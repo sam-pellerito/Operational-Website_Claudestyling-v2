@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>COGS Per Unit Builder — Sam Pellerito</title>
+<meta name="description" content="Calculate your true landed cost per SKU using both traditional COGS and cost accounting methods. Built by Sam Pellerito."/>
+<style>
+:root{--bg:#f8fafb;--card:#fff;--surface:#f1f3f6;--border:rgba(15,23,36,0.1);--text:#0f1724;--muted:#6b7280;--hint:#9ca3af;--accent:#185FA5;--teal:#1D9E75;--red:#E24B4A;--purple:#7F77DD;--amber:#BA7517;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Inter,ui-sans-serif,system-ui,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;}
+.page{max-width:960px;margin:0 auto;padding:32px 20px 60px;}
+header{margin-bottom:32px;padding-bottom:24px;border-bottom:0.5px solid var(--border);}
+.header-tag{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+h1{font-size:24px;font-weight:600;color:var(--text);margin-bottom:6px;}
+.header-desc{font-size:14px;color:var(--muted);max-width:600px;line-height:1.6;}
+.byline{font-size:13px;color:var(--muted);margin-top:10px;}
+.byline strong{color:var(--text);}
+.section-title{font-size:11px;font-weight:600;color:var(--hint);letter-spacing:.08em;text-transform:uppercase;margin:28px 0 12px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;}
+.field{display:flex;flex-direction:column;gap:5px;}
+.field label{font-size:12px;color:var(--muted);font-weight:500;}
+.field input,.field select{padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;color:var(--text);background:var(--card);outline:none;transition:border-color .15s;}
+.field input:focus,.field select:focus{border-color:var(--accent);}
+.divider{border:none;border-top:0.5px solid var(--border);margin:24px 0;}
+.method-block{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;}
+.method-block-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.method-block-sub{font-size:12px;color:var(--muted);margin-bottom:16px;}
+.line-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:10px;}
+.line-table th{font-size:10.5px;font-weight:600;color:var(--hint);text-transform:uppercase;letter-spacing:.05em;text-align:left;padding:7px 10px;border-bottom:0.5px solid var(--border);background:var(--surface);}
+.line-table th.r{text-align:right;}
+.line-table td{padding:8px 10px;border-bottom:0.5px solid var(--border);color:var(--muted);vertical-align:middle;}
+.line-table td.r{text-align:right;}
+.line-table td input{padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:13px;width:100%;background:var(--card);color:var(--text);outline:none;}
+.line-table td input:focus{border-color:var(--accent);}
+.line-table tfoot td{font-weight:700;color:var(--text);background:var(--surface);border-top:1px solid var(--border);padding:10px;}
+.line-table tfoot td.r{text-align:right;}
+.btn-add{background:none;border:1px dashed var(--border);border-radius:7px;padding:7px 14px;font-size:12px;color:var(--muted);cursor:pointer;font-family:inherit;transition:border-color .15s,color .15s;}
+.btn-add:hover{border-color:var(--accent);color:var(--accent);}
+.btn-remove{background:none;border:none;cursor:pointer;color:var(--hint);font-size:16px;line-height:1;padding:0 4px;transition:color .15s;}
+.btn-remove:hover{color:var(--red);}
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;}
+.metric{background:var(--surface);border-radius:10px;padding:14px 16px;}
+.metric-label{font-size:11px;color:var(--muted);margin-bottom:4px;}
+.metric-value{font-size:22px;font-weight:600;color:var(--text);}
+.metric-value.positive{color:var(--teal);}
+.metric-value.warn{color:var(--amber);}
+.metric-value.danger{color:var(--red);}
+.metric-sub{font-size:11px;color:var(--hint);margin-top:2px;}
+.comparison-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:6px;}
+.comparison-table th{font-size:10.5px;font-weight:600;color:var(--hint);text-transform:uppercase;letter-spacing:.05em;padding:8px 12px;border-bottom:0.5px solid var(--border);background:var(--surface);text-align:left;}
+.comparison-table th.r{text-align:right;}
+.comparison-table td{padding:10px 12px;border-bottom:0.5px solid var(--border);color:var(--muted);}
+.comparison-table td:first-child{font-weight:500;color:var(--text);}
+.comparison-table td.r{text-align:right;}
+.comparison-table tfoot td{font-weight:700;color:var(--text);background:var(--surface);border-top:1px solid var(--border);}
+.comparison-table tfoot td.r{text-align:right;}
+.pill{display:inline-block;font-size:10px;padding:1px 7px;border-radius:20px;font-weight:600;vertical-align:middle;margin-left:4px;}
+.pill-blue{background:rgba(24,95,165,0.10);color:#185FA5;}
+.pill-teal{background:rgba(29,158,117,0.12);color:#0F6E56;}
+.pill-amber{background:rgba(186,117,23,0.12);color:#92570A;}
+.chart-note{font-size:11px;color:var(--hint);margin:4px 0 20px;}
+footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.footer-left{font-size:13px;color:var(--muted);}
+.footer-left strong{color:var(--text);}
+.footer-right{font-size:12px;color:var(--hint);}
+.footer-right a{color:var(--hint);text-decoration:none;}
+.footer-right a:hover{color:var(--accent);}
+@media(max-width:640px){.field-row,.field-row-3{grid-template-columns:1fr;}h1{font-size:20px;}.line-table{font-size:11px;}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <p class="header-tag">CPG Operations Tool</p>
+  <h1>COGS Per Unit Builder</h1>
+  <p class="header-desc">Calculate your true landed cost per SKU using two methods — traditional COGS (income statement view) and cost accounting (variable vs fixed split). Compare both to understand where your money goes and how it changes at volume.</p>
+  <p class="byline">Built by <strong>Sam Pellerito</strong></p>
+</header>
+
+<!-- ── SKU info ───────────────────────────────────────────── -->
+<p class="section-title">SKU details</p>
+<div class="field-row">
+  <div class="field"><label>SKU / product name</label><input type="text" id="skuName" value="Product A" placeholder="e.g. 12oz Granola Bar"/></div>
+  <div class="field"><label>Batch / run size (units)</label><input type="number" id="batchSize" value="1000" min="1"/></div>
+</div>
+<div class="field-row">
+  <div class="field"><label>Selling price per unit ($)</label><input type="number" id="sellPrice" value="12.00" step="0.01" min="0"/></div>
+  <div class="field"><label>Target gross margin (%)</label><input type="number" id="targetMargin" value="40" step="0.1" min="0" max="100"/></div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 1 — TRADITIONAL COGS
+     ══════════════════════════════════════════════════════════ -->
+<p class="section-title">Section 1 — Traditional COGS <span class="pill pill-blue">Income statement view</span></p>
+<p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Direct materials + direct labor + manufacturing overhead. This is what appears on your P&amp;L as cost of goods sold.</p>
+
+<!-- Materials -->
+<div class="method-block">
+  <div class="method-block-title">Direct materials</div>
+  <div class="method-block-sub">Every ingredient and raw material that goes into one unit. Enter cost per unit directly or use qty × unit cost.</div>
+  <table class="line-table" id="materialsTable">
+    <thead><tr>
+      <th style="width:35%">Item</th>
+      <th class="r" style="width:18%">Qty per unit</th>
+      <th style="width:14%">Unit</th>
+      <th class="r" style="width:18%">Cost per qty ($)</th>
+      <th class="r" style="width:12%">Total ($)</th>
+      <th style="width:3%"></th>
+    </tr></thead>
+    <tbody id="materialsBody"></tbody>
+    <tfoot><tr>
+      <td colspan="4">Total direct materials</td>
+      <td class="r" id="totalMaterials">$0.00</td>
+      <td></td>
+    </tr></tfoot>
+  </table>
+  <button class="btn-add" id="addMaterial">+ Add ingredient / material</button>
+</div>
+
+<!-- Packaging -->
+<div class="method-block">
+  <div class="method-block-title">Packaging</div>
+  <div class="method-block-sub">Primary (unit packaging), secondary (case/carton), and any other packaging costs per unit.</div>
+  <table class="line-table" id="packagingTable">
+    <thead><tr>
+      <th style="width:40%">Item</th>
+      <th class="r" style="width:18%">Qty per unit</th>
+      <th class="r" style="width:20%">Cost per qty ($)</th>
+      <th class="r" style="width:16%">Total ($)</th>
+      <th style="width:6%"></th>
+    </tr></thead>
+    <tbody id="packagingBody"></tbody>
+    <tfoot><tr>
+      <td colspan="3">Total packaging</td>
+      <td class="r" id="totalPackaging">$0.00</td>
+      <td></td>
+    </tr></tfoot>
+  </table>
+  <button class="btn-add" id="addPackaging">+ Add packaging item</button>
+</div>
+
+<!-- Labor -->
+<div class="method-block">
+  <div class="method-block-title">Direct labor</div>
+  <div class="method-block-sub">Hourly workers directly involved in production. Allocates to a per-unit cost based on your batch size.</div>
+  <div class="field-row-3" style="margin-bottom:0">
+    <div class="field"><label>Labor time per batch (hrs)</label><input type="number" id="laborHours" value="4" step="0.25" min="0"/></div>
+    <div class="field"><label>Hourly rate (fully loaded) ($)</label><input type="number" id="laborRate" value="22" step="0.5" min="0"/></div>
+    <div class="field"><label>Labor cost per unit ($)</label><input type="number" id="laborPerUnit" value="" step="0.01" min="0" placeholder="Auto-calculated" style="background:var(--surface);color:var(--muted)" readonly/></div>
+  </div>
+</div>
+
+<!-- Manufacturing overhead -->
+<div class="method-block">
+  <div class="method-block-title">Manufacturing overhead</div>
+  <div class="method-block-sub">Allocated facility costs — rent, utilities, equipment depreciation — spread across the batch.</div>
+  <div class="field-row-3" style="margin-bottom:0">
+    <div class="field"><label>Total overhead per batch ($)</label><input type="number" id="overheadBatch" value="500" step="10" min="0"/></div>
+    <div class="field"><label>Co-man fee per unit ($)</label><input type="number" id="comanFee" value="0.50" step="0.01" min="0"/></div>
+    <div class="field"><label>Other overhead per unit ($)</label><input type="number" id="otherOverhead" value="0" step="0.01" min="0"/></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 2 — COST ACCOUNTING
+     ══════════════════════════════════════════════════════════ -->
+<div class="divider"></div>
+<p class="section-title">Section 2 — Cost accounting <span class="pill pill-amber">Variable vs fixed split</span></p>
+<p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Separates variable costs (change with volume) from fixed costs (constant regardless of output). Essential for pricing decisions, break-even analysis, and understanding contribution margin.</p>
+
+<div class="method-block">
+  <div class="method-block-title">Variable costs</div>
+  <div class="method-block-sub">Costs that scale directly with every unit produced. Materials and packaging from Section 1 are carried over automatically.</div>
+  <div class="field-row">
+    <div class="field"><label>Variable labor per unit ($) <span style="font-size:11px;color:var(--hint)">(piece-rate or hourly direct)</span></label><input type="number" id="varLabor" value="0.80" step="0.01" min="0"/></div>
+    <div class="field"><label>Variable overhead per unit ($) <span style="font-size:11px;color:var(--hint)">(utilities, supplies)</span></label><input type="number" id="varOverhead" value="0.20" step="0.01" min="0"/></div>
+  </div>
+  <div class="field-row">
+    <div class="field"><label>Inbound freight per unit ($)</label><input type="number" id="inboundFreight" value="0.30" step="0.01" min="0"/></div>
+    <div class="field"><label>Other variable cost per unit ($)</label><input type="number" id="otherVar" value="0" step="0.01" min="0"/></div>
+  </div>
+</div>
+
+<div class="method-block">
+  <div class="method-block-title">Fixed costs (allocated per unit at batch size)</div>
+  <div class="method-block-sub">Costs that don't change with volume — allocated to a per-unit figure based on your batch size. As volume rises, these shrink per unit.</div>
+  <div class="field-row">
+    <div class="field"><label>Fixed labor per batch ($) <span style="font-size:11px;color:var(--hint)">(salaried/supervisory)</span></label><input type="number" id="fixedLabor" value="350" step="10" min="0"/></div>
+    <div class="field"><label>Fixed overhead per batch ($) <span style="font-size:11px;color:var(--hint)">(rent, depreciation)</span></label><input type="number" id="fixedOverhead" value="500" step="10" min="0"/></div>
+  </div>
+  <div class="field-row">
+    <div class="field"><label>Co-man setup / run fee per batch ($)</label><input type="number" id="fixedComan" value="200" step="10" min="0"/></div>
+    <div class="field"><label>Other fixed cost per batch ($)</label><input type="number" id="otherFixed" value="0" step="10" min="0"/></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     RESULTS
+     ══════════════════════════════════════════════════════════ -->
+<div class="divider"></div>
+<p class="section-title">Results — cost per unit</p>
+
+<div class="metric-grid">
+  <div class="metric"><p class="metric-label">Traditional COGS / unit</p><p class="metric-value" id="out-tradCogs">—</p><p class="metric-sub">income statement view</p></div>
+  <div class="metric"><p class="metric-label">Variable cost / unit</p><p class="metric-value" id="out-varCost">—</p><p class="metric-sub">true cost accounting</p></div>
+  <div class="metric"><p class="metric-label">Full absorption cost / unit</p><p class="metric-value" id="out-fullCost">—</p><p class="metric-sub">variable + fixed allocated</p></div>
+  <div class="metric"><p class="metric-label">Contribution margin</p><p class="metric-value" id="out-cm">—</p><p class="metric-sub">price – variable cost</p></div>
+  <div class="metric"><p class="metric-label">Gross margin (trad.)</p><p class="metric-value" id="out-gm">—</p><p class="metric-sub">vs sell price</p></div>
+  <div class="metric"><p class="metric-label">Target cost to hit <span id="out-target-pct">40</span>% GM</p><p class="metric-value" id="out-targetCost">—</p><p class="metric-sub">max COGS per unit</p></div>
+</div>
+
+<p class="section-title">Side-by-side cost breakdown</p>
+<table class="comparison-table" aria-label="COGS breakdown comparison">
+  <thead>
+    <tr>
+      <th>Cost component</th>
+      <th class="r">Traditional COGS</th>
+      <th class="r">Cost accounting</th>
+      <th class="r">% of sell price</th>
+    </tr>
+  </thead>
+  <tbody id="breakdownBody"></tbody>
+  <tfoot id="breakdownFoot"></tfoot>
+</table>
+<p class="chart-note">Traditional COGS combines all costs into one line on the P&amp;L. Cost accounting splits variable from fixed so you know your true floor — the minimum price you can charge before losing money on each unit sold.</p>
+
+<p class="section-title">Volume sensitivity — cost per unit at different batch sizes</p>
+
+<div class="method-block" style="margin-bottom:16px;">
+  <div class="method-block-title">Variable cost discounts at scale</div>
+  <div class="method-block-sub">Set a % reduction in variable costs (materials, packaging, etc.) that kicks in at each volume threshold — e.g. bulk ingredient pricing at 1,000 units. Thresholds are applied to the scenarios below.</div>
+  <table class="line-table" id="discountTable">
+    <thead><tr>
+      <th style="width:40%">At or above (units)</th>
+      <th class="r" style="width:35%">Variable cost discount (%)</th>
+      <th style="width:25%"></th>
+    </tr></thead>
+    <tbody id="discountBody"></tbody>
+  </table>
+  <button class="btn-add" id="addDiscount">+ Add volume tier</button>
+</div>
+
+<div style="background:var(--surface);border-radius:10px;padding:14px 16px;margin-bottom:16px;">
+  <p style="font-size:12px;color:var(--muted);font-weight:500;margin-bottom:10px;">Scenarios to compare (units) — edit any value and the table updates instantly</p>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+    <input type="number" class="sens-input" value="100" min="1" style="width:90px;padding:7px 10px;border:1px solid var(--border);border-radius:7px;font-size:13px;font-family:inherit;color:var(--text);background:var(--card);outline:none;"/>
+    <input type="number" class="sens-input" value="250" min="1" style="width:90px;padding:7px 10px;border:1px solid var(--border);border-radius:7px;font-size:13px;font-family:inherit;color:var(--text);background:var(--card);outline:none;"/>
+    <input type="number" class="sens-input" value="500" min="1" style="width:90px;padding:7px 10px;border:1px solid var(--border);border-radius:7px;font-size:13px;font-family:inherit;color:var(--text);background:var(--card);outline:none;"/>
+    <input type="number" class="sens-input" value="1000" min="1" style="width:90px;padding:7px 10px;border:1px solid var(--border);border-radius:7px;font-size:13px;font-family:inherit;color:var(--text);background:var(--card);outline:none;"/>
+    <input type="number" class="sens-input" value="2500" min="1" style="width:90px;padding:7px 10px;border:1px solid var(--border);border-radius:7px;font-size:13px;font-family:inherit;color:var(--text);background:var(--card);outline:none;"/>
+    <input type="number" class="sens-input" value="5000" min="1" style="width:90px;padding:7px 10px;border:1px solid var(--border);border-radius:7px;font-size:13px;font-family:inherit;color:var(--text);background:var(--card);outline:none;"/>
+  </div>
+</div>
+<table class="comparison-table" aria-label="Volume sensitivity analysis">
+  <thead>
+    <tr>
+      <th>Batch size</th>
+      <th class="r">Var cost discount</th>
+      <th class="r">Variable cost / unit</th>
+      <th class="r">Fixed cost / unit</th>
+      <th class="r">Full absorption</th>
+      <th class="r">Gross margin %</th>
+      <th class="r">vs current batch</th>
+    </tr>
+  </thead>
+  <tbody id="sensitivityBody"></tbody>
+</table>
+<p class="chart-note">Highlighted row is your current batch size. Scaling volume reduces fixed cost per unit — the absorption column shows your true cost floor at each run size.</p>
+
+<footer>
+  <div class="footer-left">Built by <strong>Sam Pellerito</strong> — CPG Operations Tools</div>
+  <div class="footer-right"><a href="../index.html">← All tools</a></div>
+</footer>
+
+</div>
+<script>
+/* ── helpers ─────────────────────────────────────────── */
+function val(id){return parseFloat(document.getElementById(id).value)||0;}
+function sval(id){return document.getElementById(id).value||'';}
+function fmt(n,d=2){return '$'+n.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d});}
+function fmtPct(n){return n.toFixed(1)+'%';}
+function $id(id){return document.getElementById(id);}
+
+/* ── dynamic rows ────────────────────────────────────── */
+function makeRow(tbody, cols){
+  const tr = document.createElement('tr');
+  tr.innerHTML = cols.map(c => `<td${c.r?' class="r"':''}>${c.html}</td>`).join('') +
+    `<td><button class="btn-remove" title="Remove">×</button></td>`;
+  tr.querySelector('.btn-remove').addEventListener('click', ()=>{ tr.remove(); render(); });
+  tr.querySelectorAll('input').forEach(i=>i.addEventListener('input', render));
+  tbody.appendChild(tr);
+  render();
+}
+
+function addDiscountRow(minUnits='', discountPct=''){
+  makeRow($id('discountBody'), [
+    {html:`<input type="number" value="${minUnits}" min="1" placeholder="e.g. 1000"/>`},
+    {html:`<input type="number" value="${discountPct}" min="0" max="100" step="0.1" placeholder="e.g. 5"/>`, r:true},
+  ]);
+}
+
+function addMaterialRow(){
+  makeRow($id('materialsBody'), [
+    {html:`<input type="text" value="Ingredient" placeholder="Name"/>`},
+    {html:`<input type="number" value="1" step="0.001" min="0"/>`, r:true},
+    {html:`<input type="text" value="kg" placeholder="kg / oz / each" style="width:80px"/>`},
+    {html:`<input type="number" value="0.50" step="0.001" min="0"/>`, r:true},
+    {html:`<span class="row-total">$0.00</span>`, r:true},
+  ]);
+}
+
+function addPackagingRow(){
+  makeRow($id('packagingBody'), [
+    {html:`<input type="text" value="Primary pack" placeholder="Name"/>`},
+    {html:`<input type="number" value="1" step="0.001" min="0"/>`, r:true},
+    {html:`<input type="number" value="0.35" step="0.001" min="0"/>`, r:true},
+    {html:`<span class="row-total">$0.00</span>`, r:true},
+  ]);
+}
+
+/* ── sum table rows ──────────────────────────────────── */
+function sumMaterials(){
+  let total = 0;
+  $id('materialsBody').querySelectorAll('tr').forEach(tr=>{
+    const inputs = tr.querySelectorAll('input[type="number"]');
+    const qty = parseFloat(inputs[0]?.value)||0;
+    const cost = parseFloat(inputs[1]?.value)||0;
+    const sub = qty * cost;
+    total += sub;
+    const span = tr.querySelector('.row-total');
+    if(span) span.textContent = fmt(sub);
+  });
+  return total;
+}
+
+function sumPackaging(){
+  let total = 0;
+  $id('packagingBody').querySelectorAll('tr').forEach(tr=>{
+    const inputs = tr.querySelectorAll('input[type="number"]');
+    const qty = parseFloat(inputs[0]?.value)||0;
+    const cost = parseFloat(inputs[1]?.value)||0;
+    const sub = qty * cost;
+    total += sub;
+    const span = tr.querySelector('.row-total');
+    if(span) span.textContent = fmt(sub);
+  });
+  return total;
+}
+
+/* ── main render ─────────────────────────────────────── */
+function render(){
+  const batchSize = val('batchSize') || 1;
+  const sellPrice = val('sellPrice');
+  const targetMargin = val('targetMargin') / 100;
+
+  /* — Section 1: Traditional COGS — */
+  const matTotal = sumMaterials();
+  const pkgTotal = sumPackaging();
+  $id('totalMaterials').textContent = fmt(matTotal);
+  $id('totalPackaging').textContent = fmt(pkgTotal);
+
+  const laborHours = val('laborHours');
+  const laborRate = val('laborRate');
+  const laborPerUnit = (laborHours * laborRate) / batchSize;
+  $id('laborPerUnit').value = laborPerUnit.toFixed(4);
+
+  const overheadPerUnit = val('overheadBatch') / batchSize;
+  const comanFee = val('comanFee');
+  const otherOverhead = val('otherOverhead');
+  const tradCogs = matTotal + pkgTotal + laborPerUnit + overheadPerUnit + comanFee + otherOverhead;
+
+  /* — Section 2: Cost accounting — */
+  const varLabor = val('varLabor');
+  const varOverhead = val('varOverhead');
+  const inboundFreight = val('inboundFreight');
+  const otherVar = val('otherVar');
+  const variableCost = matTotal + pkgTotal + varLabor + varOverhead + inboundFreight + otherVar;
+
+  const fixedLaborPerUnit = val('fixedLabor') / batchSize;
+  const fixedOverheadPerUnit = val('fixedOverhead') / batchSize;
+  const fixedComanPerUnit = val('fixedComan') / batchSize;
+  const otherFixedPerUnit = val('otherFixed') / batchSize;
+  const fixedPerUnit = fixedLaborPerUnit + fixedOverheadPerUnit + fixedComanPerUnit + otherFixedPerUnit;
+  const fullAbsorption = variableCost + fixedPerUnit;
+
+  /* — Key metrics — */
+  const cm = sellPrice - variableCost;
+  const cmPct = sellPrice ? (cm / sellPrice) * 100 : 0;
+  const gm = sellPrice ? ((sellPrice - tradCogs) / sellPrice) * 100 : 0;
+  const targetCost = sellPrice * (1 - targetMargin);
+
+  $id('out-tradCogs').textContent = fmt(tradCogs);
+  $id('out-tradCogs').className = 'metric-value' + (tradCogs > sellPrice ? ' danger' : tradCogs > sellPrice * 0.7 ? ' warn' : '');
+  $id('out-varCost').textContent = fmt(variableCost);
+  $id('out-fullCost').textContent = fmt(fullAbsorption);
+  $id('out-cm').textContent = fmt(cm) + ' (' + fmtPct(cmPct) + ')';
+  $id('out-cm').className = 'metric-value' + (cm < 0 ? ' danger' : cm < sellPrice * 0.2 ? ' warn' : ' positive');
+  $id('out-gm').textContent = fmtPct(gm);
+  $id('out-gm').className = 'metric-value' + (gm < 0 ? ' danger' : gm < 20 ? ' warn' : ' positive');
+  $id('out-targetCost').textContent = fmt(targetCost);
+  $id('out-target-pct').textContent = val('targetMargin');
+
+  /* — Breakdown table — */
+  const breakRows = [
+    ['Direct materials', matTotal, matTotal],
+    ['Packaging', pkgTotal, pkgTotal],
+    ['Direct labor', laborPerUnit, varLabor],
+    ['Variable overhead / freight', overheadPerUnit, varOverhead + inboundFreight + otherVar],
+    ['Fixed labor (allocated)', 0, fixedLaborPerUnit],
+    ['Fixed overhead (allocated)', 0, fixedOverheadPerUnit],
+    ['Co-man fees', comanFee, fixedComanPerUnit],
+    ['Other', otherOverhead, otherFixedPerUnit],
+  ];
+  $id('breakdownBody').innerHTML = breakRows.map(([label, trad, ca]) => {
+    const pct = sellPrice ? ((Math.max(trad,ca)) / sellPrice * 100) : 0;
+    return `<tr>
+      <td>${label}</td>
+      <td class="r">${trad > 0 ? fmt(trad) : '<span style="color:var(--hint)">—</span>'}</td>
+      <td class="r">${ca > 0 ? fmt(ca) : '<span style="color:var(--hint)">—</span>'}</td>
+      <td class="r" style="color:var(--muted)">${pct > 0 ? fmtPct(pct) : '—'}</td>
+    </tr>`;
+  }).join('');
+  $id('breakdownFoot').innerHTML = `<tr>
+    <td>Total cost / unit</td>
+    <td class="r">${fmt(tradCogs)}</td>
+    <td class="r">${fmt(fullAbsorption)}</td>
+    <td class="r">${sellPrice ? fmtPct(Math.max(tradCogs,fullAbsorption)/sellPrice*100) : '—'}</td>
+  </tr>`;
+
+  /* — Volume sensitivity — */
+  const currentBatch = Math.round(batchSize);
+  const userScenarios = [...document.querySelectorAll('.sens-input')]
+    .map(el => parseInt(el.value) || 0).filter(v => v > 0);
+  const sensScenarios = [...new Set([...userScenarios, currentBatch])].sort((a,b)=>a-b);
+  const totalFixed = val('fixedLabor') + val('fixedOverhead') + val('fixedComan') + val('otherFixed');
+
+  // Read discount tiers: [{minUnits, discountPct}] sorted descending so we find the highest applicable tier
+  const discountTiers = [...$id('discountBody').querySelectorAll('tr')].map(tr => {
+    const inputs = tr.querySelectorAll('input[type="number"]');
+    return { minUnits: parseInt(inputs[0]?.value)||0, discountPct: parseFloat(inputs[1]?.value)||0 };
+  }).filter(t => t.minUnits > 0).sort((a,b) => b.minUnits - a.minUnits);
+
+  function getDiscount(units){
+    const tier = discountTiers.find(t => units >= t.minUnits);
+    return tier ? tier.discountPct / 100 : 0;
+  }
+
+  const baseDiscount = getDiscount(currentBatch);
+  const baseVarCost = variableCost * (1 - baseDiscount);
+  const baseFullAbsorption = baseVarCost + (totalFixed / currentBatch);
+
+  $id('sensitivityBody').innerHTML = sensScenarios.map(b => {
+    const discount = getDiscount(b);
+    const adjVarCost = variableCost * (1 - discount);
+    const fp = totalFixed / b;
+    const full = adjVarCost + fp;
+    const gmX = sellPrice ? ((sellPrice - full) / sellPrice * 100) : 0;
+    const diff = full - baseFullAbsorption;
+    const isBase = b === currentBatch;
+    return `<tr${isBase ? ' style="background:rgba(24,95,165,0.05)"':''}>
+      <td style="${isBase?'color:var(--accent);font-weight:600':''}">
+        ${b.toLocaleString()} units${isBase ? ' ← current' : ''}
+      </td>
+      <td class="r" style="color:${discount>0?'var(--teal)':'var(--hint)'}">
+        ${discount > 0 ? '−' + fmtPct(discount*100) : '—'}
+      </td>
+      <td class="r">${fmt(adjVarCost)}${discount>0?` <span style="font-size:10px;color:var(--teal)">(−${fmt(variableCost*discount)})</span>`:''}</td>
+      <td class="r" style="color:#1D9E75">${fmt(fp)}</td>
+      <td class="r" style="font-weight:${isBase?'700':'400'}">${fmt(full)}</td>
+      <td class="r" style="color:${gmX<0?'var(--red)':gmX<20?'var(--amber)':'var(--teal)'}">${fmtPct(gmX)}</td>
+      <td class="r" style="color:${diff>0.005?'var(--red)':diff<-0.005?'var(--teal)':'var(--hint)'}">
+        ${isBase ? '—' : (diff >= 0 ? '+' : '') + fmt(diff)}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+/* ── init ────────────────────────────────────────────── */
+$id('addMaterial').addEventListener('click', addMaterialRow);
+$id('addPackaging').addEventListener('click', addPackagingRow);
+$id('addDiscount').addEventListener('click', () => addDiscountRow());
+// Seed two default discount tiers
+addDiscountRow(1000, 5);
+addDiscountRow(2500, 10);
+document.querySelectorAll('input,select').forEach(el => {
+  if(!el.readOnly) el.addEventListener('input', render);
+});
+// sens inputs are added to DOM after this runs, so delegate via the container
+document.addEventListener('input', e => {
+  if(e.target.classList.contains('sens-input')) render();
+});
+
+// Seed default rows
+addMaterialRow();
+addMaterialRow();
+addPackagingRow();
+</script>
+</body>
+</html>
