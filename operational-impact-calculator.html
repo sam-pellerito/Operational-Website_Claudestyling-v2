@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Operational Impact Calculator — Sam Pellerito</title>
+<meta name="description" content="Estimate how a one-time operational savings reinvested into marketing affects customer acquisition cost and gross margin. Built by Sam Pellerito."/>
+<style>
+:root{--bg:#f8fafb;--card:#fff;--surface:#f1f3f6;--border:rgba(15,23,36,0.1);--text:#0f1724;--muted:#6b7280;--hint:#9ca3af;--accent:#185FA5;--teal:#1D9E75;--red:#E24B4A;--purple:#7F77DD;--amber:#BA7517;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Inter,ui-sans-serif,system-ui,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;}
+.page{max-width:960px;margin:0 auto;padding:32px 20px 60px;}
+header{margin-bottom:32px;padding-bottom:24px;border-bottom:0.5px solid var(--border);}
+.header-tag{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+h1{font-size:24px;font-weight:600;color:var(--text);margin-bottom:6px;}
+.header-desc{font-size:14px;color:var(--muted);max-width:600px;line-height:1.6;}
+.byline{font-size:13px;color:var(--muted);margin-top:10px;}
+.byline strong{color:var(--text);}
+.section-title{font-size:11px;font-weight:600;color:var(--hint);letter-spacing:.08em;text-transform:uppercase;margin:24px 0 12px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.field{display:flex;flex-direction:column;gap:5px;}
+.field label{font-size:12px;color:var(--muted);font-weight:500;}
+.field input,.field select{padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;color:var(--text);background:var(--card);outline:none;transition:border-color .15s;}
+.field input:focus,.field select:focus{border-color:var(--accent);}
+.field textarea{padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;color:var(--text);background:var(--card);outline:none;transition:border-color .15s;resize:vertical;min-height:60px;font-family:inherit;}
+.field textarea:focus{border-color:var(--accent);}
+.divider{border:none;border-top:0.5px solid var(--border);margin:20px 0;}
+.alert-box{border-radius:10px;padding:12px 16px;font-size:13px;margin-bottom:16px;line-height:1.5;}
+.alert-warn{background:#FEF3C7;color:#92400E;}
+.alert-ok{background:#D1FAE5;color:#065F46;}
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;}
+.metric{background:var(--surface);border-radius:10px;padding:14px 16px;}
+.metric-label{font-size:11px;color:var(--muted);margin-bottom:4px;}
+.metric-value{font-size:22px;font-weight:600;color:var(--text);}
+.metric-value.positive{color:var(--teal);}
+.metric-value.warn{color:var(--amber);}
+.metric-sub{font-size:11px;color:var(--hint);margin-top:2px;}
+.pill{display:inline-block;font-size:10px;padding:1px 6px;border-radius:20px;font-weight:600;vertical-align:middle;margin-left:3px;}
+.pill-blue{background:rgba(24,95,165,0.12);color:#185FA5;}
+.pill-teal{background:rgba(29,158,117,0.12);color:#0F6E56;}
+.breakdown-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:6px;}
+.breakdown-table th{font-size:10.5px;font-weight:600;color:var(--hint);text-transform:uppercase;letter-spacing:.05em;text-align:right;padding:8px 12px;border-bottom:0.5px solid var(--border);background:var(--surface);}
+.breakdown-table th:first-child{text-align:left;}
+.breakdown-table td{padding:10px 12px;border-bottom:0.5px solid var(--border);text-align:right;color:var(--muted);}
+.breakdown-table td:first-child{text-align:left;font-weight:500;color:var(--text);}
+.breakdown-table tfoot td{font-weight:700;color:var(--text);background:var(--surface);border-top:1px solid var(--border);}
+.chart-note{font-size:11px;color:var(--hint);margin:4px 0 20px;}
+.history-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px;}
+.history-table th{font-size:10.5px;font-weight:600;color:var(--hint);text-transform:uppercase;letter-spacing:.05em;text-align:right;padding:8px 12px;border-bottom:0.5px solid var(--border);background:var(--surface);}
+.history-table th:first-child{text-align:left;}
+.history-table td{padding:9px 12px;border-bottom:0.5px solid var(--border);text-align:right;color:var(--muted);}
+.history-table td:first-child{text-align:left;color:var(--text);}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
+.btn{padding:9px 16px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-secondary{background:var(--surface);color:var(--text);border:1px solid var(--border);}
+.btn-danger{background:#feeae6;color:#9b1c1c;border:none;}
+footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.footer-left{font-size:13px;color:var(--muted);}
+.footer-left strong{color:var(--text);}
+.footer-right{font-size:12px;color:var(--hint);}
+@media(max-width:640px){.field-row{grid-template-columns:1fr;}h1{font-size:20px;}.breakdown-table{font-size:11px;}.breakdown-table th,.breakdown-table td{padding:6px 7px;}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <p class="header-tag">CPG Operations Tool</p>
+  <h1>Operational Impact Calculator</h1>
+  <p class="header-desc">Estimate how a one-time operational savings reinvested into marketing affects customer acquisition cost and gross margin — useful for CPG owners, operators, and investors building the case for efficiency improvements.</p>
+  <p class="byline">Built by <strong>Sam Pellerito</strong></p>
+</header>
+
+<p class="section-title">Business inputs</p>
+<div class="field-row">
+  <div class="field"><label>Current annual revenue ($)</label><input type="number" id="currentRevenue" value="1000000" step="1000" min="0"/></div>
+  <div class="field"><label>Current gross margin (%)</label><input type="number" id="currentMarginPct" value="30" step="0.1" min="0" max="100"/></div>
+</div>
+<div class="field-row">
+  <div class="field"><label>Average order value — AOV ($)</label><input type="number" id="aov" value="45" step="0.01" min="0.01"/></div>
+  <div class="field"><label>Current cost per acquisition — CPA ($)</label><input type="number" id="currentCPA" value="20" step="0.01" min="0"/></div>
+</div>
+
+<p class="section-title">Savings &amp; reinvestment inputs</p>
+<div class="field-row">
+  <div class="field"><label>One-time savings amount ($)</label><input type="number" id="savings" value="50000" step="500" min="0"/></div>
+  <div class="field"><label>Reinvestment rate into marketing (%)</label><input type="number" id="reinvestmentRate" value="50" step="1" min="0" max="100"/></div>
+</div>
+<div class="field-row">
+  <div class="field"><label>Marketing ROI (revenue per $1 spent)</label><input type="number" id="marketingROI" value="3" step="0.1" min="0"/></div>
+  <div class="field"><label>Contribution margin on incremental revenue (%)</label><input type="number" id="contributionMarginPct" value="40" step="0.1" min="0" max="100"/></div>
+</div>
+<div class="field-row" style="grid-template-columns:1fr;">
+  <div class="field"><label>Notes (optional)</label><textarea id="notes" placeholder="Context or campaign notes"></textarea></div>
+</div>
+
+<div class="divider"></div>
+<div id="alertBox" class="alert-box" style="display:none"></div>
+
+<p class="section-title">Key results</p>
+<div class="metric-grid">
+  <div class="metric"><p class="metric-label">Marketing budget</p><p class="metric-value" id="out-budget">—</p><p class="metric-sub">from savings reinvestment</p></div>
+  <div class="metric"><p class="metric-label">Additional revenue (ΔR)</p><p class="metric-value positive" id="out-deltaR">—</p><p class="metric-sub">one-time</p></div>
+  <div class="metric"><p class="metric-label">Additional customers (ΔC)</p><p class="metric-value positive" id="out-deltaC">—</p><p class="metric-sub">new acquisitions</p></div>
+  <div class="metric"><p class="metric-label">New avg CPA</p><p class="metric-value" id="out-newCPA">—</p><p class="metric-sub">blended after campaign</p></div>
+  <div class="metric"><p class="metric-label">Incremental contribution</p><p class="metric-value positive" id="out-contribution">—</p><p class="metric-sub">at contribution margin</p></div>
+  <div class="metric"><p class="metric-label">New gross margin</p><p class="metric-value" id="out-newMargin">—</p><p class="metric-sub">projected blended %</p></div>
+</div>
+
+<p class="section-title">Impact breakdown</p>
+<table class="breakdown-table" aria-label="Savings reinvestment impact breakdown">
+  <thead>
+    <tr>
+      <th>Metric</th>
+      <th>Before</th>
+      <th>After</th>
+      <th>Change</th>
+    </tr>
+  </thead>
+  <tbody id="breakdownBody"></tbody>
+</table>
+<p class="chart-note">Incremental CPA (AOV ÷ mROI) shows the implied cost per new customer from this campaign. If it is lower than your current CPA, the reinvestment is acquiring customers more efficiently than your existing average.</p>
+
+<p class="section-title">How the math works</p>
+<table class="breakdown-table" aria-label="Formula reference">
+  <thead><tr><th>Variable</th><th style="text-align:left">Formula</th><th style="text-align:left">Meaning</th></tr></thead>
+  <tbody>
+    <tr><td>B</td><td style="text-align:left;font-family:monospace">Savings × Reinvestment %</td><td style="text-align:left;color:var(--muted)">Marketing budget allocated</td></tr>
+    <tr><td>ΔR</td><td style="text-align:left;font-family:monospace">B × mROI</td><td style="text-align:left;color:var(--muted)">Additional revenue generated</td></tr>
+    <tr><td>ΔC</td><td style="text-align:left;font-family:monospace">ΔR ÷ AOV</td><td style="text-align:left;color:var(--muted)">New customers acquired</td></tr>
+    <tr><td>Incremental CPA</td><td style="text-align:left;font-family:monospace">AOV ÷ mROI</td><td style="text-align:left;color:var(--muted)">Implied spend per new customer</td></tr>
+    <tr><td>New avg CPA</td><td style="text-align:left;font-family:monospace">(C₀ × CPA₀ + B) ÷ (C₀ + ΔC)</td><td style="text-align:left;color:var(--muted)">Blended CPA after campaign</td></tr>
+    <tr><td>ΔContribution</td><td style="text-align:left;font-family:monospace">ΔR × Contribution margin %</td><td style="text-align:left;color:var(--muted)">Incremental profit contribution</td></tr>
+    <tr><td>New margin %</td><td style="text-align:left;font-family:monospace">(R₀×M₀ + ΔContrib) ÷ (R₀ + ΔR)</td><td style="text-align:left;color:var(--muted)">Blended gross margin after</td></tr>
+  </tbody>
+</table>
+
+<div class="divider"></div>
+
+<p class="section-title">Saved calculations</p>
+<div id="historyWrap">
+  <p style="font-size:13px;color:var(--hint)" id="historyEmpty">No saved calculations yet. Click Save below to record a scenario.</p>
+  <table class="history-table" id="historyTable" style="display:none" aria-label="Saved calculation history">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>ΔRevenue</th>
+        <th>ΔCustomers</th>
+        <th>New Avg CPA</th>
+        <th>New Margin</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody id="historyBody"></tbody>
+  </table>
+</div>
+
+<div class="btn-row">
+  <button class="btn btn-primary" id="saveBtn">Save scenario</button>
+  <button class="btn btn-secondary" id="exportBtn">Export CSV</button>
+  <button class="btn btn-danger" id="clearHistoryBtn">Delete all saved</button>
+</div>
+
+<footer>
+  <div class="footer-left">Built by <strong>Sam Pellerito</strong> — CPG Operations Tools</div>
+  <div class="footer-right">Free to use and share</div>
+</footer>
+
+</div>
+<script>
+function $id(id){return document.getElementById(id);}
+function val(id){return parseFloat($id(id).value)||0;}
+function fmt(n){return '$'+Math.round(n).toLocaleString();}
+function fmtDec(n,d=2){return '$'+n.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d});}
+function fmtPct(n){return n.toFixed(2)+'%';}
+function fmtN(n){return Math.round(n).toLocaleString();}
+
+function calculate(){
+  const R0 = val('currentRevenue');
+  const M0 = val('currentMarginPct') / 100;
+  const AOV = val('aov');
+  const CPA0 = val('currentCPA');
+  const S = val('savings');
+  const r = val('reinvestmentRate') / 100;
+  const mROI = val('marketingROI');
+  const cm = val('contributionMarginPct') / 100;
+
+  const B = S * r;
+  const deltaR = B * mROI;
+  const deltaC = AOV ? deltaR / AOV : 0;
+  const incrementalCPA = mROI ? AOV / mROI : 0;
+  const C0 = AOV ? R0 / AOV : 0;
+  const newAvgCPA = (C0 + deltaC) ? (C0 * CPA0 + B) / (C0 + deltaC) : 0;
+  const deltaContrib = deltaR * cm;
+  const newRevenue = R0 + deltaR;
+  const newMarginPct = newRevenue ? ((R0 * M0 + deltaContrib) / newRevenue) * 100 : 0;
+
+  return {B, deltaR, deltaC, incrementalCPA, C0, CPA0, newAvgCPA,
+          deltaContrib, newRevenue, newMarginPct,
+          R0, M0: M0*100, AOV, mROI};
+}
+
+function render(){
+  const o = calculate();
+
+  $id('out-budget').textContent = fmt(o.B);
+  $id('out-deltaR').textContent = fmt(o.deltaR);
+  $id('out-deltaC').textContent = fmtN(o.deltaC);
+  $id('out-newCPA').textContent = fmtDec(o.newAvgCPA);
+  $id('out-contribution').textContent = fmt(o.deltaContrib);
+  $id('out-newMargin').textContent = fmtPct(o.newMarginPct);
+
+  // CPA colour
+  const cpaEl = $id('out-newCPA');
+  cpaEl.className = 'metric-value' + (o.newAvgCPA < o.CPA0 ? ' positive' : o.newAvgCPA > o.CPA0 * 1.1 ? ' warn' : '');
+
+  // Alert
+  const box = $id('alertBox');
+  box.style.display = 'block';
+  if(o.incrementalCPA < o.CPA0){
+    box.className = 'alert-box alert-ok';
+    box.textContent = '✓ Incremental CPA ($' + o.incrementalCPA.toFixed(2) + ') is lower than your current CPA ($' + o.CPA0.toFixed(2) + '). Reinvesting these savings acquires new customers more cheaply than your baseline.';
+  } else {
+    box.className = 'alert-box alert-warn';
+    box.textContent = '⚠ Incremental CPA ($' + o.incrementalCPA.toFixed(2) + ') is higher than your current CPA ($' + o.CPA0.toFixed(2) + '). Consider improving mROI or redirecting savings before committing to this channel.';
+  }
+
+  // Breakdown table
+  const tbody = $id('breakdownBody');
+  const rows = [
+    ['Revenue', fmt(o.R0), fmt(o.newRevenue), '+' + fmt(o.deltaR)],
+    ['Gross margin %', fmtPct(o.M0), fmtPct(o.newMarginPct), (o.newMarginPct - o.M0 >= 0 ? '+' : '') + (o.newMarginPct - o.M0).toFixed(2) + 'pp'],
+    ['Avg CPA', fmtDec(o.CPA0), fmtDec(o.newAvgCPA), (o.newAvgCPA - o.CPA0 >= 0 ? '+' : '') + fmtDec(o.newAvgCPA - o.CPA0)],
+    ['Incremental CPA (implied)', '—', fmtDec(o.incrementalCPA), 'AOV ÷ mROI'],
+    ['Customers acquired', fmtN(o.C0), fmtN(o.C0 + o.deltaC), '+' + fmtN(o.deltaC)],
+  ];
+  tbody.innerHTML = rows.map(([label, before, after, change]) =>
+    `<tr><td>${label}</td><td>${before}</td><td>${after}</td><td style="color:${change.startsWith('+')?'#1D9E75':change.startsWith('-')?'#E24B4A':'inherit'}">${change}</td></tr>`
+  ).join('');
+}
+
+// History
+function loadHistory(){
+  const list = JSON.parse(localStorage.getItem('ops_impact_history') || '[]');
+  const tbody = $id('historyBody');
+  const table = $id('historyTable');
+  const empty = $id('historyEmpty');
+  tbody.innerHTML = '';
+  if(!list.length){ table.style.display='none'; empty.style.display=''; return; }
+  table.style.display = '';
+  empty.style.display = 'none';
+  list.slice().reverse().forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${new Date(r.timestamp).toLocaleDateString()}</td>
+      <td>${fmt(r.deltaR)}</td>
+      <td>${fmtN(r.deltaC)}</td>
+      <td>${fmtDec(r.newAvgCPA)}</td>
+      <td>${fmtPct(r.newMarginPct)}</td>
+      <td style="text-align:left;color:var(--muted);font-size:12px">${r.notes || '—'}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+$id('saveBtn').addEventListener('click', () => {
+  const o = calculate();
+  const list = JSON.parse(localStorage.getItem('ops_impact_history') || '[]');
+  list.push({
+    timestamp: new Date().toISOString(),
+    currentRevenue: val('currentRevenue'), currentMarginPct: val('currentMarginPct'),
+    aov: val('aov'), currentCPA: val('currentCPA'), savings: val('savings'),
+    reinvestmentRate: val('reinvestmentRate'), marketingROI: val('marketingROI'),
+    contributionMarginPct: val('contributionMarginPct'),
+    deltaR: o.deltaR, deltaC: o.deltaC, newAvgCPA: o.newAvgCPA,
+    newMarginPct: o.newMarginPct, deltaContrib: o.deltaContrib,
+    notes: $id('notes').value
+  });
+  localStorage.setItem('ops_impact_history', JSON.stringify(list));
+  loadHistory();
+});
+
+$id('exportBtn').addEventListener('click', () => {
+  const list = JSON.parse(localStorage.getItem('ops_impact_history') || '[]');
+  if(!list.length){ alert('No saved records to export.'); return; }
+  const headers = ['Timestamp','CurrentRevenue','CurrentMarginPct','AOV','CurrentCPA','Savings','ReinvestmentRate','MarketingROI','ContributionMarginPct','DeltaRevenue','DeltaCustomers','NewAvgCPA','NewMarginPct','DeltaContribution','Notes'];
+  const rows = list.map(r => headers.map(h => `"${r[h.charAt(0).toLowerCase()+h.slice(1)] ?? r[h] ?? ''}"`).join(','));
+  const blob = new Blob([[headers.join(','), ...rows].join('\n')], {type:'text/csv'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'ops_impact_calculations.csv'; a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+$id('clearHistoryBtn').addEventListener('click', () => {
+  if(confirm('Delete all locally saved calculations?')){ localStorage.removeItem('ops_impact_history'); loadHistory(); }
+});
+
+document.querySelectorAll('input,select,textarea').forEach(el => el.addEventListener('input', render));
+render();
+loadHistory();
+</script>
+</body>
+</html>
