@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Make vs Buy Decision — Sam Pellerito</title>
+<meta name="description" content="Compare in-house production vs co-manufacturing costs at any volume. Find your break-even point and true total cost per SKU. Built by Sam Pellerito."/>
+<style>
+:root{--bg:#f8fafb;--card:#fff;--surface:#f1f3f6;--border:rgba(15,23,36,0.1);--text:#0f1724;--muted:#6b7280;--hint:#9ca3af;--accent:#185FA5;--teal:#1D9E75;--red:#E24B4A;--purple:#7F77DD;--amber:#BA7517;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Inter,ui-sans-serif,system-ui,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;}
+.page{max-width:960px;margin:0 auto;padding:32px 20px 60px;}
+header{margin-bottom:32px;padding-bottom:24px;border-bottom:0.5px solid var(--border);}
+.header-tag{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+h1{font-size:24px;font-weight:600;color:var(--text);margin-bottom:6px;}
+.header-desc{font-size:14px;color:var(--muted);max-width:620px;line-height:1.6;}
+.byline{font-size:13px;color:var(--muted);margin-top:10px;}
+.byline strong{color:var(--text);}
+.section-title{font-size:11px;font-weight:600;color:var(--hint);letter-spacing:.08em;text-transform:uppercase;margin:28px 0 12px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;}
+.panel-make{border-top:3px solid var(--accent);}
+.panel-buy{border-top:3px solid var(--teal);}
+.panel-title{font-size:14px;font-weight:700;margin-bottom:4px;}
+.panel-title.make{color:var(--accent);}
+.panel-title.buy{color:var(--teal);}
+.panel-sub{font-size:12px;color:var(--muted);margin-bottom:16px;}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.field label{font-size:12px;color:var(--muted);font-weight:500;}
+.field input{padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;color:var(--text);background:var(--card);outline:none;transition:border-color .15s;}
+.field input:focus{border-color:var(--accent);}
+.field-hint{font-size:11px;color:var(--hint);margin-top:2px;}
+.divider{border:none;border-top:0.5px solid var(--border);margin:24px 0;}
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px;}
+.metric{background:var(--surface);border-radius:10px;padding:14px 16px;}
+.metric-label{font-size:11px;color:var(--muted);margin-bottom:4px;}
+.metric-value{font-size:22px;font-weight:600;color:var(--text);}
+.metric-value.make{color:var(--accent);}
+.metric-value.buy{color:var(--teal);}
+.metric-value.fav{color:var(--teal);}
+.metric-value.unfav{color:var(--red);}
+.metric-sub{font-size:11px;color:var(--hint);margin-top:2px;}
+.verdict-bar{border-radius:12px;padding:16px 20px;margin-bottom:20px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:10px;}
+.verdict-bar.make{background:rgba(24,95,165,0.08);color:var(--accent);border:1px solid rgba(24,95,165,0.2);}
+.verdict-bar.buy{background:rgba(29,158,117,0.08);color:#0F6E56;border:1px solid rgba(29,158,117,0.2);}
+.verdict-bar.tie{background:var(--surface);color:var(--muted);border:1px solid var(--border);}
+.verdict-icon{font-size:18px;line-height:1;}
+.sens-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:6px;}
+.sens-table th{font-size:10.5px;font-weight:600;color:var(--hint);text-transform:uppercase;letter-spacing:.05em;padding:8px 12px;border-bottom:0.5px solid var(--border);background:var(--surface);text-align:right;}
+.sens-table th:first-child{text-align:left;}
+.sens-table td{padding:10px 12px;border-bottom:0.5px solid var(--border);text-align:right;color:var(--muted);}
+.sens-table td:first-child{text-align:left;color:var(--text);font-weight:500;}
+.sens-table td.cheaper{color:var(--teal);font-weight:600;}
+.sens-table td.pricier{color:var(--red);}
+.sens-table tr.breakeven-row td{background:rgba(186,117,23,0.07);font-weight:600;}
+.sens-input{width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;text-align:right;background:var(--card);color:var(--text);}
+.sens-input:focus{outline:none;border-color:var(--accent);}
+.chart-wrap{position:relative;width:100%;height:320px;margin-bottom:8px;}
+.chart-note{font-size:11px;color:var(--hint);margin:4px 0 24px;}
+.legend-row{display:flex;flex-wrap:wrap;gap:14px;margin:6px 0 10px;font-size:12px;color:var(--muted);}
+.legend-row span{display:flex;align-items:center;gap:6px;}
+.leg{width:28px;height:3px;display:inline-block;border-radius:2px;}
+.tag{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;margin-left:6px;}
+.tag-make{background:rgba(24,95,165,0.10);color:#185FA5;}
+.tag-buy{background:rgba(29,158,117,0.12);color:#0F6E56;}
+footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.footer-left{font-size:13px;color:var(--muted);}
+.footer-left strong{color:var(--text);}
+.footer-right a{color:var(--hint);text-decoration:none;font-size:12px;}
+.footer-right a:hover{color:var(--accent);}
+@media(max-width:640px){.two-col{grid-template-columns:1fr;}h1{font-size:20px;}.metric-grid{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<nav style="margin-bottom:20px;">
+  <a href="index.html" style="font-size:13px;color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+    <span style="font-size:16px;line-height:1;">←</span> All tools
+  </a>
+</nav>
+
+<header>
+  <p class="header-tag">CPG Operations Tool</p>
+  <h1>Make vs Buy Decision</h1>
+  <p class="header-desc">Compare the true total cost of in-house production versus co-manufacturing at any volume. Find your break-even point, see where each option wins, and stress-test both with a volume sensitivity table.</p>
+  <p class="byline">Built by <strong>Sam Pellerito</strong></p>
+</header>
+
+<!-- ── Volume anchor ───────────────────────────── -->
+<p class="section-title">Target volume</p>
+<div style="max-width:300px;">
+  <div class="field">
+    <label>Annual units to evaluate</label>
+    <input type="number" id="targetUnits" value="25000" min="1" step="1000"/>
+    <span class="field-hint">The volume you're planning or forecasting — used as the primary comparison point.</span>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ── Two-column inputs ──────────────────────── -->
+<div class="two-col">
+
+  <!-- MAKE -->
+  <div class="panel panel-make">
+    <p class="panel-title make">🏭 Make <span class="tag tag-make">In-house</span></p>
+    <p class="panel-sub">Your own production — fixed costs spread over volume, variable costs per unit.</p>
+
+    <p style="font-size:11px;font-weight:600;color:var(--hint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Annual fixed costs</p>
+    <div class="field">
+      <label>Equipment / depreciation ($/yr)</label>
+      <input type="number" id="makeFixedEquip" value="30000" step="500" min="0"/>
+    </div>
+    <div class="field">
+      <label>Facility / rent ($/yr)</label>
+      <input type="number" id="makeFixedFacility" value="18000" step="500" min="0"/>
+    </div>
+    <div class="field">
+      <label>Labor overhead / management ($/yr)</label>
+      <input type="number" id="makeFixedLabor" value="20000" step="500" min="0"/>
+    </div>
+    <div class="field">
+      <label>Other fixed costs ($/yr)</label>
+      <input type="number" id="makeFixedOther" value="5000" step="500" min="0"/>
+    </div>
+
+    <p style="font-size:11px;font-weight:600;color:var(--hint);text-transform:uppercase;letter-spacing:.06em;margin:14px 0 10px;">Variable costs per unit</p>
+    <div class="field">
+      <label>Raw materials ($/unit)</label>
+      <input type="number" id="makeVarMaterials" value="2.80" step="0.01" min="0"/>
+    </div>
+    <div class="field">
+      <label>Direct labor ($/unit)</label>
+      <input type="number" id="makeVarLabor" value="0.90" step="0.01" min="0"/>
+    </div>
+    <div class="field">
+      <label>Packaging ($/unit)</label>
+      <input type="number" id="makeVarPackaging" value="0.45" step="0.01" min="0"/>
+    </div>
+    <div class="field">
+      <label>Other variable costs ($/unit)</label>
+      <input type="number" id="makeVarOther" value="0.20" step="0.01" min="0"/>
+    </div>
+  </div>
+
+  <!-- BUY -->
+  <div class="panel panel-buy">
+    <p class="panel-title buy">🤝 Buy <span class="tag tag-buy">Co-man</span></p>
+    <p class="panel-sub">Contract manufacturing — per-unit fees, run minimums, and your material cost if you supply.</p>
+
+    <p style="font-size:11px;font-weight:600;color:var(--hint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Per-unit costs</p>
+    <div class="field">
+      <label>Co-man fee / unit ($)</label>
+      <input type="number" id="buyCoManFee" value="1.80" step="0.01" min="0"/>
+      <span class="field-hint">Their toll fee — labor, overhead, markup.</span>
+    </div>
+    <div class="field">
+      <label>Your materials cost / unit ($)</label>
+      <input type="number" id="buyMaterials" value="2.80" step="0.01" min="0"/>
+      <span class="field-hint">If you supply ingredients/packaging; set to $0 if co-man supplies all.</span>
+    </div>
+    <div class="field">
+      <label>Packaging / unit ($)</label>
+      <input type="number" id="buyPackaging" value="0.45" step="0.01" min="0"/>
+    </div>
+    <div class="field">
+      <label>Inbound freight / unit ($)</label>
+      <input type="number" id="buyFreight" value="0.15" step="0.01" min="0"/>
+    </div>
+
+    <p style="font-size:11px;font-weight:600;color:var(--hint);text-transform:uppercase;letter-spacing:.06em;margin:14px 0 10px;">Run costs</p>
+    <div class="field">
+      <label>Setup / run fee per batch ($)</label>
+      <input type="number" id="buySetupFee" value="500" step="50" min="0"/>
+      <span class="field-hint">Changeover, sanitation, scheduling fee.</span>
+    </div>
+    <div class="field">
+      <label>Batch / run size (units)</label>
+      <input type="number" id="buyBatchSize" value="2500" step="100" min="1"/>
+    </div>
+    <div class="field">
+      <label>Other fixed / annual costs ($)</label>
+      <input type="number" id="buyFixedOther" value="2000" step="500" min="0"/>
+      <span class="field-hint">QA audits, broker fees, annual minimums, etc.</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── Calculate button ───────────────────────── -->
+<div class="divider"></div>
+<div style="display:flex;justify-content:center;margin-bottom:28px;">
+  <button id="calcBtn" onclick="render()" style="background:var(--accent);color:#fff;border:none;border-radius:10px;padding:13px 40px;font-size:15px;font-weight:600;cursor:pointer;letter-spacing:.01em;transition:opacity .15s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+    Calculate
+  </button>
+</div>
+
+<!-- ── Results ──────────────────────────────────── -->
+<p class="section-title">Results at <span id="targetLabel">25,000</span> units / year</p>
+
+<div id="verdictBar" class="verdict-bar tie">
+  <span class="verdict-icon">⚖️</span>
+  <span id="verdictText">Enter your costs above to see the recommendation.</span>
+</div>
+
+<div class="metric-grid">
+  <div class="metric">
+    <p class="metric-label">Make — total cost / unit</p>
+    <p class="metric-value make" id="out-makeCPU">—</p>
+    <p class="metric-sub">fixed + variable at target vol.</p>
+  </div>
+  <div class="metric">
+    <p class="metric-label">Buy — total cost / unit</p>
+    <p class="metric-value buy" id="out-buyCPU">—</p>
+    <p class="metric-sub">fees + materials + run costs</p>
+  </div>
+  <div class="metric">
+    <p class="metric-label">Cost difference / unit</p>
+    <p class="metric-value" id="out-diffCPU">—</p>
+    <p class="metric-sub">+ = Make is cheaper</p>
+  </div>
+  <div class="metric">
+    <p class="metric-label">Annual savings</p>
+    <p class="metric-value" id="out-annualSavings">—</p>
+    <p class="metric-sub">at target volume</p>
+  </div>
+  <div class="metric">
+    <p class="metric-label">Make — total annual cost</p>
+    <p class="metric-value make" id="out-makeTotalAnnual">—</p>
+    <p class="metric-sub">fixed + variable × units</p>
+  </div>
+  <div class="metric">
+    <p class="metric-label">Buy — total annual cost</p>
+    <p class="metric-value buy" id="out-buyTotalAnnual">—</p>
+    <p class="metric-sub">fees + run costs × units</p>
+  </div>
+  <div class="metric">
+    <p class="metric-label">Break-even volume</p>
+    <p class="metric-value" id="out-breakeven">—</p>
+    <p class="metric-sub">units / year where costs cross</p>
+  </div>
+  <div class="metric">
+    <p class="metric-label">Make fixed cost burden</p>
+    <p class="metric-value" id="out-fixedPerUnit">—</p>
+    <p class="metric-sub">fixed cost / unit at target vol.</p>
+  </div>
+</div>
+
+<!-- ── Volume sensitivity ─────────────────────── -->
+<p class="section-title">Volume sensitivity — cost per unit</p>
+<p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Edit the volume scenarios below to stress-test both options across your likely range.</p>
+
+<table class="sens-table" aria-label="Volume sensitivity">
+  <thead>
+    <tr>
+      <th>Annual volume</th>
+      <th>Make — fixed / unit</th>
+      <th>Make — total / unit</th>
+      <th>Buy — total / unit</th>
+      <th>Difference</th>
+      <th>Winner</th>
+    </tr>
+  </thead>
+  <tbody id="sensBody">
+    <tr><td><input class="sens-input" value="5000"/></td><td id="s0-mf">—</td><td id="s0-m">—</td><td id="s0-b">—</td><td id="s0-d">—</td><td id="s0-w">—</td></tr>
+    <tr><td><input class="sens-input" value="10000"/></td><td id="s1-mf">—</td><td id="s1-m">—</td><td id="s1-b">—</td><td id="s1-d">—</td><td id="s1-w">—</td></tr>
+    <tr><td><input class="sens-input" value="25000"/></td><td id="s2-mf">—</td><td id="s2-m">—</td><td id="s2-b">—</td><td id="s2-d">—</td><td id="s2-w">—</td></tr>
+    <tr><td><input class="sens-input" value="50000"/></td><td id="s3-mf">—</td><td id="s3-m">—</td><td id="s3-b">—</td><td id="s3-d">—</td><td id="s3-w">—</td></tr>
+    <tr><td><input class="sens-input" value="100000"/></td><td id="s4-mf">—</td><td id="s4-m">—</td><td id="s4-b">—</td><td id="s4-d">—</td><td id="s4-w">—</td></tr>
+    <tr><td><input class="sens-input" value="200000"/></td><td id="s5-mf">—</td><td id="s5-m">—</td><td id="s5-b">—</td><td id="s5-d">—</td><td id="s5-w">—</td></tr>
+  </tbody>
+</table>
+<p class="chart-note">Difference = Make CPU − Buy CPU. Positive = Make is cheaper at that volume. Negative = Buy is cheaper.</p>
+
+<!-- ── Chart ─────────────────────────────────── -->
+<p class="section-title">Total annual cost — Make vs Buy</p>
+<div class="legend-row">
+  <span><span class="leg" style="background:var(--accent)"></span>Make (in-house)</span>
+  <span><span class="leg" style="background:var(--teal)"></span>Buy (co-man)</span>
+  <span style="color:var(--amber)">▸ Break-even point</span>
+</div>
+<div class="chart-wrap"><canvas id="mvbChart" role="img" aria-label="Make vs Buy total annual cost chart"></canvas></div>
+<p class="chart-note">Below the break-even, Buy wins (lower total cost). Above it, Make wins as fixed costs are diluted across more units. Your target volume is shown as a vertical reference.</p>
+
+<footer>
+  <div class="footer-left">Built by <strong>Sam Pellerito</strong> — CPG Operations Tools</div>
+  <div class="footer-right"><a href="index.html">← All tools</a></div>
+</footer>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+<script>
+if(typeof Chart === 'undefined'){
+  var _s = document.createElement('script');
+  _s.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
+  document.head.appendChild(_s);
+}
+</script>
+<script>
+function val(id){ return parseFloat(document.getElementById(id).value) || 0; }
+function fmt(n, d=2){ return '$' + n.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}); }
+function fmtK(n){ return n >= 1000 ? (n/1000).toLocaleString(undefined,{maximumFractionDigits:1})+'K' : n.toLocaleString(); }
+function $id(id){ return document.getElementById(id); }
+
+let mvbChart = null;
+
+// ── Cost model ──────────────────────────────────
+function makeCosts(){
+  const fixed = val('makeFixedEquip') + val('makeFixedFacility') + val('makeFixedLabor') + val('makeFixedOther');
+  const variable = val('makeVarMaterials') + val('makeVarLabor') + val('makeVarPackaging') + val('makeVarOther');
+  return { fixed, variable };
+}
+
+function buyCosts(){
+  const varPU = val('buyCoManFee') + val('buyMaterials') + val('buyPackaging') + val('buyFreight');
+  const setupPerUnit = val('buyBatchSize') > 0 ? val('buySetupFee') / val('buyBatchSize') : 0;
+  const annualFixed = val('buyFixedOther');
+  return { varPU, setupPerUnit, annualFixed };
+}
+
+function makeTotalAtVol(vol, m){
+  return m.fixed + m.variable * vol;
+}
+
+function makeCPUAtVol(vol, m){
+  return vol > 0 ? makeTotalAtVol(vol, m) / vol : 0;
+}
+
+function buyTotalAtVol(vol, b){
+  return b.annualFixed + (b.varPU + b.setupPerUnit) * vol;
+}
+
+function buyCPUAtVol(vol, b){
+  return vol > 0 ? buyTotalAtVol(vol, b) / vol : 0;
+}
+
+// Break-even: makeFixed + makeVar*Q + 0 = buyFixed + (buyVarPU + buySetup)*Q
+// makeFixed - buyFixed = (buyVarPU + buySetup - makeVar) * Q
+// Q = (makeFixed - buyFixed) / (buyVarPU + buySetup - makeVar)
+function calcBreakeven(m, b){
+  const denom = (b.varPU + b.setupPerUnit) - m.variable;
+  if(Math.abs(denom) < 0.0001) return null; // parallel lines
+  const Q = (m.fixed - b.annualFixed) / denom;
+  return Q > 0 ? Q : null;
+}
+
+function render(){
+  const targetVol = val('targetUnits') || 1;
+  $id('targetLabel').textContent = targetVol.toLocaleString();
+
+  const m = makeCosts();
+  const b = buyCosts();
+
+  const makeCPU    = makeCPUAtVol(targetVol, m);
+  const buyCPU     = buyCPUAtVol(targetVol, b);
+  const makeTotal  = makeTotalAtVol(targetVol, m);
+  const buyTotal   = buyTotalAtVol(targetVol, b);
+  const diffCPU    = makeCPU - buyCPU;
+  const savings    = Math.abs(makeTotal - buyTotal);
+  const fixedPU    = targetVol > 0 ? m.fixed / targetVol : 0;
+  const breakeven  = calcBreakeven(m, b);
+
+  // Metrics
+  $id('out-makeCPU').textContent = fmt(makeCPU);
+  $id('out-buyCPU').textContent  = fmt(buyCPU);
+  $id('out-makeTotalAnnual').textContent = fmt(makeTotal, 0);
+  $id('out-buyTotalAnnual').textContent  = fmt(buyTotal, 0);
+  $id('out-fixedPerUnit').textContent = fmt(fixedPU);
+  $id('out-breakeven').textContent = breakeven ? fmtK(Math.round(breakeven)) + ' units' : 'N/A';
+
+  const diffEl = $id('out-diffCPU');
+  diffEl.textContent = (diffCPU >= 0 ? '+' : '') + fmt(diffCPU);
+  diffEl.className = 'metric-value' + (diffCPU > 0.005 ? ' unfav' : diffCPU < -0.005 ? ' fav' : '');
+
+  const savEl = $id('out-annualSavings');
+  const cheaper = makeCPU < buyCPU ? 'Make' : makeCPU > buyCPU ? 'Buy' : null;
+  savEl.textContent = cheaper ? fmt(savings, 0) + ' (' + cheaper + ' wins)' : fmt(0, 0);
+  savEl.className = 'metric-value' + (cheaper ? ' fav' : '');
+
+  // Verdict
+  const verdict = $id('verdictBar');
+  const vt = $id('verdictText');
+  if(makeCPU < buyCPU - 0.005){
+    verdict.className = 'verdict-bar make';
+    vt.innerHTML = `🏭 At ${targetVol.toLocaleString()} units, <strong>Make is cheaper</strong> by ${fmt(Math.abs(diffCPU))}/unit — saving ${fmt(savings, 0)}/yr vs co-manufacturing.`;
+  } else if(buyCPU < makeCPU - 0.005){
+    verdict.className = 'verdict-bar buy';
+    vt.innerHTML = `🤝 At ${targetVol.toLocaleString()} units, <strong>Buy is cheaper</strong> by ${fmt(Math.abs(diffCPU))}/unit — co-man saves ${fmt(savings, 0)}/yr vs building in-house.`;
+  } else {
+    verdict.className = 'verdict-bar tie';
+    vt.innerHTML = `⚖️ Make and Buy are approximately equal at ${targetVol.toLocaleString()} units.`;
+  }
+
+  // Sensitivity table
+  const rows = document.querySelectorAll('#sensBody tr');
+  rows.forEach((row, i) => {
+    const inp = row.querySelector('input');
+    const v = parseFloat(inp.value) || 0;
+    const mf = v > 0 ? m.fixed / v : 0;
+    const mc = makeCPUAtVol(v, m);
+    const bc = buyCPUAtVol(v, b);
+    const diff = mc - bc;
+    const winner = diff < -0.005 ? 'Make' : diff > 0.005 ? 'Buy' : 'Tie';
+    const isNearBE = breakeven && Math.abs(v - breakeven) / breakeven < 0.05;
+
+    $id(`s${i}-mf`).textContent = fmt(mf);
+    $id(`s${i}-m`).textContent  = fmt(mc);
+    $id(`s${i}-b`).textContent  = fmt(bc);
+
+    const dEl = $id(`s${i}-d`);
+    dEl.textContent = (diff >= 0 ? '+' : '') + fmt(diff);
+    dEl.className = diff < -0.005 ? 'cheaper' : diff > 0.005 ? 'pricier' : '';
+
+    const wEl = $id(`s${i}-w`);
+    wEl.textContent = winner;
+    wEl.style.color = winner === 'Make' ? 'var(--accent)' : winner === 'Buy' ? 'var(--teal)' : 'var(--hint)';
+    wEl.style.fontWeight = '600';
+
+    row.className = isNearBE ? 'breakeven-row' : '';
+  });
+
+  // Chart
+  if(typeof Chart === 'undefined') return;
+
+  // Build x-axis: 20 points from 0 to 2× max(targetVol, breakeven)
+  const maxVol = breakeven ? Math.max(targetVol, breakeven) * 1.8 : targetVol * 2.5;
+  const step = Math.max(Math.ceil(maxVol / 20 / 1000) * 1000, 500);
+  const xVals = [];
+  for(let x = 0; x <= maxVol * 1.05; x += step) xVals.push(Math.round(x));
+  if(!xVals.includes(0)) xVals.unshift(0);
+
+  const makeData = xVals.map(x => ({ x, y: makeTotalAtVol(x, m) }));
+  const buyData  = xVals.map(x => ({ x, y: buyTotalAtVol(x, b) }));
+
+  // Vertical reference lines as thin datasets
+  const extraDatasets = [];
+  const yMax = Math.max(...makeData.map(d=>d.y), ...buyData.map(d=>d.y));
+
+  if(breakeven && breakeven > 0 && breakeven < xVals[xVals.length-1]){
+    extraDatasets.push({
+      label: `Break-even (${fmtK(Math.round(breakeven))})`,
+      data: [{ x: breakeven, y: 0 }, { x: breakeven, y: yMax * 1.05 }],
+      borderColor: 'rgba(186,117,23,0.6)',
+      borderWidth: 1.5,
+      borderDash: [5,4],
+      pointRadius: 0,
+      fill: false,
+      tension: 0,
+    });
+  }
+  extraDatasets.push({
+    label: `Target (${fmtK(targetVol)})`,
+    data: [{ x: targetVol, y: 0 }, { x: targetVol, y: yMax * 1.05 }],
+    borderColor: 'rgba(107,114,128,0.45)',
+    borderWidth: 1.5,
+    borderDash: [3,4],
+    pointRadius: 0,
+    fill: false,
+    tension: 0,
+  });
+
+  if(mvbChart) mvbChart.destroy();
+  mvbChart = new Chart($id('mvbChart'), {
+    type: 'line',
+    data: {
+      datasets:[
+        {
+          label: 'Make (in-house)',
+          data: makeData,
+          borderColor: 'rgba(24,95,165,0.85)',
+          backgroundColor: 'rgba(24,95,165,0.07)',
+          borderWidth: 2.5,
+          pointRadius: 0,
+          fill: false,
+          tension: 0,
+        },
+        {
+          label: 'Buy (co-man)',
+          data: buyData,
+          borderColor: 'rgba(29,158,117,0.85)',
+          backgroundColor: 'rgba(29,158,117,0.07)',
+          borderWidth: 2.5,
+          pointRadius: 0,
+          fill: false,
+          tension: 0,
+        },
+        ...extraDatasets
+      ]
+    },
+    options:{
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins:{
+        legend:{ display: false },
+        tooltip:{
+          filter: item => item.datasetIndex < 2,
+          callbacks:{
+            title: ctx => fmtK(ctx[0].parsed.x) + ' units',
+            label: ctx => ctx.dataset.label + ': ' + fmt(ctx.parsed.y, 0)
+          }
+        }
+      },
+      scales:{
+        x:{
+          type: 'linear',
+          title:{ display: true, text: 'Annual units', color:'#9ca3af', font:{size:11} },
+          ticks:{ color:'#9ca3af', font:{size:11}, callback: v => fmtK(v) },
+          grid:{ color:'rgba(0,0,0,0.04)' }
+        },
+        y:{
+          title:{ display: true, text: 'Total annual cost ($)', color:'#9ca3af', font:{size:11} },
+          ticks:{ color:'#9ca3af', font:{size:11}, callback: v => '$'+fmtK(v) },
+          grid:{ color:'rgba(0,0,0,0.05)' }
+        }
+      }
+    }
+  });
+}
+
+// Sensitivity table inputs still re-render on change (no heavy chart work needed)
+document.querySelectorAll('#sensBody input').forEach(el => {
+  el.addEventListener('input', render);
+});
+</script>
+</body>
+</html>

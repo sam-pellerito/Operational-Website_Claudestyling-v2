@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Cash-to-Cash Cycle — Sam Pellerito</title>
+<meta name="description" content="Calculate your cash conversion cycle: DIO + DSO − DPO. See how long cash is tied up in operations and how much working capital it costs. Built by Sam Pellerito."/>
+<style>
+:root{--bg:#f8fafb;--card:#fff;--surface:#f1f3f6;--border:rgba(15,23,36,0.1);--text:#0f1724;--muted:#6b7280;--hint:#9ca3af;--accent:#185FA5;--teal:#1D9E75;--red:#E24B4A;--purple:#7F77DD;--amber:#BA7517;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Inter,ui-sans-serif,system-ui,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;}
+.page{max-width:960px;margin:0 auto;padding:32px 20px 60px;}
+header{margin-bottom:32px;padding-bottom:24px;border-bottom:0.5px solid var(--border);}
+.header-tag{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+h1{font-size:24px;font-weight:600;color:var(--text);margin-bottom:6px;}
+.header-desc{font-size:14px;color:var(--muted);max-width:620px;line-height:1.6;}
+.byline{font-size:13px;color:var(--muted);margin-top:10px;}
+.byline strong{color:var(--text);}
+.section-title{font-size:11px;font-weight:600;color:var(--hint);letter-spacing:.08em;text-transform:uppercase;margin:28px 0 12px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;}
+.panel-dio{border-top:3px solid var(--accent);}
+.panel-dso{border-top:3px solid var(--amber);}
+.panel-dpo{border-top:3px solid var(--teal);}
+.panel-title{font-size:13px;font-weight:700;margin-bottom:2px;}
+.panel-title.dio{color:var(--accent);}
+.panel-title.dso{color:var(--amber);}
+.panel-title.dpo{color:var(--teal);}
+.panel-sub{font-size:11px;color:var(--muted);margin-bottom:14px;line-height:1.4;}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.field label{font-size:12px;color:var(--muted);font-weight:500;}
+.field input{padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;color:var(--text);background:var(--card);outline:none;transition:border-color .15s;}
+.field input:focus{border-color:var(--accent);}
+.field input.calc-out{background:var(--surface);color:var(--muted);}
+.field-hint{font-size:11px;color:var(--hint);margin-top:2px;}
+.divider{border:none;border-top:0.5px solid var(--border);margin:24px 0;}
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px;}
+.metric{background:var(--surface);border-radius:10px;padding:14px 16px;}
+.metric-label{font-size:11px;color:var(--muted);margin-bottom:4px;}
+.metric-value{font-size:22px;font-weight:600;color:var(--text);}
+.metric-value.good{color:var(--teal);}
+.metric-value.warn{color:var(--amber);}
+.metric-value.bad{color:var(--red);}
+.metric-sub{font-size:11px;color:var(--hint);margin-top:2px;}
+/* Timeline bar */
+.timeline-wrap{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px;}
+.timeline-label{font-size:12px;color:var(--muted);margin-bottom:10px;}
+.timeline-track{position:relative;height:48px;border-radius:6px;overflow:visible;display:flex;align-items:center;}
+.tl-bar{height:36px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;position:absolute;}
+.tl-dpo{background:var(--teal);bottom:0;z-index:1;}
+.tl-dio{background:var(--accent);top:0;z-index:2;}
+.tl-dso{background:var(--amber);top:0;z-index:2;}
+.tl-ccc{border:2px dashed rgba(226,75,74,0.6);background:transparent;z-index:3;}
+.tl-legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;font-size:12px;color:var(--muted);}
+.tl-legend span{display:flex;align-items:center;gap:6px;}
+.tl-dot{width:12px;height:12px;border-radius:3px;display:inline-block;}
+/* Improvement table */
+.imp-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:6px;}
+.imp-table th{font-size:10.5px;font-weight:600;color:var(--hint);text-transform:uppercase;letter-spacing:.05em;padding:8px 12px;border-bottom:0.5px solid var(--border);background:var(--surface);text-align:right;}
+.imp-table th:first-child{text-align:left;}
+.imp-table td{padding:10px 12px;border-bottom:0.5px solid var(--border);text-align:right;color:var(--muted);}
+.imp-table td:first-child{text-align:left;color:var(--text);font-weight:500;}
+.imp-table td.good{color:var(--teal);font-weight:600;}
+.imp-input{width:72px;padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-size:13px;text-align:center;background:var(--card);color:var(--text);}
+.imp-input:focus{outline:none;border-color:var(--accent);}
+.chart-wrap{position:relative;width:100%;height:260px;margin-bottom:8px;}
+.chart-note{font-size:11px;color:var(--hint);margin:4px 0 24px;}
+.calc-btn{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:13px 40px;font-size:15px;font-weight:600;cursor:pointer;letter-spacing:.01em;transition:opacity .15s;}
+.calc-btn:hover{opacity:.85;}
+footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.footer-left{font-size:13px;color:var(--muted);}
+.footer-left strong{color:var(--text);}
+.footer-right a{color:var(--hint);text-decoration:none;font-size:12px;}
+.footer-right a:hover{color:var(--accent);}
+@media(max-width:700px){.three-col{grid-template-columns:1fr;}h1{font-size:20px;}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<nav style="margin-bottom:20px;">
+  <a href="index.html" style="font-size:13px;color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+    <span style="font-size:16px;line-height:1;">←</span> All tools
+  </a>
+</nav>
+
+<header>
+  <p class="header-tag">CPG Operations Tool</p>
+  <h1>Cash-to-Cash Cycle</h1>
+  <p class="header-desc">DIO + DSO − DPO — how many days cash is trapped in your operations before you collect from customers. The cash conversion cycle is the single biggest driver of working capital for CPG brands.</p>
+  <p class="byline">Built by <strong>Sam Pellerito</strong></p>
+</header>
+
+<!-- ── Annual financials ─────────────────────── -->
+<p class="section-title">Annual financials</p>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:4px;">
+  <div class="field">
+    <label>Annual revenue ($)</label>
+    <input type="number" id="annualRevenue" value="2000000" step="50000" min="0"/>
+  </div>
+  <div class="field">
+    <label>Annual COGS ($)</label>
+    <input type="number" id="annualCOGS" value="900000" step="50000" min="0"/>
+    <span class="field-hint">Used to compute DIO and DPO.</span>
+  </div>
+  <div class="field">
+    <label>Cost of working capital (% / yr)</label>
+    <input type="number" id="capitalCost" value="8" step="0.5" min="0"/>
+    <span class="field-hint">Your borrowing rate or opportunity cost of cash.</span>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ── Three components ──────────────────────── -->
+<p class="section-title">The three components</p>
+<div class="three-col">
+
+  <!-- DIO -->
+  <div class="panel panel-dio">
+    <p class="panel-title dio">📦 DIO</p>
+    <p class="panel-sub">Days Inventory Outstanding — how long product sits before it's sold.</p>
+    <div class="field">
+      <label>Avg inventory value ($)</label>
+      <input type="number" id="avgInventory" value="225000" step="5000" min="0"/>
+    </div>
+    <div class="field">
+      <label>DIO (days)</label>
+      <input type="number" id="out-dio" class="calc-out" readonly/>
+      <span class="field-hint">= Avg Inventory ÷ COGS × 365</span>
+    </div>
+  </div>
+
+  <!-- DSO -->
+  <div class="panel panel-dso">
+    <p class="panel-title dso">🧾 DSO</p>
+    <p class="panel-sub">Days Sales Outstanding — how long before customers pay you.</p>
+    <div class="field">
+      <label>Accounts receivable ($)</label>
+      <input type="number" id="accountsReceivable" value="165000" step="5000" min="0"/>
+    </div>
+    <div class="field">
+      <label>DSO (days)</label>
+      <input type="number" id="out-dso" class="calc-out" readonly/>
+      <span class="field-hint">= AR ÷ Revenue × 365</span>
+    </div>
+  </div>
+
+  <!-- DPO -->
+  <div class="panel panel-dpo">
+    <p class="panel-title dpo">🤝 DPO</p>
+    <p class="panel-sub">Days Payable Outstanding — how long before you pay your suppliers.</p>
+    <div class="field">
+      <label>Accounts payable ($)</label>
+      <input type="number" id="accountsPayable" value="75000" step="5000" min="0"/>
+    </div>
+    <div class="field">
+      <label>DPO (days)</label>
+      <input type="number" id="out-dpo" class="calc-out" readonly/>
+      <span class="field-hint">= AP ÷ COGS × 365</span>
+    </div>
+  </div>
+
+</div>
+
+<div class="divider"></div>
+
+<!-- ── Calculate ─────────────────────────────── -->
+<div style="display:flex;justify-content:center;margin-bottom:32px;">
+  <button class="calc-btn" onclick="render()">Calculate</button>
+</div>
+
+<!-- ── Results ───────────────────────────────── -->
+<p class="section-title">Cash conversion cycle</p>
+
+<div class="metric-grid">
+  <div class="metric"><p class="metric-label">DIO</p><p class="metric-value" id="m-dio" style="color:var(--accent)">—</p><p class="metric-sub">days in inventory</p></div>
+  <div class="metric"><p class="metric-label">DSO</p><p class="metric-value" id="m-dso" style="color:var(--amber)">—</p><p class="metric-sub">days to collect</p></div>
+  <div class="metric"><p class="metric-label">DPO</p><p class="metric-value" id="m-dpo" style="color:var(--teal)">—</p><p class="metric-sub">days to pay suppliers</p></div>
+  <div class="metric"><p class="metric-label">Cash conversion cycle</p><p class="metric-value" id="m-ccc">—</p><p class="metric-sub">DIO + DSO − DPO</p></div>
+  <div class="metric"><p class="metric-label">Working capital tied up</p><p class="metric-value" id="m-wc">—</p><p class="metric-sub">cash in the cycle</p></div>
+  <div class="metric"><p class="metric-label">Annual financing cost</p><p class="metric-value bad" id="m-fc">—</p><p class="metric-sub">cost of carrying WC</p></div>
+</div>
+
+<!-- ── Timeline visual ───────────────────────── -->
+<p class="section-title">Cash cycle timeline</p>
+<div class="timeline-wrap">
+  <p class="timeline-label">Each bar represents days. DPO (green) offsets the cycle — longer DPO = less cash tied up.</p>
+  <div style="overflow-x:auto;padding-bottom:8px;">
+    <canvas id="timelineChart" style="width:100%;height:120px;"></canvas>
+  </div>
+  <div class="tl-legend">
+    <span><span class="tl-dot" style="background:var(--accent)"></span>DIO — inventory days</span>
+    <span><span class="tl-dot" style="background:var(--amber)"></span>DSO — collection days</span>
+    <span><span class="tl-dot" style="background:var(--teal)"></span>DPO — payable days (reduces cycle)</span>
+    <span><span class="tl-dot" style="background:rgba(226,75,74,0.25);border:2px dashed var(--red)"></span>Cash conversion cycle</span>
+  </div>
+</div>
+
+<!-- ── Improvement scenarios ─────────────────── -->
+<p class="section-title">What-if — improvement scenarios</p>
+<p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Enter how many days you could improve each metric to see the working capital freed up.</p>
+<table class="imp-table" aria-label="Improvement scenarios">
+  <thead>
+    <tr>
+      <th>Lever</th>
+      <th style="text-align:center">Days improved</th>
+      <th>New value</th>
+      <th>New CCC</th>
+      <th>WC freed up</th>
+      <th>Annual savings</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Reduce DIO (faster turns)</td>
+      <td style="text-align:center"><input class="imp-input" id="imp-dio" type="number" value="10" min="0" max="365"/></td>
+      <td id="imp-dio-new">—</td>
+      <td id="imp-dio-ccc">—</td>
+      <td id="imp-dio-wc" class="good">—</td>
+      <td id="imp-dio-save" class="good">—</td>
+    </tr>
+    <tr>
+      <td>Reduce DSO (faster collections)</td>
+      <td style="text-align:center"><input class="imp-input" id="imp-dso" type="number" value="10" min="0" max="365"/></td>
+      <td id="imp-dso-new">—</td>
+      <td id="imp-dso-ccc">—</td>
+      <td id="imp-dso-wc" class="good">—</td>
+      <td id="imp-dso-save" class="good">—</td>
+    </tr>
+    <tr>
+      <td>Extend DPO (slower payments)</td>
+      <td style="text-align:center"><input class="imp-input" id="imp-dpo" type="number" value="10" min="0" max="365"/></td>
+      <td id="imp-dpo-new">—</td>
+      <td id="imp-dpo-ccc">—</td>
+      <td id="imp-dpo-wc" class="good">—</td>
+      <td id="imp-dpo-save" class="good">—</td>
+    </tr>
+    <tr style="background:var(--surface);">
+      <td style="font-weight:700;color:var(--text)">All three combined</td>
+      <td></td>
+      <td></td>
+      <td id="imp-all-ccc" style="font-weight:700;color:var(--text)">—</td>
+      <td id="imp-all-wc" class="good" style="font-weight:700">—</td>
+      <td id="imp-all-save" class="good" style="font-weight:700">—</td>
+    </tr>
+  </tbody>
+</table>
+<p class="chart-note">Working capital freed = (days improved ÷ 365) × annual COGS (for DIO/DPO) or Revenue (for DSO). Annual savings = freed WC × capital cost %.</p>
+
+<!-- ── Chart ─────────────────────────────────── -->
+<p class="section-title">Component breakdown</p>
+<div class="chart-wrap"><canvas id="cccChart" role="img" aria-label="Cash conversion cycle chart"></canvas></div>
+<p class="chart-note">The cash conversion cycle equals the total bar length minus DPO. A shorter cycle means less cash trapped in operations.</p>
+
+<footer>
+  <div class="footer-left">Built by <strong>Sam Pellerito</strong> — CPG Operations Tools</div>
+  <div class="footer-right"><a href="index.html">← All tools</a></div>
+</footer>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+<script>
+if(typeof Chart==='undefined'){
+  var _s=document.createElement('script');
+  _s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
+  document.head.appendChild(_s);
+}
+</script>
+<script>
+function val(id){ return parseFloat(document.getElementById(id).value)||0; }
+function fmt(n,d=0){ return '$'+n.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}); }
+function fmtD(n){ return n.toFixed(1)+' d'; }
+function $id(id){ return document.getElementById(id); }
+
+let cccChart=null, tlChart=null;
+
+function workingCapital(ccc, revenue){
+  return (ccc/365)*revenue;
+}
+
+function render(){
+  const revenue  = val('annualRevenue')||1;
+  const cogs     = val('annualCOGS')||1;
+  const capCost  = val('capitalCost')/100;
+  const avgInv   = val('avgInventory');
+  const ar       = val('accountsReceivable');
+  const ap       = val('accountsPayable');
+
+  const dio = (avgInv/cogs)*365;
+  const dso = (ar/revenue)*365;
+  const dpo = (ap/cogs)*365;
+  const ccc = dio+dso-dpo;
+  const wc  = workingCapital(ccc, revenue);
+  const fc  = wc*capCost;
+
+  // Update readonly inputs
+  $id('out-dio').value = dio.toFixed(1);
+  $id('out-dso').value = dso.toFixed(1);
+  $id('out-dpo').value = dpo.toFixed(1);
+
+  // Metrics
+  $id('m-dio').textContent = fmtD(dio);
+  $id('m-dso').textContent = fmtD(dso);
+  $id('m-dpo').textContent = fmtD(dpo);
+
+  const cccEl=$id('m-ccc');
+  cccEl.textContent=fmtD(ccc);
+  cccEl.className='metric-value'+(ccc<30?' good':ccc<60?' warn':' bad');
+
+  $id('m-wc').textContent=fmt(wc);
+  $id('m-fc').textContent=fmt(fc);
+
+  // Improvement table
+  function impRow(newDIO,newDSO,newDPO,dioId,dsoId,dpoId,cccId,wcId,saveId){
+    const newCCC=newDIO+newDSO-newDPO;
+    const newWC=workingCapital(newCCC,revenue);
+    const freed=wc-newWC;
+    const saved=freed*capCost;
+    $id(dioId).textContent=fmtD(newDIO);
+    $id(dsoId).textContent=fmtD(newDSO);
+    $id(dpoId).textContent=fmtD(newDPO);
+    $id(cccId).textContent=fmtD(newCCC);
+    $id(wcId).textContent=fmt(freed);
+    $id(saveId).textContent=fmt(saved);
+  }
+
+  const impDIO=val('imp-dio'), impDSO=val('imp-dso'), impDPO=val('imp-dpo');
+  const newDIO=Math.max(0,dio-impDIO);
+  const newDSO=Math.max(0,dso-impDSO);
+  const newDPO=dpo+impDPO;
+
+  impRow(newDIO,dso,dpo,'imp-dio-new','imp-dio-new','imp-dio-new','imp-dio-ccc','imp-dio-wc','imp-dio-save');
+  impRow(dio,newDSO,dpo,'imp-dso-new','imp-dso-new','imp-dso-new','imp-dso-ccc','imp-dso-wc','imp-dso-save');
+  impRow(dio,dso,newDPO,'imp-dpo-new','imp-dpo-new','imp-dpo-new','imp-dpo-ccc','imp-dpo-wc','imp-dpo-save');
+
+  // Fix individual row display
+  $id('imp-dio-new').textContent=fmtD(newDIO);
+  $id('imp-dio-ccc').textContent=fmtD(newDIO+dso-dpo);
+  $id('imp-dio-wc').textContent=fmt(wc-workingCapital(newDIO+dso-dpo,revenue));
+  $id('imp-dio-save').textContent=fmt((wc-workingCapital(newDIO+dso-dpo,revenue))*capCost);
+
+  $id('imp-dso-new').textContent=fmtD(newDSO);
+  $id('imp-dso-ccc').textContent=fmtD(dio+newDSO-dpo);
+  $id('imp-dso-wc').textContent=fmt(wc-workingCapital(dio+newDSO-dpo,revenue));
+  $id('imp-dso-save').textContent=fmt((wc-workingCapital(dio+newDSO-dpo,revenue))*capCost);
+
+  $id('imp-dpo-new').textContent=fmtD(newDPO);
+  $id('imp-dpo-ccc').textContent=fmtD(dio+dso-newDPO);
+  $id('imp-dpo-wc').textContent=fmt(wc-workingCapital(dio+dso-newDPO,revenue));
+  $id('imp-dpo-save').textContent=fmt((wc-workingCapital(dio+dso-newDPO,revenue))*capCost);
+
+  const allNewCCC=newDIO+newDSO-newDPO;
+  const allFreed=wc-workingCapital(allNewCCC,revenue);
+  $id('imp-all-ccc').textContent=fmtD(allNewCCC);
+  $id('imp-all-wc').textContent=fmt(allFreed);
+  $id('imp-all-save').textContent=fmt(allFreed*capCost);
+
+  if(typeof Chart==='undefined') return;
+
+  // ── Horizontal stacked bar chart ─────────────
+  if(cccChart) cccChart.destroy();
+  cccChart = new Chart($id('cccChart'),{
+    type:'bar',
+    data:{
+      labels:['Your business'],
+      datasets:[
+        {
+          label:'DIO (inventory days)',
+          data:[dio],
+          backgroundColor:'rgba(24,95,165,0.75)',
+          borderRadius:4,
+        },
+        {
+          label:'DSO (collection days)',
+          data:[dso],
+          backgroundColor:'rgba(186,117,23,0.75)',
+          borderRadius:4,
+        },
+        {
+          label:'DPO offset (reduces cycle)',
+          data:[-dpo],
+          backgroundColor:'rgba(29,158,117,0.65)',
+          borderRadius:4,
+        }
+      ]
+    },
+    options:{
+      indexAxis:'y',
+      responsive:true,
+      maintainAspectRatio:false,
+      animation:false,
+      plugins:{
+        legend:{
+          display:true,
+          position:'bottom',
+          labels:{font:{size:11},color:'#6b7280',boxWidth:12,padding:16}
+        },
+        tooltip:{
+          callbacks:{
+            label: ctx => {
+              const v=Math.abs(ctx.parsed.x);
+              return ctx.dataset.label+': '+v.toFixed(1)+' days';
+            }
+          }
+        }
+      },
+      scales:{
+        x:{
+          stacked:true,
+          ticks:{color:'#9ca3af',font:{size:11},callback:v=>Math.abs(v)+' d'},
+          grid:{color:'rgba(0,0,0,0.05)'},
+          title:{display:true,text:'Days',color:'#9ca3af',font:{size:11}}
+        },
+        y:{stacked:true,ticks:{color:'#9ca3af',font:{size:11}},grid:{display:false}}
+      }
+    }
+  });
+}
+
+// Improvement inputs re-render on change
+document.querySelectorAll('.imp-input').forEach(el=>{
+  el.addEventListener('input', render);
+});
+</script>
+</body>
+</html>

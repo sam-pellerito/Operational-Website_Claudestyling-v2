@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>MOQ & Run Size Optimizer — Sam Pellerito</title>
+<meta name="description" content="Find the optimal order or run size for your CPG SKU. See cost per unit across supplier price tiers, amortized setup costs, and inventory carrying costs. Built by Sam Pellerito."/>
+<style>
+:root{--bg:#f8fafb;--card:#fff;--surface:#f1f3f6;--border:rgba(15,23,36,0.1);--text:#0f1724;--muted:#6b7280;--hint:#9ca3af;--accent:#185FA5;--teal:#1D9E75;--red:#E24B4A;--purple:#7F77DD;--amber:#BA7517;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Inter,ui-sans-serif,system-ui,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;}
+.page{max-width:960px;margin:0 auto;padding:32px 20px 60px;}
+header{margin-bottom:32px;padding-bottom:24px;border-bottom:0.5px solid var(--border);}
+.header-tag{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+h1{font-size:24px;font-weight:600;color:var(--text);margin-bottom:6px;}
+.header-desc{font-size:14px;color:var(--muted);max-width:620px;line-height:1.6;}
+.byline{font-size:13px;color:var(--muted);margin-top:10px;}
+.byline strong{color:var(--text);}
+.section-title{font-size:11px;font-weight:600;color:var(--hint);letter-spacing:.08em;text-transform:uppercase;margin:28px 0 12px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;}
+.field{display:flex;flex-direction:column;gap:5px;}
+.field label{font-size:12px;color:var(--muted);font-weight:500;}
+.field input,.field select{padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;color:var(--text);background:var(--card);outline:none;transition:border-color .15s;}
+.field input:focus,.field select:focus{border-color:var(--accent);}
+.field-hint{font-size:11px;color:var(--hint);margin-top:2px;}
+.divider{border:none;border-top:0.5px solid var(--border);margin:24px 0;}
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px;}
+.metric{background:var(--surface);border-radius:10px;padding:14px 16px;}
+.metric-label{font-size:11px;color:var(--muted);margin-bottom:4px;}
+.metric-value{font-size:22px;font-weight:600;color:var(--text);}
+.metric-value.good{color:var(--teal);}
+.metric-value.warn{color:var(--amber);}
+.metric-value.bad{color:var(--red);}
+.metric-sub{font-size:11px;color:var(--hint);margin-top:2px;}
+.verdict-bar{border-radius:12px;padding:16px 20px;margin-bottom:20px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:10px;background:rgba(24,95,165,0.08);color:var(--accent);border:1px solid rgba(24,95,165,0.2);}
+/* Tier table */
+.tier-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:10px;}
+.tier-table th{font-size:10.5px;font-weight:600;color:var(--hint);text-transform:uppercase;letter-spacing:.05em;padding:8px 10px;border-bottom:0.5px solid var(--border);background:var(--surface);text-align:left;}
+.tier-table td{padding:8px 10px;border-bottom:0.5px solid var(--border);}
+.tier-table input{width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;background:var(--card);color:var(--text);}
+.tier-table input:focus{outline:none;border-color:var(--accent);}
+.tier-table .remove-btn{background:none;border:none;color:var(--hint);cursor:pointer;font-size:16px;padding:0 4px;line-height:1;}
+.tier-table .remove-btn:hover{color:var(--red);}
+.add-btn{font-size:12px;color:var(--accent);background:none;border:1px solid rgba(24,95,165,0.25);border-radius:6px;padding:6px 14px;cursor:pointer;font-weight:600;}
+.add-btn:hover{background:rgba(24,95,165,0.06);}
+/* Results table */
+.res-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:6px;}
+.res-table th{font-size:10.5px;font-weight:600;color:var(--hint);text-transform:uppercase;letter-spacing:.05em;padding:8px 12px;border-bottom:0.5px solid var(--border);background:var(--surface);text-align:right;}
+.res-table th:first-child{text-align:left;}
+.res-table td{padding:10px 12px;border-bottom:0.5px solid var(--border);text-align:right;color:var(--muted);}
+.res-table td:first-child{text-align:left;color:var(--text);font-weight:500;}
+.res-table tr.optimal td{background:rgba(29,158,117,0.06);}
+.res-table tr.optimal td:first-child{color:var(--teal);}
+.res-table .opt-badge{display:inline-block;font-size:9px;font-weight:700;background:rgba(29,158,117,0.15);color:#0F6E56;padding:1px 6px;border-radius:10px;margin-left:6px;vertical-align:middle;}
+.chart-wrap{position:relative;width:100%;height:300px;margin-bottom:8px;}
+.chart-note{font-size:11px;color:var(--hint);margin:4px 0 24px;}
+.legend-row{display:flex;flex-wrap:wrap;gap:14px;margin:6px 0 10px;font-size:12px;color:var(--muted);}
+.legend-row span{display:flex;align-items:center;gap:6px;}
+.leg{width:14px;height:3px;display:inline-block;border-radius:2px;}
+.calc-btn{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:13px 40px;font-size:15px;font-weight:600;cursor:pointer;letter-spacing:.01em;transition:opacity .15s;}
+.calc-btn:hover{opacity:.85;}
+footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.footer-left{font-size:13px;color:var(--muted);}
+.footer-left strong{color:var(--text);}
+.footer-right a{color:var(--hint);text-decoration:none;font-size:12px;}
+.footer-right a:hover{color:var(--accent);}
+@media(max-width:640px){.field-row,.field-row-3{grid-template-columns:1fr;}h1{font-size:20px;}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<nav style="margin-bottom:20px;">
+  <a href="index.html" style="font-size:13px;color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+    <span style="font-size:16px;line-height:1;">←</span> All tools
+  </a>
+</nav>
+
+<header>
+  <p class="header-tag">CPG Operations Tool</p>
+  <h1>MOQ &amp; Run Size Optimizer</h1>
+  <p class="header-desc">Find the true cost per unit at every order or run size — accounting for supplier price tiers, amortized setup costs, and inventory carrying costs. Identify your optimal quantity before committing to a run.</p>
+  <p class="byline">Built by <strong>Sam Pellerito</strong></p>
+</header>
+
+<!-- ── Demand & product ──────────────────────────── -->
+<p class="section-title">Product & annual demand</p>
+<div class="field-row">
+  <div class="field">
+    <label>SKU / product name</label>
+    <input type="text" id="skuName" value="Product A"/>
+  </div>
+  <div class="field">
+    <label>Annual demand (units/yr)</label>
+    <input type="number" id="annualDemand" value="50000" step="1000" min="1"/>
+  </div>
+</div>
+<div class="field-row">
+  <div class="field">
+    <label>Selling price per unit ($)</label>
+    <input type="number" id="sellPrice" value="14.00" step="0.01" min="0"/>
+  </div>
+  <div class="field">
+    <label>Inventory carrying cost (% / yr)</label>
+    <input type="number" id="carryingRate" value="25" step="1" min="0" max="100"/>
+    <span class="field-hint">Typical range: 20–35%. Covers storage, insurance, obsolescence, opportunity cost.</span>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ── Fixed costs per run ───────────────────────── -->
+<p class="section-title">Fixed costs per run / order</p>
+<p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Costs that are the same regardless of how many units you produce — amortized over run size.</p>
+<div class="field-row-3">
+  <div class="field">
+    <label>Setup / changeover fee ($)</label>
+    <input type="number" id="fixedSetup" value="800" step="50" min="0"/>
+  </div>
+  <div class="field">
+    <label>Inbound freight per run ($)</label>
+    <input type="number" id="fixedFreight" value="350" step="50" min="0"/>
+  </div>
+  <div class="field">
+    <label>Other fixed costs per run ($)</label>
+    <input type="number" id="fixedOther" value="150" step="50" min="0"/>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ── Your variable costs ───────────────────────── -->
+<p class="section-title">Your variable costs per unit</p>
+<p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Costs that scale with units — <em>excluding</em> the supplier / co-man price (entered in tiers below).</p>
+<div class="field-row-3">
+  <div class="field">
+    <label>Materials / ingredients ($/unit)</label>
+    <input type="number" id="varMaterials" value="2.40" step="0.01" min="0"/>
+  </div>
+  <div class="field">
+    <label>Packaging ($/unit)</label>
+    <input type="number" id="varPackaging" value="0.55" step="0.01" min="0"/>
+  </div>
+  <div class="field">
+    <label>Other variable costs ($/unit)</label>
+    <input type="number" id="varOther" value="0.20" step="0.01" min="0"/>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ── Supplier price tiers ──────────────────────── -->
+<p class="section-title">Supplier / co-man price tiers</p>
+<p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Enter each quantity break and the co-man or supplier price per unit at that tier. The tool picks the applicable tier for each run size.</p>
+
+<table class="tier-table" id="tierTable">
+  <thead>
+    <tr>
+      <th>Min order qty (units)</th>
+      <th>Supplier price / unit ($)</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="tierBody"></tbody>
+</table>
+<button class="add-btn" onclick="addTierRow()">+ Add tier</button>
+
+<div class="divider"></div>
+
+<!-- ── Calculate ─────────────────────────────────── -->
+<div style="display:flex;justify-content:center;margin-bottom:32px;">
+  <button class="calc-btn" onclick="render()">Calculate</button>
+</div>
+
+<!-- ── Results ───────────────────────────────────── -->
+<p class="section-title">Results</p>
+
+<div id="verdictBar" class="verdict-bar" style="display:none;">
+  <span style="font-size:18px;">✅</span>
+  <span id="verdictText"></span>
+</div>
+
+<div class="metric-grid">
+  <div class="metric"><p class="metric-label">Optimal run size</p><p class="metric-value good" id="out-optQty">—</p><p class="metric-sub">lowest total cost/unit</p></div>
+  <div class="metric"><p class="metric-label">Optimal cost / unit</p><p class="metric-value" id="out-optCPU">—</p><p class="metric-sub">at optimal qty</p></div>
+  <div class="metric"><p class="metric-label">Runs / orders per year</p><p class="metric-value" id="out-optRuns">—</p><p class="metric-sub">at optimal qty</p></div>
+  <div class="metric"><p class="metric-label">Gross margin</p><p class="metric-value" id="out-optGM">—</p><p class="metric-sub">at optimal qty</p></div>
+  <div class="metric"><p class="metric-label">Fixed cost / unit</p><p class="metric-value" id="out-optFixed">—</p><p class="metric-sub">setup amortized</p></div>
+  <div class="metric"><p class="metric-label">Carrying cost / unit</p><p class="metric-value" id="out-optCarry">—</p><p class="metric-sub">inventory holding cost</p></div>
+</div>
+
+<!-- ── Breakdown table ───────────────────────────── -->
+<p class="section-title">Cost breakdown by run size</p>
+<table class="res-table" aria-label="Cost breakdown by run size">
+  <thead>
+    <tr>
+      <th>Run size</th>
+      <th class="r" style="text-align:right">Supplier price</th>
+      <th class="r" style="text-align:right">Setup / unit</th>
+      <th class="r" style="text-align:right">Variable / unit</th>
+      <th class="r" style="text-align:right">Carrying / unit</th>
+      <th class="r" style="text-align:right">Total / unit</th>
+      <th class="r" style="text-align:right">Runs / yr</th>
+      <th class="r" style="text-align:right">Gross margin</th>
+    </tr>
+  </thead>
+  <tbody id="resBody"></tbody>
+</table>
+<p class="chart-note">Optimal row highlighted in green. Carrying cost = average inventory value × carrying rate ÷ annual demand.</p>
+
+<!-- ── Chart ─────────────────────────────────────── -->
+<p class="section-title">Total cost per unit vs run size</p>
+<div class="legend-row">
+  <span><span class="leg" style="background:var(--accent)"></span>Total cost / unit</span>
+  <span><span class="leg" style="background:var(--teal)"></span>Optimal point</span>
+  <span><span class="leg" style="background:rgba(186,117,23,0.7)"></span>Supplier price (variable)</span>
+</div>
+<div class="chart-wrap"><canvas id="moqChart" role="img" aria-label="MOQ cost per unit chart"></canvas></div>
+<p class="chart-note">As run size grows, setup costs per unit fall but carrying costs rise. The optimal quantity sits at the trough of the total cost curve.</p>
+
+<footer>
+  <div class="footer-left">Built by <strong>Sam Pellerito</strong> — CPG Operations Tools</div>
+  <div class="footer-right"><a href="index.html">← All tools</a></div>
+</footer>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+<script>
+if(typeof Chart === 'undefined'){
+  var _s = document.createElement('script');
+  _s.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
+  document.head.appendChild(_s);
+}
+</script>
+<script>
+function val(id){ return parseFloat(document.getElementById(id).value) || 0; }
+function fmt(n, d=2){ return '$' + n.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}); }
+function fmtK(n){ return n >= 1000 ? (n/1000).toLocaleString(undefined,{maximumFractionDigits:1})+'K' : n.toLocaleString(); }
+function fmtPct(n){ return n.toFixed(1)+'%'; }
+function $id(id){ return document.getElementById(id); }
+
+// ── Tier table ──────────────────────────────────
+const defaultTiers = [
+  { moq: 1000,  price: 3.20 },
+  { moq: 2500,  price: 2.95 },
+  { moq: 5000,  price: 2.75 },
+  { moq: 10000, price: 2.55 },
+  { moq: 25000, price: 2.35 },
+];
+
+function addTierRow(moq='', price=''){
+  const tbody = $id('tierBody');
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input type="number" class="tier-moq" value="${moq}" min="1" step="100" placeholder="e.g. 5000"/></td>
+    <td><input type="number" class="tier-price" value="${price}" min="0" step="0.01" placeholder="e.g. 2.50"/></td>
+    <td><button class="remove-btn" onclick="this.closest('tr').remove()" title="Remove">×</button></td>`;
+  tbody.appendChild(tr);
+}
+
+function getTiers(){
+  const rows = document.querySelectorAll('#tierBody tr');
+  const tiers = [];
+  rows.forEach(r => {
+    const moq   = parseFloat(r.querySelector('.tier-moq').value) || 0;
+    const price = parseFloat(r.querySelector('.tier-price').value) || 0;
+    if(moq > 0 && price > 0) tiers.push({ moq, price });
+  });
+  return tiers.sort((a,b) => a.moq - b.moq);
+}
+
+function getSupplierPrice(qty, tiers){
+  // Find highest tier whose MOQ <= qty
+  let price = null;
+  for(const t of tiers){
+    if(qty >= t.moq) price = t.price;
+  }
+  return price; // null if below all tiers
+}
+
+// ── Cost model ──────────────────────────────────
+function totalCPU(qty, tiers){
+  const demand    = val('annualDemand') || 1;
+  const fixedRun  = val('fixedSetup') + val('fixedFreight') + val('fixedOther');
+  const varPU     = val('varMaterials') + val('varPackaging') + val('varOther');
+  const carryRate = val('carryingRate') / 100;
+  const suppPrice = getSupplierPrice(qty, tiers);
+  if(suppPrice === null) return null;
+
+  const setupPU   = fixedRun / qty;
+  const unitCost  = suppPrice + varPU + setupPU; // before carrying
+  const carryPU   = (qty / 2) * unitCost * carryRate / demand;
+  const totalPU   = unitCost + carryPU;
+  return { setupPU, varPU, suppPrice, carryPU, totalPU };
+}
+
+// ── Chart instance ──────────────────────────────
+let moqChart = null;
+
+// ── Render ──────────────────────────────────────
+function render(){
+  const tiers  = getTiers();
+  if(tiers.length === 0){ alert('Please add at least one supplier price tier.'); return; }
+
+  const demand   = val('annualDemand') || 1;
+  const sell     = val('sellPrice');
+
+  // Evaluate at each tier's MOQ + a few multiples
+  const evalQtys = new Set();
+  tiers.forEach(t => {
+    [1, 1.5, 2, 3, 5].forEach(mult => {
+      const q = Math.round(t.moq * mult);
+      if(q <= demand * 2) evalQtys.add(q);
+    });
+  });
+  // Also evaluate at demand itself
+  evalQtys.add(Math.round(demand));
+
+  const points = [...evalQtys].sort((a,b) => a-b)
+    .map(qty => ({ qty, ...totalCPU(qty, tiers) }))
+    .filter(p => p.totalPU !== undefined && p.totalPU !== null);
+
+  if(points.length === 0) return;
+
+  // Find optimal (min total CPU)
+  const optimal = points.reduce((best, p) => p.totalPU < best.totalPU ? p : best, points[0]);
+
+  // Key metrics
+  const optGM = sell ? ((sell - optimal.totalPU) / sell * 100) : 0;
+  const optRuns = demand / optimal.qty;
+
+  $id('out-optQty').textContent    = fmtK(optimal.qty) + ' units';
+  $id('out-optCPU').textContent    = fmt(optimal.totalPU);
+  $id('out-optRuns').textContent   = optRuns.toFixed(1) + 'x / yr';
+  $id('out-optFixed').textContent  = fmt(optimal.setupPU);
+  $id('out-optCarry').textContent  = fmt(optimal.carryPU);
+
+  const gmEl = $id('out-optGM');
+  gmEl.textContent = fmtPct(optGM);
+  gmEl.className = 'metric-value' + (optGM < 0 ? ' bad' : optGM < 20 ? ' warn' : ' good');
+
+  // Verdict
+  const vb = $id('verdictBar');
+  vb.style.display = 'flex';
+  $id('verdictText').innerHTML = `Optimal run size is <strong>${fmtK(optimal.qty)} units</strong> at <strong>${fmt(optimal.totalPU)}/unit</strong> total cost — ${optRuns.toFixed(1)} runs/yr at ${fmtPct(optGM)} gross margin.`;
+
+  // Results table — one row per tier at its MOQ
+  const tableQtys = tiers.map(t => t.moq);
+  // Also include optimal if not already a tier MOQ
+  if(!tableQtys.includes(optimal.qty)) tableQtys.push(optimal.qty);
+  tableQtys.sort((a,b) => a-b);
+
+  $id('resBody').innerHTML = tableQtys.map(qty => {
+    const c = totalCPU(qty, tiers);
+    if(!c) return '';
+    const runs  = (demand / qty).toFixed(1);
+    const gm    = sell ? ((sell - c.totalPU) / sell * 100) : 0;
+    const isOpt = qty === optimal.qty;
+    const gmColor = gm < 0 ? 'var(--red)' : gm < 20 ? 'var(--amber)' : 'var(--teal)';
+    return `<tr class="${isOpt ? 'optimal' : ''}">
+      <td>${fmtK(qty)} units${isOpt ? '<span class="opt-badge">OPTIMAL</span>' : ''}</td>
+      <td style="text-align:right">${fmt(c.suppPrice)}</td>
+      <td style="text-align:right">${fmt(c.setupPU)}</td>
+      <td style="text-align:right">${fmt(c.varPU)}</td>
+      <td style="text-align:right">${fmt(c.carryPU)}</td>
+      <td style="text-align:right;font-weight:600;color:${isOpt ? 'var(--teal)' : 'var(--text)'}">${fmt(c.totalPU)}</td>
+      <td style="text-align:right">${runs}x</td>
+      <td style="text-align:right;color:${gmColor}">${fmtPct(gm)}</td>
+    </tr>`;
+  }).join('');
+
+  // Chart — smooth curve across a range of quantities
+  if(typeof Chart === 'undefined') return;
+
+  const minQ = tiers[0].moq;
+  const maxQ = Math.min(demand * 1.5, tiers[tiers.length-1].moq * 4);
+  const steps = 60;
+  const step = (maxQ - minQ) / steps;
+  const chartQtys = [], totalLine = [], suppLine = [];
+
+  for(let i = 0; i <= steps; i++){
+    const q = Math.round(minQ + i * step);
+    const c = totalCPU(q, tiers);
+    if(c){
+      chartQtys.push(q);
+      totalLine.push({ x: q, y: parseFloat(c.totalPU.toFixed(4)) });
+      suppLine.push({ x: q, y: parseFloat(c.suppPrice.toFixed(4)) });
+    }
+  }
+
+  // Optimal point dataset
+  const optPoint = [{ x: optimal.qty, y: parseFloat(optimal.totalPU.toFixed(4)) }];
+
+  if(moqChart) moqChart.destroy();
+  moqChart = new Chart($id('moqChart'), {
+    type: 'line',
+    data: {
+      datasets: [
+        {
+          label: 'Total cost / unit',
+          data: totalLine,
+          borderColor: 'rgba(24,95,165,0.85)',
+          backgroundColor: 'rgba(24,95,165,0.07)',
+          borderWidth: 2.5,
+          pointRadius: 0,
+          fill: true,
+          tension: 0.3,
+          order: 2,
+        },
+        {
+          label: 'Supplier price',
+          data: suppLine,
+          borderColor: 'rgba(186,117,23,0.55)',
+          borderWidth: 1.5,
+          borderDash: [4,4],
+          pointRadius: 0,
+          fill: false,
+          tension: 0.3,
+          order: 3,
+        },
+        {
+          label: 'Optimal',
+          data: optPoint,
+          borderColor: 'var(--teal)',
+          backgroundColor: 'rgba(29,158,117,0.9)',
+          pointRadius: 8,
+          pointHoverRadius: 10,
+          showLine: false,
+          order: 1,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          filter: item => item.datasetIndex < 2,
+          callbacks: {
+            title: ctx => fmtK(ctx[0].parsed.x) + ' units',
+            label: ctx => ctx.dataset.label + ': ' + fmt(ctx.parsed.y)
+          }
+        }
+      },
+      scales: {
+        x: {
+          type: 'linear',
+          title: { display: true, text: 'Run size (units)', color: '#9ca3af', font: { size: 11 } },
+          ticks: { color: '#9ca3af', font: { size: 11 }, callback: v => fmtK(v) },
+          grid: { color: 'rgba(0,0,0,0.04)' }
+        },
+        y: {
+          title: { display: true, text: 'Cost per unit ($)', color: '#9ca3af', font: { size: 11 } },
+          ticks: { color: '#9ca3af', font: { size: 11 }, callback: v => fmt(v) },
+          grid: { color: 'rgba(0,0,0,0.05)' }
+        }
+      }
+    }
+  });
+}
+
+// Initialize tier table with defaults
+defaultTiers.forEach(t => addTierRow(t.moq, t.price));
+</script>
+</body>
+</html>

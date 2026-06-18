@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Channel Margin Waterfall — Sam Pellerito</title>
+<meta name="description" content="Compare gross-to-net margin across retail, DTC, Amazon, and foodservice channels. See where margin erodes by channel. Built by Sam Pellerito."/>
+<style>
+:root{--bg:#f8fafb;--card:#fff;--surface:#f1f3f6;--border:rgba(15,23,36,0.1);--text:#0f1724;--muted:#6b7280;--hint:#9ca3af;--accent:#185FA5;--teal:#1D9E75;--red:#E24B4A;--purple:#7F77DD;--amber:#BA7517;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Inter,ui-sans-serif,system-ui,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;}
+.page{max-width:1020px;margin:0 auto;padding:32px 20px 60px;}
+header{margin-bottom:32px;padding-bottom:24px;border-bottom:0.5px solid var(--border);}
+.header-tag{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+h1{font-size:24px;font-weight:600;color:var(--text);margin-bottom:6px;}
+.header-desc{font-size:14px;color:var(--muted);max-width:660px;line-height:1.6;}
+.byline{font-size:13px;color:var(--muted);margin-top:10px;}
+.byline strong{color:var(--text);}
+.section-title{font-size:11px;font-weight:600;color:var(--hint);letter-spacing:.08em;text-transform:uppercase;margin:28px 0 12px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.field{display:flex;flex-direction:column;gap:5px;}
+.field label{font-size:12px;color:var(--muted);font-weight:500;}
+.field input,.field select{padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;color:var(--text);background:var(--card);outline:none;transition:border-color .15s;}
+.field input:focus{border-color:var(--accent);}
+.field-hint{font-size:11px;color:var(--hint);margin-top:2px;}
+.divider{border:none;border-top:0.5px solid var(--border);margin:24px 0;}
+/* channel toggle row */
+.ch-toggle-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+.ch-toggle{padding:7px 14px;border-radius:20px;border:1px solid var(--border);background:var(--card);font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s;user-select:none;}
+.ch-toggle:hover{border-color:rgba(24,95,165,0.3);color:var(--accent);}
+.ch-toggle.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+/* channel deduction editors */
+.ch-editors{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-bottom:8px;}
+.ch-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;}
+.ch-card.hidden{display:none;}
+.ch-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.ch-card-title{font-size:14px;font-weight:600;color:var(--text);}
+.ch-card-net{font-size:13px;font-weight:700;color:var(--teal);}
+.ded-row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;}
+.ded-label{font-size:12px;color:var(--muted);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ded-input{width:72px;padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;color:var(--text);background:var(--card);text-align:right;}
+.ded-input:focus{outline:none;border-color:var(--accent);}
+.ded-pct{font-size:11px;color:var(--hint);width:28px;text-align:right;}
+/* summary metric grid */
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:20px;}
+.metric{background:var(--surface);border-radius:10px;padding:14px 16px;}
+.metric-label{font-size:11px;color:var(--muted);margin-bottom:4px;}
+.metric-value{font-size:20px;font-weight:600;color:var(--text);}
+.metric-value.good{color:var(--teal);}
+.metric-value.warn{color:var(--amber);}
+.metric-value.bad{color:var(--red);}
+.metric-sub{font-size:11px;color:var(--hint);margin-top:2px;}
+/* comparison table */
+.cmp-table{width:100%;border-collapse:collapse;font-size:13px;overflow-x:auto;display:block;margin-bottom:6px;}
+.cmp-table th{font-size:10.5px;font-weight:600;color:var(--hint);text-transform:uppercase;letter-spacing:.05em;padding:8px 12px;border-bottom:0.5px solid var(--border);background:var(--surface);text-align:right;white-space:nowrap;}
+.cmp-table th:first-child{text-align:left;}
+.cmp-table td{padding:9px 12px;border-bottom:0.5px solid var(--border);text-align:right;color:var(--muted);white-space:nowrap;}
+.cmp-table td:first-child{text-align:left;color:var(--text);font-weight:500;}
+.cmp-table tr.best td{background:rgba(29,158,117,0.05);}
+.cmp-table tr.total td{font-weight:700;color:var(--text);background:var(--surface);border-top:1px solid var(--border);}
+/* chart */
+.chart-wrap{position:relative;width:100%;height:360px;margin-bottom:8px;}
+.chart-note{font-size:11px;color:var(--hint);margin:4px 0 20px;}
+.legend-row{display:flex;flex-wrap:wrap;gap:14px;margin:6px 0 10px;font-size:12px;color:var(--muted);}
+.legend-row span{display:flex;align-items:center;gap:6px;}
+.leg{width:14px;height:3px;display:inline-block;border-radius:2px;}
+/* calc btn */
+.calc-btn{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:13px 40px;font-size:15px;font-weight:600;cursor:pointer;letter-spacing:.01em;transition:opacity .15s;}
+.calc-btn:hover{opacity:.85;}
+/* detail waterfall tables */
+.detail-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:16px;}
+.detail-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;}
+.detail-card.hidden{display:none;}
+.detail-card h3{font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px;}
+.wf-mini{width:100%;border-collapse:collapse;font-size:12px;}
+.wf-mini td{padding:5px 0;border-bottom:0.5px solid var(--border);color:var(--muted);}
+.wf-mini td:last-child{text-align:right;font-weight:500;}
+.wf-mini tr.subtotal td{color:var(--text);font-weight:600;}
+.wf-mini tr.total td{color:var(--teal);font-weight:700;border-top:1px solid var(--border);border-bottom:none;}
+footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.footer-left{font-size:13px;color:var(--muted);}
+.footer-left strong{color:var(--text);}
+.footer-right a{color:var(--hint);text-decoration:none;font-size:12px;}
+.footer-right a:hover{color:var(--accent);}
+@media(max-width:640px){.field-row{grid-template-columns:1fr;}h1{font-size:20px;}.ch-editors{grid-template-columns:1fr;}.detail-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<nav style="margin-bottom:20px;">
+  <a href="index.html" style="font-size:13px;color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+    <span style="font-size:16px;line-height:1;">←</span> All tools
+  </a>
+</nav>
+
+<header>
+  <p class="header-tag">CPG Operations Tool</p>
+  <h1>Channel Margin Waterfall</h1>
+  <p class="header-desc">Compare gross-to-net margin across every channel side by side. Same product, same gross revenue — see exactly where margin erodes in retail, DTC, Amazon, and foodservice. Adjust deduction rates to match your actual trade terms.</p>
+  <p class="byline">Built by <strong>Sam Pellerito</strong></p>
+</header>
+
+<!-- ── Inputs ─────────────────────────────────── -->
+<p class="section-title">Revenue & cost</p>
+<div class="field-row">
+  <div class="field">
+    <label>Gross revenue ($)</label>
+    <input type="number" id="grossRevenue" value="500000" step="10000" min="0"/>
+    <span class="field-hint">Total invoiced before any deductions or fees. Same across all channels for comparison.</span>
+  </div>
+  <div class="field">
+    <label>COGS ($)</label>
+    <input type="number" id="totalCOGS" value="185000" step="5000" min="0"/>
+    <span class="field-hint">Cost of goods sold — used to calculate gross profit after channel deductions.</span>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ── Channel selector ───────────────────────── -->
+<p class="section-title">Channels to compare</p>
+<div class="ch-toggle-row" id="toggleRow"></div>
+
+<!-- ── Deduction editors ──────────────────────── -->
+<p class="section-title">Deduction rates — edit to match your terms</p>
+<div class="ch-editors" id="editorsContainer"></div>
+
+<div class="divider"></div>
+
+<!-- ── Calculate ─────────────────────────────── -->
+<div style="display:flex;justify-content:center;margin-bottom:32px;">
+  <button class="calc-btn" onclick="render()">Calculate</button>
+</div>
+
+<!-- ── Summary chart ──────────────────────────── -->
+<p class="section-title">Net revenue & gross margin by channel</p>
+<div class="legend-row">
+  <span><span class="leg" style="background:var(--teal)"></span>Net revenue</span>
+  <span><span class="leg" style="background:var(--red)"></span>Total deductions</span>
+  <span><span class="leg" style="background:var(--purple)"></span>Gross margin % (line)</span>
+</div>
+<div class="chart-wrap"><canvas id="cmpChart" role="img" aria-label="Channel margin comparison chart"></canvas></div>
+<p class="chart-note">Bars show net revenue (green) and total deductions (red) stacked to gross revenue. Purple line shows gross margin % on net revenue after COGS.</p>
+
+<!-- ── Comparison table ───────────────────────── -->
+<p class="section-title">Channel comparison summary</p>
+<div style="overflow-x:auto;">
+<table class="cmp-table" id="cmpTable" aria-label="Channel comparison table">
+  <thead>
+    <tr>
+      <th>Channel</th>
+      <th>Gross revenue</th>
+      <th>Total deductions</th>
+      <th>Deductions %</th>
+      <th>Net revenue</th>
+      <th>COGS</th>
+      <th>Gross profit</th>
+      <th>Gross margin</th>
+    </tr>
+  </thead>
+  <tbody id="cmpBody"></tbody>
+</table>
+</div>
+<p class="chart-note" id="bestChannelNote"></p>
+
+<!-- ── Per-channel waterfall detail ──────────── -->
+<p class="section-title" style="margin-top:32px;">Gross-to-net detail by channel</p>
+<div class="detail-grid" id="detailGrid"></div>
+
+<footer>
+  <div class="footer-left">Built by <strong>Sam Pellerito</strong> — CPG Operations Tools</div>
+  <div class="footer-right"><a href="index.html">← All tools</a></div>
+</footer>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+<script>
+if(typeof Chart==='undefined'){
+  var _s=document.createElement('script');
+  _s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
+  document.head.appendChild(_s);
+}
+</script>
+<script>
+function val(id){ return parseFloat(document.getElementById(id).value)||0; }
+function fmt(n,d=0){ return '$'+Math.abs(n).toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}); }
+function fmtPct(n,d=1){ return n.toFixed(d)+'%'; }
+function $id(id){ return document.getElementById(id); }
+
+// ── Channel definitions ─────────────────────────
+// Each deduction: { key, label, pct }
+const CHANNELS = {
+  grocery: {
+    label: 'Grocery', emoji: '🛒',
+    deductions: [
+      { key:'tpr',     label:'TPR / Scan-back',         pct:7.0 },
+      { key:'oi',      label:'Off-Invoice',              pct:4.5 },
+      { key:'mcb',     label:'MCB / Bill-back',          pct:3.0 },
+      { key:'slot',    label:'Slotting & New Item Fees', pct:1.5 },
+      { key:'spoil',   label:'Spoils & Returns',         pct:1.0 },
+      { key:'freight', label:'Freight Allowance',        pct:0.8 },
+      { key:'epd',     label:'Early Payment Discount',   pct:0.3 },
+      { key:'other',   label:'Other / Chargebacks',      pct:0.5 },
+    ]
+  },
+  mass: {
+    label: 'Mass / Club', emoji: '🏪',
+    deductions: [
+      { key:'oi',      label:'Vendor Markdown / Off-Invoice',   pct:9.0 },
+      { key:'mcb',     label:'MCB / Compliance Penalty',        pct:4.0 },
+      { key:'freight', label:'Routing Guide / Freight',         pct:1.5 },
+      { key:'epd',     label:'Early Payment (mandatory)',        pct:2.0 },
+      { key:'spoil',   label:'Spoils / Returns',                pct:0.5 },
+      { key:'slot',    label:'Slotting / New Item Fees',        pct:0.5 },
+      { key:'other',   label:'Other / Admin Fees',              pct:1.0 },
+    ]
+  },
+  dtc: {
+    label: 'DTC', emoji: '📦',
+    deductions: [
+      { key:'marketing',  label:'Marketing & Paid Acquisition',  pct:25.0 },
+      { key:'processing', label:'Payment Processing',            pct:2.9  },
+      { key:'shipping',   label:'Outbound Shipping & Fulfillment', pct:9.0 },
+      { key:'returns',    label:'Returns & Refunds',             pct:3.5  },
+      { key:'promos',     label:'Discount Codes & Promos',       pct:4.0  },
+      { key:'affiliate',  label:'Affiliate / Influencer',        pct:2.0  },
+      { key:'platform',   label:'Platform & App Fees',           pct:1.0  },
+      { key:'other',      label:'Other (chargebacks, misc)',      pct:0.5  },
+    ]
+  },
+  amazon: {
+    label: 'Amazon', emoji: '🟠',
+    deductions: [
+      { key:'referral', label:'Amazon Referral Fee',         pct:10.0 },
+      { key:'fba',      label:'FBA Fulfillment Fee',         pct:6.0  },
+      { key:'ads',      label:'Amazon Advertising (AMS)',    pct:10.0 },
+      { key:'coupons',  label:'Coupons & Promotions',        pct:2.5  },
+      { key:'returns',  label:'Returns & Refunds',           pct:4.0  },
+      { key:'storage',  label:'FBA Storage & Aged Inv.',     pct:1.5  },
+      { key:'other',    label:'Other (co-op, chargebacks)',  pct:1.5  },
+    ]
+  },
+  drug: {
+    label: 'Drug', emoji: '💊',
+    deductions: [
+      { key:'tpr',     label:'TPR / Scan-back',         pct:6.0 },
+      { key:'oi',      label:'Off-Invoice Allowance',   pct:4.0 },
+      { key:'mcb',     label:'MCB / Bill-back',         pct:2.5 },
+      { key:'slot',    label:'Slotting & New Item Fees',pct:2.5 },
+      { key:'spoil',   label:'Spoils / Damages',        pct:1.0 },
+      { key:'freight', label:'Freight Allowance',       pct:0.5 },
+      { key:'epd',     label:'Early Payment Discount',  pct:0.3 },
+      { key:'other',   label:'Other / Chargebacks',     pct:0.5 },
+    ]
+  },
+  foodservice: {
+    label: 'Foodservice', emoji: '🍽️',
+    deductions: [
+      { key:'distrib', label:'Distributor Margin',          pct:24.0 },
+      { key:'broker',  label:'Broker Commission',           pct:4.0  },
+      { key:'gpo',     label:'GPO / Contract Fees',         pct:3.0  },
+      { key:'freight', label:'Freight / Delivery',          pct:2.0  },
+      { key:'samples', label:'Samples, Demos & Cuttings',   pct:1.0  },
+      { key:'other',   label:'Other (rebates, admin)',       pct:0.5  },
+    ]
+  },
+};
+
+// ── State ───────────────────────────────────────
+// activeChannels: set of channel keys currently toggled ON
+const activeChannels = new Set(['grocery','mass','dtc','amazon']);
+// userPcts: { channelKey: { dedKey: pct } } — user-edited percentages
+const userPcts = {};
+Object.keys(CHANNELS).forEach(ck => {
+  userPcts[ck] = {};
+  CHANNELS[ck].deductions.forEach(d => { userPcts[ck][d.key] = d.pct; });
+});
+
+let cmpChart = null;
+
+// ── Build toggle buttons ────────────────────────
+function buildToggles(){
+  $id('toggleRow').innerHTML = Object.entries(CHANNELS).map(([key,ch]) =>
+    `<button class="ch-toggle${activeChannels.has(key)?' on':''}" onclick="toggleChannel('${key}')">${ch.emoji} ${ch.label}</button>`
+  ).join('');
+}
+
+function toggleChannel(key){
+  if(activeChannels.has(key)) activeChannels.delete(key);
+  else activeChannels.add(key);
+  buildToggles();
+  updateEditorVisibility();
+}
+
+// ── Build deduction editors ─────────────────────
+function buildEditors(){
+  const container = $id('editorsContainer');
+  container.innerHTML = '';
+  Object.entries(CHANNELS).forEach(([ck, ch]) => {
+    const card = document.createElement('div');
+    card.className = 'ch-card' + (activeChannels.has(ck) ? '' : ' hidden');
+    card.id = 'editor-'+ck;
+    card.innerHTML = `
+      <div class="ch-card-header">
+        <span class="ch-card-title">${ch.emoji} ${ch.label}</span>
+        <span class="ch-card-net" id="ednet-${ck}">—</span>
+      </div>
+      ${ch.deductions.map(d => `
+        <div class="ded-row">
+          <span class="ded-label" title="${d.label}">${d.label}</span>
+          <input class="ded-input" type="number" step="0.1" min="0" max="100"
+            value="${userPcts[ck][d.key]}"
+            oninput="userPcts['${ck}']['${d.key}']=parseFloat(this.value)||0; updateEditorNet('${ck}')"/>
+          <span class="ded-pct">%</span>
+        </div>`).join('')}`;
+    container.appendChild(card);
+  });
+  // Initial net preview
+  Object.keys(CHANNELS).forEach(ck => updateEditorNet(ck));
+}
+
+function updateEditorVisibility(){
+  Object.keys(CHANNELS).forEach(ck => {
+    const card = $id('editor-'+ck);
+    if(card) card.classList.toggle('hidden', !activeChannels.has(ck));
+  });
+}
+
+function updateEditorNet(ck){
+  const gross = val('grossRevenue') || 500000;
+  const totalPct = CHANNELS[ck].deductions.reduce((s,d) => s + (userPcts[ck][d.key]||0), 0);
+  const net = gross * (1 - totalPct/100);
+  const el = $id('ednet-'+ck);
+  if(el) el.textContent = 'Net: '+fmt(net);
+}
+
+// ── Compute channel result ──────────────────────
+function computeChannel(ck, gross, cogs){
+  const ch = CHANNELS[ck];
+  const deductions = ch.deductions.map(d => ({
+    label: d.label,
+    amount: Math.round(userPcts[ck][d.key] / 100 * gross),
+  }));
+  const totalDed = deductions.reduce((s,d) => s+d.amount, 0);
+  const net      = gross - totalDed;
+  const gp       = net - cogs;
+  const gm       = net > 0 ? gp/net*100 : 0;
+  const dedPct   = gross > 0 ? totalDed/gross*100 : 0;
+  return { ch, deductions, totalDed, net, gp, gm, dedPct };
+}
+
+// ── Render ──────────────────────────────────────
+function render(){
+  const gross = val('grossRevenue');
+  const cogs  = val('totalCOGS');
+
+  if(activeChannels.size === 0){
+    alert('Select at least one channel to compare.');
+    return;
+  }
+
+  const active = [...activeChannels];
+  const results = active.map(ck => ({ ck, ...computeChannel(ck, gross, cogs) }));
+
+  // Best channel by gross margin
+  const best = results.reduce((a,b) => a.gm > b.gm ? a : b);
+
+  // ── Comparison table ──────────────────────────
+  let rows = '';
+  results.forEach(r => {
+    const isBest = r.ck === best.ck;
+    rows += `<tr class="${isBest?'best':''}">
+      <td>${CHANNELS[r.ck].emoji} ${CHANNELS[r.ck].label}${isBest?' ★':''}</td>
+      <td>${fmt(gross)}</td>
+      <td style="color:var(--red)">(${fmt(r.totalDed)})</td>
+      <td style="color:var(--red)">${fmtPct(r.dedPct)}</td>
+      <td style="color:var(--teal);font-weight:600">${fmt(r.net)}</td>
+      <td>${fmt(cogs)}</td>
+      <td style="color:${r.gp>=0?'var(--teal)':'var(--red)'};font-weight:600">${r.gp>=0?fmt(r.gp):'('+fmt(Math.abs(r.gp))+')' }</td>
+      <td style="color:${r.gm>=20?'var(--teal)':r.gm>=0?'var(--amber)':'var(--red)'};font-weight:700">${fmtPct(r.gm)}</td>
+    </tr>`;
+  });
+  $id('cmpBody').innerHTML = rows;
+  $id('bestChannelNote').textContent = `★ ${CHANNELS[best.ck].label} has the highest gross margin at ${fmtPct(best.gm)} in this scenario.`;
+
+  // ── Per-channel waterfall detail ─────────────
+  const detailGrid = $id('detailGrid');
+  detailGrid.innerHTML = '';
+  results.forEach(r => {
+    const card = document.createElement('div');
+    card.className = 'detail-card';
+    let running = gross;
+    let rows = `<tr class="subtotal"><td>Gross revenue</td><td>${fmt(gross)}</td></tr>`;
+    r.deductions.forEach(d => {
+      if(d.amount === 0) return;
+      running -= d.amount;
+      const pct = gross > 0 ? d.amount/gross*100 : 0;
+      rows += `<tr><td style="padding-left:12px">${d.label}</td><td style="color:var(--red)">(${fmt(d.amount)}) <span style="color:var(--hint);font-weight:400">${fmtPct(pct)}</span></td></tr>`;
+    });
+    rows += `<tr class="total"><td>Net revenue</td><td>${fmt(r.net)}</td></tr>`;
+    if(cogs > 0){
+      rows += `<tr><td style="padding-left:12px">COGS</td><td style="color:var(--red)">(${fmt(cogs)})</td></tr>
+               <tr class="total"><td>Gross profit</td><td style="color:${r.gp>=0?'var(--teal)':'var(--red)'}">${r.gp>=0?fmt(r.gp):'('+fmt(Math.abs(r.gp))+')'}</td></tr>
+               <tr><td>Gross margin</td><td style="color:${r.gm>=20?'var(--teal)':r.gm>=0?'var(--amber)':'var(--red)'}"><strong>${fmtPct(r.gm)}</strong></td></tr>`;
+    }
+    card.innerHTML = `<h3>${CHANNELS[r.ck].emoji} ${CHANNELS[r.ck].label}</h3>
+      <table class="wf-mini"><tbody>${rows}</tbody></table>`;
+    detailGrid.appendChild(card);
+  });
+
+  // ── Chart ─────────────────────────────────────
+  if(typeof Chart === 'undefined') return;
+
+  const chLabels = results.map(r => CHANNELS[r.ck].emoji + ' ' + CHANNELS[r.ck].label);
+  const netData  = results.map(r => r.net);
+  const dedData  = results.map(r => r.totalDed);
+  const gmData   = results.map(r => parseFloat(r.gm.toFixed(1)));
+
+  if(cmpChart) cmpChart.destroy();
+  cmpChart = new Chart($id('cmpChart'), {
+    type: 'bar',
+    data:{
+      labels: chLabels,
+      datasets:[
+        {
+          label: 'Net revenue',
+          data: netData,
+          backgroundColor: 'rgba(29,158,117,0.72)',
+          borderRadius: 3,
+          borderSkipped: 'bottom',
+          stack: 'revenue',
+          order: 2,
+        },
+        {
+          label: 'Total deductions',
+          data: dedData,
+          backgroundColor: 'rgba(226,75,74,0.65)',
+          borderRadius: 3,
+          borderSkipped: 'bottom',
+          stack: 'revenue',
+          order: 2,
+        },
+        {
+          label: 'Gross margin %',
+          data: gmData,
+          type: 'line',
+          borderColor: 'rgba(127,119,221,0.85)',
+          backgroundColor: 'rgba(127,119,221,0.12)',
+          borderWidth: 2.5,
+          pointBackgroundColor: 'rgba(127,119,221,1)',
+          pointRadius: 5,
+          pointHoverRadius: 7,
+          tension: 0.25,
+          yAxisID: 'yPct',
+          order: 1,
+        }
+      ]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      animation:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          mode:'index',
+          intersect:false,
+          callbacks:{
+            title: ctx => chLabels[ctx[0].dataIndex],
+            label: ctx => {
+              if(ctx.dataset.label==='Gross margin %') return 'Gross margin: '+ctx.raw.toFixed(1)+'%';
+              if(ctx.dataset.label==='Net revenue') return 'Net revenue: '+fmt(ctx.raw);
+              return 'Deductions: '+fmt(ctx.raw)+' ('+fmtPct(ctx.raw/gross*100)+' of gross)';
+            }
+          }
+        }
+      },
+      scales:{
+        x:{ticks:{color:'#9ca3af',font:{size:12}},grid:{display:false}},
+        y:{
+          stacked:true,
+          ticks:{color:'#9ca3af',font:{size:11},callback:v=>'$'+(v>=1000?(v/1000).toFixed(0)+'K':v)},
+          grid:{color:'rgba(0,0,0,0.05)'},
+          max: Math.ceil(gross * 1.08 / 50000) * 50000,
+        },
+        yPct:{
+          position:'right',
+          ticks:{color:'rgba(127,119,221,0.8)',font:{size:11},callback:v=>v+'%'},
+          grid:{display:false},
+          min: 0,
+          max: Math.ceil(Math.max(...gmData, 60) / 10) * 10 + 10,
+          title:{display:true,text:'Gross margin %',color:'rgba(127,119,221,0.7)',font:{size:10}},
+        }
+      }
+    }
+  });
+}
+
+// ── Gross revenue live update of editor nets ────
+$id('grossRevenue').addEventListener('input', () => {
+  Object.keys(CHANNELS).forEach(ck => updateEditorNet(ck));
+});
+
+// ── Init ────────────────────────────────────────
+buildToggles();
+buildEditors();
+</script>
+</body>
+</html>

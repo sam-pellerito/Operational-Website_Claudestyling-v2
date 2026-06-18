@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Stockout vs Overstock Cost — Sam Pellerito</title>
+<meta name="description" content="Compare the annual cost of stocking out vs holding too much inventory. Find your optimal safety stock level. Built by Sam Pellerito."/>
+<style>
+:root{--bg:#f8fafb;--card:#fff;--surface:#f1f3f6;--border:rgba(15,23,36,0.1);--text:#0f1724;--muted:#6b7280;--hint:#9ca3af;--accent:#185FA5;--teal:#1D9E75;--red:#E24B4A;--purple:#7F77DD;--amber:#BA7517;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Inter,ui-sans-serif,system-ui,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;}
+.page{max-width:960px;margin:0 auto;padding:32px 20px 60px;}
+header{margin-bottom:32px;padding-bottom:24px;border-bottom:0.5px solid var(--border);}
+.header-tag{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+h1{font-size:24px;font-weight:600;color:var(--text);margin-bottom:6px;}
+.header-desc{font-size:14px;color:var(--muted);max-width:620px;line-height:1.6;}
+.byline{font-size:13px;color:var(--muted);margin-top:10px;}
+.byline strong{color:var(--text);}
+.section-title{font-size:11px;font-weight:600;color:var(--hint);letter-spacing:.08em;text-transform:uppercase;margin:28px 0 12px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;}
+.panel-out{border-top:3px solid var(--red);}
+.panel-over{border-top:3px solid var(--amber);}
+.panel-title{font-size:13px;font-weight:700;margin-bottom:2px;}
+.panel-title.out{color:var(--red);}
+.panel-title.over{color:var(--amber);}
+.panel-sub{font-size:11px;color:var(--muted);margin-bottom:14px;line-height:1.4;}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.field label{font-size:12px;color:var(--muted);font-weight:500;}
+.field input{padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;color:var(--text);background:var(--card);outline:none;transition:border-color .15s;}
+.field input:focus{border-color:var(--accent);}
+.field-hint{font-size:11px;color:var(--hint);margin-top:2px;}
+.field-sub{font-size:11px;font-weight:600;color:var(--hint);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 8px;}
+.divider{border:none;border-top:0.5px solid var(--border);margin:24px 0;}
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px;}
+.metric{background:var(--surface);border-radius:10px;padding:14px 16px;}
+.metric-label{font-size:11px;color:var(--muted);margin-bottom:4px;}
+.metric-value{font-size:22px;font-weight:600;color:var(--text);}
+.metric-value.bad{color:var(--red);}
+.metric-value.warn{color:var(--amber);}
+.metric-value.good{color:var(--teal);}
+.metric-sub{font-size:11px;color:var(--hint);margin-top:2px;}
+.verdict-bar{border-radius:12px;padding:16px 20px;margin-bottom:20px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:10px;}
+.verdict-out{background:rgba(226,75,74,0.08);color:#9B1C1C;border:1px solid rgba(226,75,74,0.2);}
+.verdict-over{background:rgba(186,117,23,0.08);color:#7A4A0A;border:1px solid rgba(186,117,23,0.2);}
+.verdict-balanced{background:rgba(29,158,117,0.08);color:#0F6E56;border:1px solid rgba(29,158,117,0.2);}
+/* breakdown table */
+.cost-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:6px;}
+.cost-table th{font-size:10.5px;font-weight:600;color:var(--hint);text-transform:uppercase;letter-spacing:.05em;padding:8px 12px;border-bottom:0.5px solid var(--border);background:var(--surface);text-align:right;}
+.cost-table th:first-child{text-align:left;}
+.cost-table td{padding:10px 12px;border-bottom:0.5px solid var(--border);text-align:right;color:var(--muted);}
+.cost-table td:first-child{text-align:left;color:var(--text);font-weight:500;}
+.cost-table tfoot td{font-weight:700;color:var(--text);background:var(--surface);border-top:1px solid var(--border);}
+.cost-table tfoot td.r{text-align:right;}
+/* safety stock slider section */
+.ss-row{display:grid;grid-template-columns:1fr 3fr 1fr;gap:12px;align-items:center;margin-bottom:8px;}
+.ss-row label{font-size:12px;color:var(--muted);font-weight:500;}
+.ss-row input[type=range]{width:100%;accent-color:var(--accent);}
+.ss-row span{font-size:14px;font-weight:600;color:var(--text);text-align:right;}
+.chart-wrap{position:relative;width:100%;height:280px;margin-bottom:8px;}
+.chart-note{font-size:11px;color:var(--hint);margin:4px 0 24px;}
+.legend-row{display:flex;flex-wrap:wrap;gap:14px;margin:6px 0 10px;font-size:12px;color:var(--muted);}
+.legend-row span{display:flex;align-items:center;gap:6px;}
+.leg{width:28px;height:3px;display:inline-block;border-radius:2px;}
+.calc-btn{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:13px 40px;font-size:15px;font-weight:600;cursor:pointer;letter-spacing:.01em;transition:opacity .15s;}
+.calc-btn:hover{opacity:.85;}
+footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.footer-left{font-size:13px;color:var(--muted);}
+.footer-left strong{color:var(--text);}
+.footer-right a{color:var(--hint);text-decoration:none;font-size:12px;}
+.footer-right a:hover{color:var(--accent);}
+@media(max-width:640px){.two-col{grid-template-columns:1fr;}h1{font-size:20px;}.ss-row{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<nav style="margin-bottom:20px;">
+  <a href="index.html" style="font-size:13px;color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+    <span style="font-size:16px;line-height:1;">←</span> All tools
+  </a>
+</nav>
+
+<header>
+  <p class="header-tag">CPG Operations Tool</p>
+  <h1>Stockout vs Overstock Cost</h1>
+  <p class="header-desc">Quantify the real annual cost of running out of stock versus carrying too much inventory. Find where the two curves cross to identify your optimal safety stock level.</p>
+  <p class="byline">Built by <strong>Sam Pellerito</strong></p>
+</header>
+
+<!-- ── Product & demand ──────────────────────── -->
+<p class="section-title">Product & demand baseline</p>
+<div class="two-col">
+  <div class="field">
+    <label>Average monthly demand (units)</label>
+    <input type="number" id="monthlyDemand" value="4000" step="100" min="1"/>
+  </div>
+  <div class="field">
+    <label>Demand variability — std dev (% of avg monthly demand)</label>
+    <input type="number" id="demandCV" value="20" step="1" min="0" max="100"/>
+    <span class="field-hint">e.g. 20% means ±800 units/month at your avg. Higher = more volatile.</span>
+  </div>
+  <div class="field">
+    <label>Unit selling price ($)</label>
+    <input type="number" id="sellPrice" value="16.00" step="0.50" min="0"/>
+  </div>
+  <div class="field">
+    <label>Unit cost / COGS ($)</label>
+    <input type="number" id="unitCost" value="6.50" step="0.25" min="0"/>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ── Two cost panels ───────────────────────── -->
+<div class="two-col">
+
+  <!-- STOCKOUT -->
+  <div class="panel panel-out">
+    <p class="panel-title out">🚫 Stockout costs</p>
+    <p class="panel-sub">What it costs when you run out — lost margin, lost customers, emergency orders.</p>
+
+    <p class="field-sub">Per event</p>
+    <div class="field">
+      <label>Avg stockout duration (days)</label>
+      <input type="number" id="outDuration" value="7" step="1" min="0"/>
+    </div>
+    <div class="field">
+      <label>Units lost per stockout day</label>
+      <input type="number" id="outUnitsPerDay" value="130" step="10" min="0"/>
+      <span class="field-hint">Avg daily demand ÷ 30 as a starting point.</span>
+    </div>
+    <div class="field">
+      <label>Demand permanently lost vs delayed (%)</label>
+      <input type="number" id="outLostPct" value="60" step="5" min="0" max="100"/>
+      <span class="field-hint">Retail shelf gaps: ~60–80% permanently lost. DTC: lower.</span>
+    </div>
+
+    <p class="field-sub">Emergency reorder</p>
+    <div class="field">
+      <label>Emergency restock premium above normal cost (%)</label>
+      <input type="number" id="outEmergencyPct" value="25" step="5" min="0"/>
+    </div>
+    <div class="field">
+      <label>Units rush-ordered per event</label>
+      <input type="number" id="outRushUnits" value="500" step="100" min="0"/>
+    </div>
+
+    <p class="field-sub">Frequency</p>
+    <div class="field">
+      <label>Expected stockout events per year</label>
+      <input type="number" id="outEventsPerYear" value="3" step="1" min="0"/>
+    </div>
+  </div>
+
+  <!-- OVERSTOCK -->
+  <div class="panel panel-over">
+    <p class="panel-title over">📦 Overstock costs</p>
+    <p class="panel-sub">What it costs to hold too much — tied-up capital, storage, expiration risk.</p>
+
+    <p class="field-sub">Holding costs</p>
+    <div class="field">
+      <label>Annual carrying cost rate (% of inventory value)</label>
+      <input type="number" id="overCarryRate" value="25" step="1" min="0"/>
+      <span class="field-hint">Typically 20–35%. Includes capital, insurance, handling.</span>
+    </div>
+    <div class="field">
+      <label>Storage cost per unit per month ($)</label>
+      <input type="number" id="overStoragePU" value="0.08" step="0.01" min="0"/>
+    </div>
+
+    <p class="field-sub">Obsolescence & write-offs</p>
+    <div class="field">
+      <label>Shelf life / expiration window (months)</label>
+      <input type="number" id="overShelfLife" value="18" step="1" min="1"/>
+    </div>
+    <div class="field">
+      <label>% of overstock at risk of expiring unsold</label>
+      <input type="number" id="overObsPct" value="15" step="5" min="0" max="100"/>
+    </div>
+    <div class="field">
+      <label>Liquidation recovery (% of unit cost recovered)</label>
+      <input type="number" id="overLiqPct" value="30" step="5" min="0" max="100"/>
+      <span class="field-hint">What you recover selling excess at discount. 0% = full write-off.</span>
+    </div>
+  </div>
+
+</div>
+
+<div class="divider"></div>
+
+<!-- ── Safety stock slider ───────────────────── -->
+<p class="section-title">Safety stock level to evaluate</p>
+<p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Adjust the slider to see how total annual cost changes at different safety stock levels.</p>
+<div class="ss-row">
+  <label>Safety stock (days of cover)</label>
+  <input type="range" id="ssSlider" min="0" max="60" value="14" step="1" oninput="updateSliderLabel(); render();"/>
+  <span id="ssLabel">14 days</span>
+</div>
+<p style="font-size:11px;color:var(--hint);margin-bottom:4px;">= <span id="ssUnits">—</span> units held as buffer above expected demand during lead time.</p>
+
+<div class="divider"></div>
+
+<!-- ── Calculate ─────────────────────────────── -->
+<div style="display:flex;justify-content:center;margin-bottom:32px;">
+  <button class="calc-btn" onclick="render()">Calculate</button>
+</div>
+
+<!-- ── Results ───────────────────────────────── -->
+<p class="section-title">Results at current safety stock level</p>
+
+<div id="verdictBar" class="verdict-bar verdict-balanced" style="display:none;">
+  <span style="font-size:18px;" id="verdictIcon">⚖️</span>
+  <span id="verdictText"></span>
+</div>
+
+<div class="metric-grid">
+  <div class="metric"><p class="metric-label">Annual stockout cost</p><p class="metric-value bad" id="out-stockoutCost">—</p><p class="metric-sub">lost margin + emergency orders</p></div>
+  <div class="metric"><p class="metric-label">Annual overstock cost</p><p class="metric-value warn" id="out-overstockCost">—</p><p class="metric-sub">carrying + storage + write-offs</p></div>
+  <div class="metric"><p class="metric-label">Total annual inventory cost</p><p class="metric-value" id="out-totalCost">—</p><p class="metric-sub">combined</p></div>
+  <div class="metric"><p class="metric-label">Optimal safety stock</p><p class="metric-value good" id="out-optSS">—</p><p class="metric-sub">lowest total cost point</p></div>
+  <div class="metric"><p class="metric-label">Safety stock (units)</p><p class="metric-value" id="out-ssUnits">—</p><p class="metric-sub">at current slider level</p></div>
+  <div class="metric"><p class="metric-label">Units at risk / yr</p><p class="metric-value bad" id="out-unitsRisk">—</p><p class="metric-sub">from stockouts</p></div>
+</div>
+
+<!-- ── Cost breakdown ────────────────────────── -->
+<p class="section-title">Annual cost breakdown</p>
+<table class="cost-table" aria-label="Annual cost breakdown">
+  <thead>
+    <tr>
+      <th>Cost item</th>
+      <th style="text-align:right">Calculation</th>
+      <th style="text-align:right">Annual cost</th>
+    </tr>
+  </thead>
+  <tbody id="costBody"></tbody>
+  <tfoot id="costFoot"></tfoot>
+</table>
+
+<!-- ── Chart ─────────────────────────────────── -->
+<p class="section-title">Total cost vs safety stock level</p>
+<div class="legend-row">
+  <span><span class="leg" style="background:var(--red)"></span>Stockout cost</span>
+  <span><span class="leg" style="background:var(--amber)"></span>Overstock cost</span>
+  <span><span class="leg" style="background:var(--accent)"></span>Total cost</span>
+  <span style="color:var(--teal)">▸ Optimal point</span>
+</div>
+<div class="chart-wrap"><canvas id="ssChart" role="img" aria-label="Safety stock cost curve chart"></canvas></div>
+<p class="chart-note">Stockout cost falls as safety stock rises. Overstock cost rises. Total cost is U-shaped — the bottom is your optimal safety stock level.</p>
+
+<footer>
+  <div class="footer-left">Built by <strong>Sam Pellerito</strong> — CPG Operations Tools</div>
+  <div class="footer-right"><a href="index.html">← All tools</a></div>
+</footer>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+<script>
+if(typeof Chart==='undefined'){
+  var _s=document.createElement('script');
+  _s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
+  document.head.appendChild(_s);
+}
+</script>
+<script>
+function val(id){ return parseFloat(document.getElementById(id).value)||0; }
+function fmt(n,d=0){ return '$'+n.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}); }
+function $id(id){ return document.getElementById(id); }
+
+let ssChart=null;
+
+function updateSliderLabel(){
+  const days=parseInt($id('ssSlider').value);
+  $id('ssLabel').textContent=days+' days';
+  const monthly=val('monthlyDemand')||1;
+  const units=Math.round((days/30)*monthly);
+  $id('ssUnits').textContent=units.toLocaleString();
+}
+
+// ── Cost model ──────────────────────────────────
+function calcStockoutCost(ssDays){
+  const monthly      = val('monthlyDemand')||1;
+  const demandCV     = val('demandCV')/100;
+  const sell         = val('sellPrice');
+  const cost         = val('unitCost');
+  const margin       = sell - cost;
+  const duration     = val('outDuration');
+  const unitsPerDay  = val('outUnitsPerDay');
+  const lostPct      = val('outLostPct')/100;
+  const emergPct     = val('outEmergencyPct')/100;
+  const rushUnits    = val('outRushUnits');
+  const baseEvents   = val('outEventsPerYear');
+
+  // Safety stock reduces stockout frequency
+  // More SS days → fewer events. Model: events scale with service gap.
+  const monthlyStdDev = monthly * demandCV;
+  const ssUnits = (ssDays/30)*monthly;
+  // Approximate: stockout probability decreases as SS covers more std devs
+  // Reduction factor: as SS grows relative to demand variability, events drop
+  const zScore = monthlyStdDev > 0 ? ssUnits / monthlyStdDev : 3;
+  // Simple sigmoid-like reduction: events * max(0, 1 - z/3)
+  const reductionFactor = Math.max(0, 1 - zScore/3);
+  const adjEvents = baseEvents * reductionFactor;
+
+  const lostUnitsPerEvent  = duration * unitsPerDay * lostPct;
+  const lostMarginCost     = lostUnitsPerEvent * margin * adjEvents;
+  const emergencyCost      = rushUnits * cost * emergPct * adjEvents;
+  const totalStockout      = lostMarginCost + emergencyCost;
+
+  return { totalStockout, lostMarginCost, emergencyCost, adjEvents, lostUnitsPerEvent };
+}
+
+function calcOverstockCost(ssDays){
+  const monthly     = val('monthlyDemand')||1;
+  const unitCost    = val('unitCost');
+  const carryRate   = val('overCarryRate')/100;
+  const storagePU   = val('overStoragePU');
+  const shelfLife   = val('overShelfLife')||1;
+  const obsPct      = val('overObsPct')/100;
+  const liqPct      = val('overLiqPct')/100;
+
+  const ssUnits     = (ssDays/30)*monthly;
+  const ssValue     = ssUnits * unitCost;
+
+  const carryingCost  = ssValue * carryRate;
+  const storageCost   = ssUnits * storagePU * 12;
+  // Obsolescence: fraction of SS that might expire based on shelf life and turnover
+  const obsUnits      = ssUnits * obsPct;
+  const obsCost       = obsUnits * unitCost * (1 - liqPct);
+  const totalOverstock = carryingCost + storageCost + obsCost;
+
+  return { totalOverstock, carryingCost, storageCost, obsCost, ssUnits };
+}
+
+function render(){
+  updateSliderLabel();
+  const ssDays = parseInt($id('ssSlider').value)||0;
+
+  const so  = calcStockoutCost(ssDays);
+  const ov  = calcOverstockCost(ssDays);
+  const total = so.totalStockout + ov.totalOverstock;
+
+  // Find optimal (scan 0–60 days in 1-day steps)
+  let optDays=0, optTotal=Infinity;
+  for(let d=0;d<=60;d++){
+    const t = calcStockoutCost(d).totalStockout + calcOverstockCost(d).totalOverstock;
+    if(t < optTotal){ optTotal=t; optDays=d; }
+  }
+
+  // Metrics
+  $id('out-stockoutCost').textContent = fmt(so.totalStockout);
+  $id('out-overstockCost').textContent = fmt(ov.totalOverstock);
+  const totEl=$id('out-totalCost');
+  totEl.textContent=fmt(total);
+  totEl.className='metric-value'+(so.totalStockout>ov.totalOverstock*2?' bad':ov.totalOverstock>so.totalStockout*2?' warn':'');
+  $id('out-optSS').textContent=optDays+' days';
+  $id('out-ssUnits').textContent=Math.round(ov.ssUnits).toLocaleString()+' units';
+  $id('out-unitsRisk').textContent=Math.round(so.lostUnitsPerEvent*so.adjEvents).toLocaleString()+' units';
+
+  // Verdict
+  const vb=$id('verdictBar');
+  const vt=$id('verdictText');
+  vb.style.display='flex';
+  if(so.totalStockout > ov.totalOverstock*1.5){
+    vb.className='verdict-bar verdict-out';
+    $id('verdictIcon').textContent='🚫';
+    vt.innerHTML=`Stockouts are your bigger problem — costing <strong>${fmt(so.totalStockout)}/yr</strong> vs ${fmt(ov.totalOverstock)}/yr for overstock. Consider raising safety stock toward the optimal <strong>${optDays} days</strong>.`;
+  } else if(ov.totalOverstock > so.totalStockout*1.5){
+    vb.className='verdict-bar verdict-over';
+    $id('verdictIcon').textContent='📦';
+    vt.innerHTML=`Overstock is your bigger cost — <strong>${fmt(ov.totalOverstock)}/yr</strong> in carrying and write-offs vs ${fmt(so.totalStockout)}/yr for stockouts. Tighten safety stock toward <strong>${optDays} days</strong>.`;
+  } else {
+    vb.className='verdict-bar verdict-balanced';
+    $id('verdictIcon').textContent='⚖️';
+    vt.innerHTML=`Costs are roughly balanced. Optimal safety stock is <strong>${optDays} days</strong> at a total annual cost of <strong>${fmt(optTotal)}</strong>.`;
+  }
+
+  // Breakdown table
+  const monthly=val('monthlyDemand')||1;
+  $id('costBody').innerHTML=`
+    <tr><td colspan="3" style="font-size:10.5px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.05em;padding:10px 12px 4px;border-bottom:none">Stockout costs</td></tr>
+    <tr>
+      <td>Lost margin (${so.adjEvents.toFixed(1)} events × ${Math.round(so.lostUnitsPerEvent)} units)</td>
+      <td style="text-align:right">${Math.round(so.lostUnitsPerEvent*so.adjEvents).toLocaleString()} units × ${fmt(val('sellPrice')-val('unitCost'),2)}</td>
+      <td style="text-align:right;color:var(--red)">${fmt(so.lostMarginCost)}</td>
+    </tr>
+    <tr>
+      <td>Emergency restock premium</td>
+      <td style="text-align:right">${val('outRushUnits').toLocaleString()} units × ${val('outEmergencyPct')}% premium × ${so.adjEvents.toFixed(1)} events</td>
+      <td style="text-align:right;color:var(--red)">${fmt(so.emergencyCost)}</td>
+    </tr>
+    <tr><td colspan="3" style="font-size:10.5px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.05em;padding:10px 12px 4px;border-bottom:none">Overstock costs</td></tr>
+    <tr>
+      <td>Inventory carrying cost</td>
+      <td style="text-align:right">${fmt(Math.round(ov.ssUnits)*val('unitCost'),0)} inventory value × ${val('overCarryRate')}%</td>
+      <td style="text-align:right;color:var(--amber)">${fmt(ov.carryingCost)}</td>
+    </tr>
+    <tr>
+      <td>Storage cost</td>
+      <td style="text-align:right">${Math.round(ov.ssUnits).toLocaleString()} units × $${val('overStoragePU').toFixed(2)}/mo × 12</td>
+      <td style="text-align:right;color:var(--amber)">${fmt(ov.storageCost)}</td>
+    </tr>
+    <tr>
+      <td>Obsolescence / write-offs</td>
+      <td style="text-align:right">${val('overObsPct')}% at risk × (1 − ${val('overLiqPct')}% recovery)</td>
+      <td style="text-align:right;color:var(--amber)">${fmt(ov.obsCost)}</td>
+    </tr>`;
+
+  $id('costFoot').innerHTML=`<tr>
+    <td colspan="2">Total annual inventory cost</td>
+    <td class="r" style="text-align:right">${fmt(total)}</td>
+  </tr>`;
+
+  // Chart
+  if(typeof Chart==='undefined') return;
+
+  const xDays=[], soLine=[], ovLine=[], totLine=[];
+  let chartOptDays=0, chartOptTotal=Infinity;
+  for(let d=0;d<=60;d++){
+    const s=calcStockoutCost(d).totalStockout;
+    const o=calcOverstockCost(d).totalOverstock;
+    const t=s+o;
+    xDays.push(d);
+    soLine.push({x:d,y:Math.round(s)});
+    ovLine.push({x:d,y:Math.round(o)});
+    totLine.push({x:d,y:Math.round(t)});
+    if(t<chartOptTotal){chartOptTotal=t;chartOptDays=d;}
+  }
+  const optPoint=[{x:chartOptDays,y:Math.round(chartOptTotal)}];
+  const currentPoint=[{x:ssDays,y:Math.round(total)}];
+
+  if(ssChart) ssChart.destroy();
+  ssChart=new Chart($id('ssChart'),{
+    type:'line',
+    data:{
+      datasets:[
+        {label:'Stockout cost',data:soLine,borderColor:'rgba(226,75,74,0.8)',borderWidth:2,pointRadius:0,fill:false,tension:0.3},
+        {label:'Overstock cost',data:ovLine,borderColor:'rgba(186,117,23,0.8)',borderWidth:2,pointRadius:0,fill:false,tension:0.3},
+        {label:'Total cost',data:totLine,borderColor:'rgba(24,95,165,0.85)',borderWidth:2.5,pointRadius:0,fill:false,tension:0.3},
+        {label:'Optimal',data:optPoint,borderColor:'var(--teal)',backgroundColor:'rgba(29,158,117,0.9)',pointRadius:8,showLine:false},
+        {label:'Current',data:currentPoint,borderColor:'var(--accent)',backgroundColor:'rgba(24,95,165,0.8)',pointRadius:6,showLine:false,pointStyle:'rectRot'},
+      ]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      animation:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          filter:item=>item.datasetIndex<3,
+          callbacks:{
+            title:ctx=>ctx[0].parsed.x+' days safety stock',
+            label:ctx=>ctx.dataset.label+': '+fmt(ctx.parsed.y)
+          }
+        }
+      },
+      scales:{
+        x:{type:'linear',title:{display:true,text:'Safety stock (days of cover)',color:'#9ca3af',font:{size:11}},ticks:{color:'#9ca3af',font:{size:11},callback:v=>v+' d'},grid:{color:'rgba(0,0,0,0.04)'}},
+        y:{ticks:{color:'#9ca3af',font:{size:11},callback:v=>'$'+v.toLocaleString()},grid:{color:'rgba(0,0,0,0.05)'}}
+      }
+    }
+  });
+}
+
+updateSliderLabel();
+</script>
+</body>
+</html>

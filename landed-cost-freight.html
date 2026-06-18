@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Landed Cost & Freight — Sam Pellerito</title>
+<meta name="description" content="Calculate the true landed cost per unit from supplier to warehouse — FOB price, freight, duties, customs, insurance, and 3PL fees. Built by Sam Pellerito."/>
+<style>
+:root{--bg:#f8fafb;--card:#fff;--surface:#f1f3f6;--border:rgba(15,23,36,0.1);--text:#0f1724;--muted:#6b7280;--hint:#9ca3af;--accent:#185FA5;--teal:#1D9E75;--red:#E24B4A;--purple:#7F77DD;--amber:#BA7517;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Inter,ui-sans-serif,system-ui,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;}
+.page{max-width:960px;margin:0 auto;padding:32px 20px 60px;}
+header{margin-bottom:32px;padding-bottom:24px;border-bottom:0.5px solid var(--border);}
+.header-tag{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+h1{font-size:24px;font-weight:600;color:var(--text);margin-bottom:6px;}
+.header-desc{font-size:14px;color:var(--muted);max-width:620px;line-height:1.6;}
+.byline{font-size:13px;color:var(--muted);margin-top:10px;}
+.byline strong{color:var(--text);}
+.section-title{font-size:11px;font-weight:600;color:var(--hint);letter-spacing:.08em;text-transform:uppercase;margin:28px 0 12px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;}
+.field{display:flex;flex-direction:column;gap:5px;}
+.field label{font-size:12px;color:var(--muted);font-weight:500;}
+.field input,.field select{padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;color:var(--text);background:var(--card);outline:none;transition:border-color .15s;}
+.field input:focus,.field select:focus{border-color:var(--accent);}
+.field-hint{font-size:11px;color:var(--hint);margin-top:2px;}
+.field-section{font-size:11px;font-weight:600;color:var(--hint);text-transform:uppercase;letter-spacing:.06em;margin:18px 0 10px;}
+.divider{border:none;border-top:0.5px solid var(--border);margin:24px 0;}
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px;}
+.metric{background:var(--surface);border-radius:10px;padding:14px 16px;}
+.metric-label{font-size:11px;color:var(--muted);margin-bottom:4px;}
+.metric-value{font-size:22px;font-weight:600;color:var(--text);}
+.metric-value.good{color:var(--teal);}
+.metric-value.warn{color:var(--amber);}
+.metric-value.bad{color:var(--red);}
+.metric-sub{font-size:11px;color:var(--hint);margin-top:2px;}
+/* waterfall/breakdown table */
+.cost-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:6px;}
+.cost-table th{font-size:10.5px;font-weight:600;color:var(--hint);text-transform:uppercase;letter-spacing:.05em;padding:8px 12px;border-bottom:0.5px solid var(--border);background:var(--surface);text-align:right;}
+.cost-table th:first-child{text-align:left;}
+.cost-table td{padding:10px 12px;border-bottom:0.5px solid var(--border);text-align:right;color:var(--muted);}
+.cost-table td:first-child{text-align:left;color:var(--text);font-weight:500;}
+.cost-table tfoot td{font-weight:700;color:var(--text);background:var(--surface);border-top:1px solid var(--border);text-align:right;}
+.cost-table tfoot td:first-child{text-align:left;}
+/* incoterm compare */
+.inco-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:20px;}
+.inco-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+.inco-card.active{border-color:var(--accent);background:rgba(24,95,165,0.04);}
+.inco-label{font-size:10px;font-weight:700;color:var(--hint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+.inco-term{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.inco-cpu{font-size:20px;font-weight:700;color:var(--accent);}
+.inco-sub{font-size:11px;color:var(--muted);margin-top:4px;}
+.chart-wrap{position:relative;width:100%;height:300px;margin-bottom:8px;}
+.chart-note{font-size:11px;color:var(--hint);margin:4px 0 24px;}
+.legend-row{display:flex;flex-wrap:wrap;gap:14px;margin:6px 0 10px;font-size:12px;color:var(--muted);}
+.legend-row span{display:flex;align-items:center;gap:6px;}
+.leg{width:14px;height:14px;border-radius:3px;display:inline-block;}
+.calc-btn{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:13px 40px;font-size:15px;font-weight:600;cursor:pointer;letter-spacing:.01em;transition:opacity .15s;}
+.calc-btn:hover{opacity:.85;}
+footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.footer-left{font-size:13px;color:var(--muted);}
+.footer-left strong{color:var(--text);}
+.footer-right a{color:var(--hint);text-decoration:none;font-size:12px;}
+.footer-right a:hover{color:var(--accent);}
+@media(max-width:640px){.field-row,.field-row-3{grid-template-columns:1fr;}h1{font-size:20px;}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<nav style="margin-bottom:20px;">
+  <a href="index.html" style="font-size:13px;color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+    <span style="font-size:16px;line-height:1;">←</span> All tools
+  </a>
+</nav>
+
+<header>
+  <p class="header-tag">CPG Operations Tool</p>
+  <h1>Landed Cost &amp; Freight</h1>
+  <p class="header-desc">Calculate the true cost of getting a unit from your supplier to your warehouse — FOB price, ocean or air freight, import duties, customs fees, insurance, drayage, and 3PL receiving. See each component's share of landed cost.</p>
+  <p class="byline">Built by <strong>Sam Pellerito</strong></p>
+</header>
+
+<!-- ── Shipment basics ───────────────────────── -->
+<p class="section-title">Shipment details</p>
+<div class="field-row">
+  <div class="field">
+    <label>SKU / product name</label>
+    <input type="text" id="skuName" value="Product A"/>
+  </div>
+  <div class="field">
+    <label>Units per shipment</label>
+    <input type="number" id="shipUnits" value="5000" step="100" min="1"/>
+  </div>
+</div>
+<div class="field-row">
+  <div class="field">
+    <label>Incoterm</label>
+    <select id="incoterm">
+      <option value="exw">EXW — Ex Works (buyer pays everything)</option>
+      <option value="fob" selected>FOB — Free On Board (buyer pays from port)</option>
+      <option value="cif">CIF — Cost, Insurance & Freight (seller pays to dest. port)</option>
+      <option value="ddp">DDP — Delivered Duty Paid (seller pays everything)</option>
+    </select>
+    <span class="field-hint">Determines which costs are included in supplier's quoted price vs yours to pay.</span>
+  </div>
+  <div class="field">
+    <label>Shipping mode</label>
+    <select id="shipMode">
+      <option value="ocean_fcl">Ocean — FCL (full container)</option>
+      <option value="ocean_lcl" selected>Ocean — LCL (less than container)</option>
+      <option value="air">Air freight</option>
+      <option value="truck">Domestic truck / FTL</option>
+    </select>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ── Product cost ──────────────────────────── -->
+<p class="section-title">Product cost</p>
+<div class="field-row">
+  <div class="field">
+    <label>Supplier price per unit — as quoted ($)</label>
+    <input type="number" id="fobPrice" value="4.20" step="0.01" min="0"/>
+    <span class="field-hint">This is the price under your chosen incoterm (e.g. FOB price, DDP price).</span>
+  </div>
+  <div class="field">
+    <label>Selling price per unit ($)</label>
+    <input type="number" id="sellPrice" value="16.00" step="0.50" min="0"/>
+    <span class="field-hint">Used to calculate gross margin on landed cost.</span>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ── Freight ───────────────────────────────── -->
+<p class="section-title">Freight & shipping costs</p>
+<p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Enter only the costs you pay — leave at $0 if covered by supplier under your incoterm.</p>
+<div class="field-row-3">
+  <div class="field">
+    <label>Origin freight / inland haulage ($)</label>
+    <input type="number" id="freightOrigin" value="180" step="10" min="0"/>
+    <span class="field-hint">Trucking from factory to origin port.</span>
+  </div>
+  <div class="field">
+    <label>Ocean / air freight ($)</label>
+    <input type="number" id="freightOcean" value="1400" step="50" min="0"/>
+    <span class="field-hint">Total shipment cost for the main leg.</span>
+  </div>
+  <div class="field">
+    <label>Destination drayage ($)</label>
+    <input type="number" id="freightDrayage" value="350" step="25" min="0"/>
+    <span class="field-hint">Port to warehouse or 3PL.</span>
+  </div>
+</div>
+<div class="field-row">
+  <div class="field">
+    <label>Fuel surcharge / other freight fees ($)</label>
+    <input type="number" id="freightOther" value="120" step="10" min="0"/>
+  </div>
+  <div class="field">
+    <label>Freight insurance (% of shipment value)</label>
+    <input type="number" id="insuranceRate" value="0.5" step="0.1" min="0"/>
+    <span class="field-hint">Typically 0.3–1.0% of cargo value.</span>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ── Import / customs ──────────────────────── -->
+<p class="section-title">Import duties & customs</p>
+<p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Skip if DDP (supplier pays duties) or for domestic shipments.</p>
+<div class="field-row-3">
+  <div class="field">
+    <label>Import duty rate (% of customs value)</label>
+    <input type="number" id="dutyRate" value="6.4" step="0.1" min="0"/>
+    <span class="field-hint">Look up via HTS code at usitc.gov.</span>
+  </div>
+  <div class="field">
+    <label>Customs broker fee ($)</label>
+    <input type="number" id="brokerFee" value="175" step="25" min="0"/>
+    <span class="field-hint">Typically $100–300 per entry.</span>
+  </div>
+  <div class="field">
+    <label>Port / terminal handling fees ($)</label>
+    <input type="number" id="portFees" value="85" step="10" min="0"/>
+    <span class="field-hint">THC, ISF filing, exam fees, etc.</span>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ── 3PL / warehouse ───────────────────────── -->
+<p class="section-title">3PL & warehouse receiving</p>
+<div class="field-row-3">
+  <div class="field">
+    <label>Pallets per shipment</label>
+    <input type="number" id="pallets" value="8" step="1" min="0"/>
+  </div>
+  <div class="field">
+    <label>3PL receiving fee per pallet ($)</label>
+    <input type="number" id="receivingPerPallet" value="12" step="1" min="0"/>
+  </div>
+  <div class="field">
+    <label>Other warehouse / handling fees ($)</label>
+    <input type="number" id="warehouseOther" value="50" step="10" min="0"/>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ── Calculate ─────────────────────────────── -->
+<div style="display:flex;justify-content:center;margin-bottom:32px;">
+  <button class="calc-btn" onclick="render()">Calculate</button>
+</div>
+
+<!-- ── Results ───────────────────────────────── -->
+<p class="section-title">Landed cost summary</p>
+<div class="metric-grid">
+  <div class="metric"><p class="metric-label">Landed cost / unit</p><p class="metric-value" id="out-landedCPU">—</p><p class="metric-sub">full cost to warehouse</p></div>
+  <div class="metric"><p class="metric-label">Supplier price / unit</p><p class="metric-value" id="out-fobCPU">—</p><p class="metric-sub">as quoted</p></div>
+  <div class="metric"><p class="metric-label">Landed premium</p><p class="metric-value warn" id="out-premium">—</p><p class="metric-sub">above supplier price</p></div>
+  <div class="metric"><p class="metric-label">Gross margin</p><p class="metric-value" id="out-gm">—</p><p class="metric-sub">on landed cost</p></div>
+  <div class="metric"><p class="metric-label">Total shipment cost</p><p class="metric-value" id="out-totalShip">—</p><p class="metric-sub">all-in per run</p></div>
+  <div class="metric"><p class="metric-label">Logistics as % of landed</p><p class="metric-value" id="out-logisticsPct">—</p><p class="metric-sub">freight + duties + 3PL</p></div>
+</div>
+
+<!-- ── Incoterm comparison ───────────────────── -->
+<p class="section-title">Incoterm sensitivity — landed cost per unit</p>
+<p style="font-size:13px;color:var(--muted);margin-bottom:14px;">See how landed cost changes if your supplier quoted under a different incoterm (assumes same shipment costs, reallocated between parties).</p>
+<div class="inco-grid" id="incoGrid"></div>
+
+<!-- ── Cost breakdown table ──────────────────── -->
+<p class="section-title">Full cost breakdown</p>
+<table class="cost-table" aria-label="Landed cost breakdown">
+  <thead>
+    <tr>
+      <th>Cost item</th>
+      <th style="text-align:right">Total ($)</th>
+      <th style="text-align:right">Per unit ($)</th>
+      <th style="text-align:right">% of landed</th>
+    </tr>
+  </thead>
+  <tbody id="costBody"></tbody>
+  <tfoot id="costFoot"></tfoot>
+</table>
+<p class="chart-note">Landed cost = supplier price + all freight, duties, and handling costs you pay to get the unit into your warehouse.</p>
+
+<!-- ── Waterfall chart ────────────────────────── -->
+<p class="section-title">Landed cost waterfall</p>
+<div class="legend-row">
+  <span><span class="leg" style="background:var(--accent)"></span>Supplier price</span>
+  <span><span class="leg" style="background:var(--purple)"></span>Freight</span>
+  <span><span class="leg" style="background:var(--amber)"></span>Duties & customs</span>
+  <span><span class="leg" style="background:var(--teal)"></span>3PL & warehouse</span>
+</div>
+<div class="chart-wrap"><canvas id="lcChart" role="img" aria-label="Landed cost waterfall chart"></canvas></div>
+<p class="chart-note">Each segment shows the per-unit cost added at each stage of the supply chain journey.</p>
+
+<footer>
+  <div class="footer-left">Built by <strong>Sam Pellerito</strong> — CPG Operations Tools</div>
+  <div class="footer-right"><a href="index.html">← All tools</a></div>
+</footer>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+<script>
+if(typeof Chart==='undefined'){
+  var _s=document.createElement('script');
+  _s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
+  document.head.appendChild(_s);
+}
+</script>
+<script>
+function val(id){ return parseFloat(document.getElementById(id).value)||0; }
+function fmt(n,d=2){ return '$'+n.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}); }
+function fmtPct(n){ return n.toFixed(1)+'%'; }
+function $id(id){ return document.getElementById(id); }
+
+let lcChart=null;
+
+// Incoterm responsibility matrix
+// Which costs does the SUPPLIER pay under each term (not charged to buyer)?
+const INCO_SELLER_PAYS = {
+  exw:  { origin:false, ocean:false, insurance:false, duty:false, drayage:false },
+  fob:  { origin:true,  ocean:false, insurance:false, duty:false, drayage:false },
+  cif:  { origin:true,  ocean:true,  insurance:true,  duty:false, drayage:false },
+  ddp:  { origin:true,  ocean:true,  insurance:true,  duty:true,  drayage:true  },
+};
+
+function calcLanded(units, fobPU, incoterm){
+  const sp      = INCO_SELLER_PAYS[incoterm] || INCO_SELLER_PAYS.fob;
+  const shipVal = fobPU * units;
+
+  // Freight components — only what buyer pays
+  const originFreight  = sp.origin   ? 0 : val('freightOrigin');
+  const oceanFreight   = sp.ocean    ? 0 : val('freightOcean');
+  const drayage        = sp.drayage  ? 0 : val('freightDrayage');
+  const freightOther   = val('freightOther');
+  const insurance      = sp.insurance? 0 : (shipVal * val('insuranceRate') / 100);
+  const totalFreight   = originFreight + oceanFreight + drayage + freightOther + insurance;
+
+  // Duties & customs — only what buyer pays
+  const dutyAmt    = sp.duty ? 0 : (shipVal * val('dutyRate') / 100);
+  const brokerFee  = sp.duty ? 0 : val('brokerFee');
+  const portFees   = sp.duty ? 0 : val('portFees');
+  const totalDuty  = dutyAmt + brokerFee + portFees;
+
+  // 3PL / warehouse
+  const receiving  = val('pallets') * val('receivingPerPallet');
+  const whOther    = val('warehouseOther');
+  const total3PL   = receiving + whOther;
+
+  const productCost  = fobPU * units;
+  const totalCost    = productCost + totalFreight + totalDuty + total3PL;
+  const landedCPU    = totalCost / units;
+
+  return {
+    productCost, totalFreight, totalDuty, total3PL, totalCost, landedCPU,
+    originFreight, oceanFreight, drayage, freightOther, insurance,
+    dutyAmt, brokerFee, portFees, receiving, whOther
+  };
+}
+
+function render(){
+  const units  = val('shipUnits')||1;
+  const fobPU  = val('fobPrice');
+  const sell   = val('sellPrice');
+  const inco   = $id('incoterm').value;
+
+  const c = calcLanded(units, fobPU, inco);
+
+  const gm = sell ? ((sell - c.landedCPU) / sell * 100) : 0;
+  const logisticsCost = c.totalFreight + c.totalDuty + c.total3PL;
+  const logisticsPct  = c.totalCost > 0 ? (logisticsCost / c.totalCost * 100) : 0;
+  const premium       = c.landedCPU - fobPU;
+  const premiumPct    = fobPU > 0 ? (premium / fobPU * 100) : 0;
+
+  $id('out-landedCPU').textContent = fmt(c.landedCPU);
+  $id('out-fobCPU').textContent    = fmt(fobPU);
+  $id('out-premium').textContent   = fmt(premium) + ' (+' + premiumPct.toFixed(1) + '%)';
+  $id('out-totalShip').textContent = fmt(c.totalCost, 0);
+  $id('out-logisticsPct').textContent = fmtPct(logisticsPct);
+
+  const gmEl = $id('out-gm');
+  gmEl.textContent = fmtPct(gm);
+  gmEl.className = 'metric-value' + (gm < 0 ? ' bad' : gm < 20 ? ' warn' : ' good');
+
+  // Incoterm comparison cards
+  const incoTerms = [
+    { key:'exw', label:'EXW', desc:'Buyer pays all logistics' },
+    { key:'fob', label:'FOB', desc:'Buyer pays from origin port' },
+    { key:'cif', label:'CIF', desc:'Buyer pays duties + last mile' },
+    { key:'ddp', label:'DDP', desc:'Buyer pays nothing extra' },
+  ];
+  $id('incoGrid').innerHTML = incoTerms.map(t => {
+    // For incoterm comparison, keep same FOB quote and just adjust which costs apply
+    const ic = calcLanded(units, fobPU, t.key);
+    const active = t.key === inco;
+    return `<div class="inco-card${active?' active':''}">
+      <p class="inco-label">${t.desc}</p>
+      <p class="inco-term">${t.label}</p>
+      <p class="inco-cpu">${fmt(ic.landedCPU)}</p>
+      <p class="inco-sub">+${fmt(ic.landedCPU - fobPU)} vs supplier price</p>
+    </div>`;
+  }).join('');
+
+  // Breakdown table
+  function row(label, total, pct){
+    const cpu = total / units;
+    return `<tr>
+      <td>${label}</td>
+      <td>${fmt(total)}</td>
+      <td>${fmt(cpu)}</td>
+      <td>${fmtPct(pct)}</td>
+    </tr>`;
+  }
+  function pct(v){ return c.totalCost > 0 ? v/c.totalCost*100 : 0; }
+
+  $id('costBody').innerHTML = `
+    <tr><td colspan="4" style="font-size:10.5px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;padding:10px 12px 4px;border-bottom:none">Product cost</td></tr>
+    ${row('Supplier price ('+$id('incoterm').options[$id('incoterm').selectedIndex].text.split(' — ')[0]+')', c.productCost, pct(c.productCost))}
+    <tr><td colspan="4" style="font-size:10.5px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.05em;padding:10px 12px 4px;border-bottom:none">Freight & shipping</td></tr>
+    ${c.originFreight ? row('Origin freight / inland haulage', c.originFreight, pct(c.originFreight)) : ''}
+    ${c.oceanFreight  ? row('Ocean / air freight', c.oceanFreight, pct(c.oceanFreight)) : ''}
+    ${c.drayage       ? row('Destination drayage', c.drayage, pct(c.drayage)) : ''}
+    ${c.freightOther  ? row('Fuel surcharge / other freight', c.freightOther, pct(c.freightOther)) : ''}
+    ${c.insurance     ? row('Cargo insurance', c.insurance, pct(c.insurance)) : ''}
+    <tr><td colspan="4" style="font-size:10.5px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.05em;padding:10px 12px 4px;border-bottom:none">Duties & customs</td></tr>
+    ${c.dutyAmt   ? row('Import duties ('+val('dutyRate')+'% of cargo value)', c.dutyAmt, pct(c.dutyAmt)) : ''}
+    ${c.brokerFee ? row('Customs broker fee', c.brokerFee, pct(c.brokerFee)) : ''}
+    ${c.portFees  ? row('Port / terminal handling fees', c.portFees, pct(c.portFees)) : ''}
+    ${(!c.dutyAmt && !c.brokerFee && !c.portFees) ? '<tr><td style="color:var(--hint)" colspan="4">Covered by supplier under selected incoterm</td></tr>' : ''}
+    <tr><td colspan="4" style="font-size:10.5px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.05em;padding:10px 12px 4px;border-bottom:none">3PL & warehouse</td></tr>
+    ${c.receiving ? row('3PL receiving ('+val('pallets')+' pallets × $'+val('receivingPerPallet')+')', c.receiving, pct(c.receiving)) : ''}
+    ${c.whOther   ? row('Other warehouse / handling fees', c.whOther, pct(c.whOther)) : ''}
+  `;
+
+  $id('costFoot').innerHTML = `<tr>
+    <td>Landed cost — all in</td>
+    <td>${fmt(c.totalCost, 0)}</td>
+    <td>${fmt(c.landedCPU)}</td>
+    <td>100.0%</td>
+  </tr>`;
+
+  // Chart — horizontal stacked bar
+  if(typeof Chart==='undefined') return;
+
+  const categories = ['Landed cost / unit'];
+  const suppData   = [fobPU];
+  const freightData = [c.totalFreight / units];
+  const dutyData   = [c.totalDuty / units];
+  const wh3plData  = [c.total3PL / units];
+
+  if(lcChart) lcChart.destroy();
+  lcChart = new Chart($id('lcChart'), {
+    type: 'bar',
+    data: {
+      labels: categories,
+      datasets: [
+        { label: 'Supplier price', data: suppData,    backgroundColor: 'rgba(24,95,165,0.8)',  borderRadius:4 },
+        { label: 'Freight',        data: freightData, backgroundColor: 'rgba(127,119,221,0.8)',borderRadius:4 },
+        { label: 'Duties & customs',data:dutyData,   backgroundColor: 'rgba(186,117,23,0.8)', borderRadius:4 },
+        { label: '3PL & warehouse',data: wh3plData,  backgroundColor: 'rgba(29,158,117,0.8)', borderRadius:4 },
+      ]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      plugins: {
+        legend: { display:true, position:'bottom', labels:{ font:{size:11}, color:'#6b7280', boxWidth:12, padding:16 } },
+        tooltip: {
+          callbacks: {
+            label: ctx => ctx.dataset.label + ': ' + fmt(ctx.parsed.x)
+          }
+        }
+      },
+      scales: {
+        x: {
+          stacked: true,
+          ticks: { color:'#9ca3af', font:{size:11}, callback: v => fmt(v) },
+          grid:  { color:'rgba(0,0,0,0.05)' },
+          title: { display:true, text:'Cost per unit ($)', color:'#9ca3af', font:{size:11} }
+        },
+        y: { stacked:true, ticks:{ color:'#9ca3af', font:{size:11} }, grid:{ display:false } }
+      }
+    }
+  });
+}
+</script>
+</body>
+</html>

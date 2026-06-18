@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Trade Spend & Net Revenue — Sam Pellerito</title>
+<meta name="description" content="Calculate net revenue after all channel-specific deductions — retail trade, DTC, Amazon, foodservice. See your gross-to-net waterfall. Built by Sam Pellerito."/>
+<style>
+:root{--bg:#f8fafb;--card:#fff;--surface:#f1f3f6;--border:rgba(15,23,36,0.1);--text:#0f1724;--muted:#6b7280;--hint:#9ca3af;--accent:#185FA5;--teal:#1D9E75;--red:#E24B4A;--purple:#7F77DD;--amber:#BA7517;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Inter,ui-sans-serif,system-ui,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;}
+.page{max-width:960px;margin:0 auto;padding:32px 20px 60px;}
+header{margin-bottom:32px;padding-bottom:24px;border-bottom:0.5px solid var(--border);}
+.header-tag{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+h1{font-size:24px;font-weight:600;color:var(--text);margin-bottom:6px;}
+.header-desc{font-size:14px;color:var(--muted);max-width:620px;line-height:1.6;}
+.byline{font-size:13px;color:var(--muted);margin-top:10px;}
+.byline strong{color:var(--text);}
+.section-title{font-size:11px;font-weight:600;color:var(--hint);letter-spacing:.08em;text-transform:uppercase;margin:28px 0 12px;}
+/* channel pill selector */
+.channel-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+.ch-pill{padding:8px 16px;border-radius:20px;border:1px solid var(--border);background:var(--card);font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s;}
+.ch-pill:hover{border-color:rgba(24,95,165,0.3);color:var(--accent);}
+.ch-pill.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.channel-tip{font-size:12px;color:var(--muted);margin-bottom:16px;padding:10px 14px;background:rgba(24,95,165,0.05);border-radius:8px;border-left:3px solid var(--accent);}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;}
+.field{display:flex;flex-direction:column;gap:5px;}
+.field label{font-size:12px;color:var(--muted);font-weight:500;}
+.field input,.field select{padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;color:var(--text);background:var(--card);outline:none;transition:border-color .15s;}
+.field input:focus{border-color:var(--accent);}
+.field-hint{font-size:11px;color:var(--hint);margin-top:2px;}
+/* deduction blocks */
+.deduction-block{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:10px;}
+.deduction-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+.deduction-title{font-size:13px;font-weight:600;color:var(--text);}
+.deduction-desc{font-size:11px;color:var(--muted);margin-top:1px;}
+.deduction-badge{font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(226,75,74,0.10);color:var(--red);white-space:nowrap;margin-left:10px;}
+.input-row{display:grid;grid-template-columns:1fr auto 110px;gap:8px;align-items:center;}
+.toggle-btn{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:7px 12px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .12s;}
+.toggle-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.pct-field{display:flex;flex-direction:column;gap:3px;}
+.pct-field label{font-size:10px;color:var(--hint);}
+.pct-field input{padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;color:var(--text);background:var(--card);outline:none;}
+/* results */
+.divider{border:none;border-top:0.5px solid var(--border);margin:24px 0;}
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px;}
+.metric{background:var(--surface);border-radius:10px;padding:14px 16px;}
+.metric-label{font-size:11px;color:var(--muted);margin-bottom:4px;}
+.metric-value{font-size:22px;font-weight:600;color:var(--text);}
+.metric-value.good{color:var(--teal);}
+.metric-value.warn{color:var(--amber);}
+.metric-value.bad{color:var(--red);}
+.metric-sub{font-size:11px;color:var(--hint);margin-top:2px;}
+.wf-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:6px;}
+.wf-table th{font-size:10.5px;font-weight:600;color:var(--hint);text-transform:uppercase;letter-spacing:.05em;padding:8px 12px;border-bottom:0.5px solid var(--border);background:var(--surface);text-align:right;}
+.wf-table th:first-child{text-align:left;}
+.wf-table td{padding:10px 12px;border-bottom:0.5px solid var(--border);text-align:right;color:var(--muted);}
+.wf-table td:first-child{text-align:left;color:var(--text);font-weight:500;}
+.wf-table tr.subtotal td{font-weight:600;color:var(--text);background:rgba(24,95,165,0.04);}
+.wf-table tr.total td{font-weight:700;color:var(--text);background:var(--surface);border-top:1px solid var(--border);}
+.chart-wrap{position:relative;width:100%;height:320px;margin-bottom:8px;}
+.chart-note{font-size:11px;color:var(--hint);margin:4px 0 24px;}
+.legend-row{display:flex;flex-wrap:wrap;gap:14px;margin:6px 0 10px;font-size:12px;color:var(--muted);}
+.legend-row span{display:flex;align-items:center;gap:6px;}
+.leg{width:14px;height:3px;display:inline-block;border-radius:2px;}
+.calc-btn{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:13px 40px;font-size:15px;font-weight:600;cursor:pointer;letter-spacing:.01em;transition:opacity .15s;}
+.calc-btn:hover{opacity:.85;}
+footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.footer-left{font-size:13px;color:var(--muted);}
+.footer-left strong{color:var(--text);}
+.footer-right a{color:var(--hint);text-decoration:none;font-size:12px;}
+.footer-right a:hover{color:var(--accent);}
+@media(max-width:640px){.field-row,.field-row-3{grid-template-columns:1fr;}h1{font-size:20px;}.input-row{grid-template-columns:1fr;}.channel-row{gap:6px;}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<nav style="margin-bottom:20px;">
+  <a href="index.html" style="font-size:13px;color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+    <span style="font-size:16px;line-height:1;">←</span> All tools
+  </a>
+</nav>
+
+<header>
+  <p class="header-tag">CPG Operations Tool</p>
+  <h1>Trade Spend &amp; Net Revenue</h1>
+  <p class="header-desc">See what lands in your pocket after every channel-specific deduction. Select your channel and the right cost structure loads automatically — retail trade spend, DTC fulfillment, Amazon fees, or foodservice margins.</p>
+  <p class="byline">Built by <strong>Sam Pellerito</strong></p>
+</header>
+
+<!-- ── Channel selector ──────────────────────── -->
+<p class="section-title">Select your channel</p>
+<div class="channel-row" id="channelRow"></div>
+<div class="channel-tip" id="channelTip"></div>
+
+<!-- ── Revenue & COGS ─────────────────────────── -->
+<p class="section-title">Revenue & cost</p>
+<div class="field-row">
+  <div class="field">
+    <label>Gross revenue ($)</label>
+    <input type="number" id="grossRevenue" value="500000" step="10000" min="0"/>
+    <span class="field-hint">Total invoiced / earned before any deductions or fees.</span>
+  </div>
+  <div class="field">
+    <label>COGS ($)</label>
+    <input type="number" id="totalCOGS" value="185000" step="5000" min="0"/>
+    <span class="field-hint">Used to calculate gross profit after all deductions.</span>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ── Deductions ────────────────────────────── -->
+<p class="section-title" id="deductionSectionTitle">Channel deductions</p>
+<p style="font-size:13px;color:var(--muted);margin-bottom:16px;" id="deductionSectionDesc">Enter each deduction as a dollar amount or toggle to % of gross. Defaults are pre-filled for your channel.</p>
+<div id="deductionsContainer"></div>
+
+<div class="divider"></div>
+
+<!-- ── Calculate ─────────────────────────────── -->
+<div style="display:flex;justify-content:center;margin-bottom:32px;">
+  <button class="calc-btn" onclick="render()">Calculate</button>
+</div>
+
+<!-- ── Results ───────────────────────────────── -->
+<p class="section-title">Net revenue summary</p>
+<div class="metric-grid">
+  <div class="metric"><p class="metric-label">Gross revenue</p><p class="metric-value" id="out-gross">—</p><p class="metric-sub">before deductions</p></div>
+  <div class="metric"><p class="metric-label">Total deductions</p><p class="metric-value bad" id="out-trade">—</p><p class="metric-sub">all channel costs</p></div>
+  <div class="metric"><p class="metric-label">Net revenue</p><p class="metric-value good" id="out-net">—</p><p class="metric-sub">after all deductions</p></div>
+  <div class="metric"><p class="metric-label">Deductions as % of gross</p><p class="metric-value warn" id="out-tradePct">—</p><p class="metric-sub">total cost to sell</p></div>
+  <div class="metric"><p class="metric-label">Gross profit</p><p class="metric-value" id="out-gp">—</p><p class="metric-sub">net revenue − COGS</p></div>
+  <div class="metric"><p class="metric-label">Gross margin</p><p class="metric-value" id="out-gm">—</p><p class="metric-sub">on net revenue</p></div>
+</div>
+
+<!-- ── Waterfall table ────────────────────────── -->
+<p class="section-title">Gross-to-net waterfall</p>
+<table class="wf-table" aria-label="Gross to net waterfall">
+  <thead>
+    <tr>
+      <th>Line item</th>
+      <th style="text-align:right">Amount ($)</th>
+      <th style="text-align:right">% of gross</th>
+      <th style="text-align:right">Running total</th>
+    </tr>
+  </thead>
+  <tbody id="wfBody"></tbody>
+</table>
+<p class="chart-note">Net revenue = gross minus all channel-specific deductions. Margin is calculated on net revenue.</p>
+
+<!-- ── Chart ─────────────────────────────────── -->
+<p class="section-title">Gross-to-net waterfall chart</p>
+<div class="legend-row">
+  <span><span class="leg" style="background:var(--accent)"></span>Gross revenue</span>
+  <span><span class="leg" style="background:var(--red)"></span>Deductions</span>
+  <span><span class="leg" style="background:var(--teal)"></span>Net revenue</span>
+</div>
+<div class="chart-wrap"><canvas id="wfChart" role="img" aria-label="Gross to net waterfall chart"></canvas></div>
+<p class="chart-note">Gross and net revenue are shown as positive bars (above zero). Each deduction is shown as a negative bar below zero — the deeper the bar, the larger the cost.</p>
+
+<footer>
+  <div class="footer-left">Built by <strong>Sam Pellerito</strong> — CPG Operations Tools</div>
+  <div class="footer-right"><a href="index.html">← All tools</a></div>
+</footer>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+<script>
+if(typeof Chart==='undefined'){
+  var _s=document.createElement('script');
+  _s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
+  document.head.appendChild(_s);
+}
+</script>
+<script>
+function val(id){ return parseFloat(document.getElementById(id).value)||0; }
+function fmt(n,d=0){ return '$'+Math.abs(n).toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}); }
+function fmtPct(n,d=1){ return n.toFixed(d)+'%'; }
+function $id(id){ return document.getElementById(id); }
+
+// ── Channel definitions ────────────────────────
+const CHANNELS = {
+  grocery: {
+    label: 'Grocery',
+    emoji: '🛒',
+    tip: 'Conventional and natural grocery (Kroger, Whole Foods, Sprouts). Expect 18–28% total deductions driven by TPR, MCBs, and slotting.',
+    deductions: [
+      { key:'tpr',     label:'TPR / Scan-back',              desc:'Promoted price discount scanned at register — most common grocery deduction.',           pct:7.0 },
+      { key:'oi',      label:'Off-Invoice Allowance',         desc:'Discount taken directly off the invoice for promotional periods.',                       pct:4.5 },
+      { key:'mcb',     label:'MCB / Bill-back',               desc:'Retailer claims for displays, features, or circulars. Often estimated, then trued-up.',  pct:3.0 },
+      { key:'slot',    label:'Slotting & New Item Fees',      desc:'One-time fees for shelf placement, resets, or line extensions.',                         pct:1.5 },
+      { key:'spoil',   label:'Spoils, Damages & Returns',     desc:'Deductions for damaged, out-of-code, or unsaleable product.',                            pct:1.0 },
+      { key:'freight', label:'Freight Allowance',             desc:'Shipping cost concession or routing guide penalty.',                                     pct:0.8 },
+      { key:'epd',     label:'Early Payment Discount',        desc:'e.g. 2/10 net 30 — discount for paying within terms.',                                  pct:0.3 },
+      { key:'other',   label:'Other / Chargebacks',           desc:'Admin fees, shortage claims, or other unlisted deductions.',                             pct:0.5 },
+    ]
+  },
+  mass: {
+    label: 'Mass / Club',
+    emoji: '🏪',
+    tip: 'Mass market and club (Walmart, Target, Costco, Sam\'s). High compliance penalties, mandatory early pay terms, and significant routing guide fees.',
+    deductions: [
+      { key:'oi',        label:'Vendor Markdown / Off-Invoice',   desc:'Everyday low-price rollbacks, promotional markdowns taken off invoice.',                  pct:9.0 },
+      { key:'mcb',       label:'MCB / Compliance Penalty',        desc:'Chargebacks for non-compliance with routing, labeling, or EDI requirements.',            pct:4.0 },
+      { key:'freight',   label:'Routing Guide / Freight Penalty', desc:'Mandatory carrier compliance — deviations result in significant chargebacks.',           pct:1.5 },
+      { key:'epd',       label:'Early Payment (mandatory)',        desc:'Often non-negotiable at mass — 2% discount for paying within 10 days.',                 pct:2.0 },
+      { key:'spoil',     label:'Spoils / Returns',                desc:'Damaged or returned product — lower rate than grocery but still common.',                pct:0.5 },
+      { key:'slot',      label:'Slotting / New Item Fees',        desc:'Line extension or reset fees — often lower than traditional grocery.',                   pct:0.5 },
+      { key:'other',     label:'Other / Admin Fees',              desc:'Label changes, shortage deductions, or miscellaneous compliance fees.',                  pct:1.0 },
+    ]
+  },
+  dtc: {
+    label: 'DTC',
+    emoji: '📦',
+    tip: 'Direct-to-consumer (Shopify, own website). No trade deductions — costs come from fulfillment, payment processing, and customer acquisition. Marketing spend is often the single largest cost for DTC brands.',
+    deductions: [
+      { key:'marketing',  label:'Marketing & Paid Acquisition',          desc:'Paid social (Meta, TikTok), Google, influencer spend. CAC-driven — the biggest lever in DTC unit economics. Growing brands often run 20–40% of revenue.',  pct:25.0 },
+      { key:'processing', label:'Payment Processing (Stripe / Shopify)', desc:'Credit card and platform processing fees. Typically 2.5–3.5% of revenue.',                                                                                   pct:2.9  },
+      { key:'shipping',   label:'Outbound Shipping & Fulfillment',       desc:'Shipping labels, packaging, and pick/pack labor per order.',                                                                                                   pct:9.0  },
+      { key:'returns',    label:'Returns & Refunds',                     desc:'Refunds, return shipping, and restocking costs. DTC returns average 2–6%.',                                                                                    pct:3.5  },
+      { key:'promos',     label:'Discount Codes & Promotions',           desc:'Welcome discounts, loyalty codes, flash sales — reduces net revenue directly.',                                                                               pct:4.0  },
+      { key:'affiliate',  label:'Affiliate / Influencer Commissions',    desc:'Referral fees, creator commissions, or ambassador discounts.',                                                                                                 pct:2.0  },
+      { key:'platform',   label:'Platform & App Fees',                   desc:'Shopify subscription, apps, and third-party app fees.',                                                                                                        pct:1.0  },
+      { key:'other',      label:'Other (chargebacks, misc)',              desc:'Fraud chargebacks, customer service costs, or unlisted fees.',                                                                                                 pct:0.5  },
+    ]
+  },
+  amazon: {
+    label: 'Amazon',
+    emoji: '🟠',
+    tip: 'Amazon (FBA or FBM). Fees stack fast — referral + FBA + advertising often total 30–50% of revenue before you see a dollar.',
+    deductions: [
+      { key:'referral',   label:'Amazon Referral Fee',           desc:'Amazon\'s commission on every sale. Grocery/Health ~8%, most CPG categories 8–15%.',      pct:10.0 },
+      { key:'fba',        label:'FBA Fulfillment Fee',           desc:'Pick, pack, and ship per unit. Varies by size/weight — typically $3–6/unit.',             pct:6.0 },
+      { key:'ads',        label:'Amazon Advertising (AMS)',      desc:'Sponsored Products, Brands, Display. Often the biggest cost to grow on Amazon.',          pct:10.0 },
+      { key:'coupons',    label:'Coupons & Promotions',          desc:'Lightning deals, Prime-exclusive discounts, vine fees, coupon face value.',               pct:2.5 },
+      { key:'returns',    label:'Returns & Refunds',             desc:'Amazon\'s liberal return policy. Category average 3–8% of revenue.',                       pct:4.0 },
+      { key:'storage',    label:'FBA Storage & Aged Inventory',  desc:'Monthly storage fees plus aged inventory surcharges for slow-moving SKUs.',               pct:1.5 },
+      { key:'other',      label:'Other (co-op, chargebacks)',    desc:'Vendor co-op, A+ content, shortage claims, or other Amazon fees.',                       pct:1.5 },
+    ]
+  },
+  drug: {
+    label: 'Drug',
+    emoji: '💊',
+    tip: 'Drug channel (CVS, Walgreens, Rite Aid). Similar structure to grocery but with higher slotting and more MCB exposure.',
+    deductions: [
+      { key:'tpr',     label:'TPR / Scan-back',          desc:'Promoted price discount scanned at register.',                                             pct:6.0 },
+      { key:'oi',      label:'Off-Invoice Allowance',     desc:'Everyday or promotional off-invoice discount.',                                           pct:4.0 },
+      { key:'mcb',     label:'MCB / Bill-back',           desc:'Circular ads, front-end display, or endcap programs.',                                   pct:2.5 },
+      { key:'slot',    label:'Slotting & New Item Fees',  desc:'Drug chains have high slotting — often $500–2,000+ per store.',                          pct:2.5 },
+      { key:'spoil',   label:'Spoils / Damages',          desc:'Returns and unsaleable product deductions.',                                             pct:1.0 },
+      { key:'freight', label:'Freight Allowance',         desc:'Shipping cost concession to distribution center.',                                       pct:0.5 },
+      { key:'epd',     label:'Early Payment Discount',    desc:'Standard 2/10 net 30 terms.',                                                            pct:0.3 },
+      { key:'other',   label:'Other / Chargebacks',       desc:'Shortage claims, admin fees, or other deductions.',                                     pct:0.5 },
+    ]
+  },
+  foodservice: {
+    label: 'Foodservice',
+    emoji: '🍽️',
+    tip: 'Foodservice (restaurants, institutions, catering). Distributor margins dominate — net revenue can be 60–75% of list price after the full chain.',
+    deductions: [
+      { key:'distrib',  label:'Distributor Margin',          desc:'Sysco, US Foods, etc. take 18–30% of your invoice as their margin.',                      pct:24.0 },
+      { key:'broker',   label:'Broker Commission',           desc:'Foodservice broker fee — typically 3–6% of net sales.',                                   pct:4.0 },
+      { key:'gpo',      label:'GPO / Contract Fees',         desc:'Group Purchasing Organization admin fees for contract pricing.',                          pct:3.0 },
+      { key:'freight',  label:'Freight / Delivery',          desc:'Inbound freight to distributor warehouse or direct-ship delivery costs.',                 pct:2.0 },
+      { key:'samples',  label:'Samples, Demos & Cuttings',   desc:'Product used for sales cuttings, operator demos, or chef trials.',                       pct:1.0 },
+      { key:'other',    label:'Other (rebates, admin)',       desc:'Distributor rebates, deviated pricing agreements, or miscellaneous fees.',               pct:0.5 },
+    ]
+  },
+};
+
+// ── State ───────────────────────────────────────
+let activeChannel = 'grocery';
+const modeMap = {}; // key → '$' or '%'
+
+// ── Build channel pills ─────────────────────────
+function buildChannelPills(){
+  const row = $id('channelRow');
+  row.innerHTML = Object.entries(CHANNELS).map(([key, ch]) =>
+    `<button class="ch-pill${key===activeChannel?' active':''}" onclick="selectChannel('${key}')">${ch.emoji} ${ch.label}</button>`
+  ).join('');
+}
+
+function selectChannel(key){
+  activeChannel = key;
+  buildChannelPills();
+  buildDeductions();
+}
+
+// ── Build deduction blocks ──────────────────────
+function buildDeductions(){
+  const ch = CHANNELS[activeChannel];
+  $id('channelTip').textContent = ch.tip;
+
+  const gross = val('grossRevenue') || 500000;
+  const container = $id('deductionsContainer');
+  container.innerHTML = '';
+
+  ch.deductions.forEach(d => {
+    modeMap[d.key] = modeMap[d.key] || '$';
+    const dollarVal = (d.pct / 100 * gross).toFixed(0);
+
+    const block = document.createElement('div');
+    block.className = 'deduction-block';
+    block.innerHTML = `
+      <div class="deduction-header">
+        <div>
+          <div class="deduction-title">${d.label}</div>
+          <div class="deduction-desc">${d.desc}</div>
+        </div>
+        <span class="deduction-badge" id="badge-${d.key}">—</span>
+      </div>
+      <div class="input-row">
+        <input type="number" id="${d.key}-val" value="${dollarVal}" step="100" min="0"/>
+        <button class="toggle-btn active" id="btn-${d.key}" onclick="toggleMode('${d.key}')">${modeMap[d.key]==='$'?'$ amount':'% of gross'}</button>
+        <div class="pct-field">
+          <label>% of gross</label>
+          <input type="number" id="${d.key}-pct" value="${d.pct}" step="0.1" min="0" max="100" ${modeMap[d.key]==='$'?'readonly style="background:var(--surface);color:var(--muted)"':''}/>
+        </div>
+      </div>`;
+    container.appendChild(block);
+
+    // Wire input events for badge update
+    block.querySelectorAll('input').forEach(el => {
+      el.addEventListener('input', () => updateBadge(d.key));
+    });
+    updateBadge(d.key);
+  });
+}
+
+function updateBadge(key){
+  const gross = val('grossRevenue') || 1;
+  const amt   = getDeduction(key);
+  const pct   = gross > 0 ? amt/gross*100 : 0;
+  const badge = $id('badge-'+key);
+  if(badge) badge.textContent = fmt(amt)+' ('+fmtPct(pct)+')';
+}
+
+function toggleMode(key){
+  const gross = val('grossRevenue') || 1;
+  if(modeMap[key]==='$'){
+    modeMap[key]='%';
+    const d = val(key+'-val');
+    $id(key+'-pct').value = (d/gross*100).toFixed(1);
+    $id(key+'-val').readOnly = true;
+    $id(key+'-val').style.background='var(--surface)';
+    $id(key+'-val').style.color='var(--muted)';
+    $id(key+'-pct').removeAttribute('readonly');
+    $id(key+'-pct').style.background='';
+    $id(key+'-pct').style.color='';
+    $id('btn-'+key).textContent='% of gross';
+  } else {
+    modeMap[key]='$';
+    const p = val(key+'-pct');
+    $id(key+'-val').value = (p/100*gross).toFixed(0);
+    $id(key+'-val').removeAttribute('readonly');
+    $id(key+'-val').style.background='';
+    $id(key+'-val').style.color='';
+    $id(key+'-pct').readOnly = true;
+    $id(key+'-pct').style.background='var(--surface)';
+    $id(key+'-pct').style.color='var(--muted)';
+    $id('btn-'+key).textContent='$ amount';
+  }
+  updateBadge(key);
+}
+
+function getDeduction(key){
+  const gross = val('grossRevenue') || 1;
+  if(modeMap[key]==='$'){
+    const d = val(key+'-val');
+    const pctEl = $id(key+'-pct');
+    if(pctEl) pctEl.value = (d/gross*100).toFixed(1);
+    return d;
+  } else {
+    const p = val(key+'-pct');
+    const d = p/100*gross;
+    const valEl = $id(key+'-val');
+    if(valEl) valEl.value = d.toFixed(0);
+    return d;
+  }
+}
+
+// ── Chart ───────────────────────────────────────
+let wfChart = null;
+
+// ── Render results ──────────────────────────────
+function render(){
+  const gross = val('grossRevenue');
+  const cogs  = val('totalCOGS');
+  const ch    = CHANNELS[activeChannel];
+
+  const deductions = ch.deductions.map(d => ({
+    label: d.label,
+    amount: getDeduction(d.key),
+  })).filter(d => d.amount > 0);
+
+  // Update all badges
+  ch.deductions.forEach(d => updateBadge(d.key));
+
+  const totalTrade  = deductions.reduce((s,d) => s+d.amount, 0);
+  const netRevenue  = gross - totalTrade;
+  const tradePct    = gross > 0 ? totalTrade/gross*100 : 0;
+  const grossProfit = netRevenue - cogs;
+  const grossMargin = netRevenue > 0 ? grossProfit/netRevenue*100 : 0;
+
+  $id('out-gross').textContent    = fmt(gross);
+  $id('out-trade').textContent    = fmt(totalTrade);
+  $id('out-net').textContent      = fmt(netRevenue);
+  $id('out-tradePct').textContent = fmtPct(tradePct);
+
+  const gpEl = $id('out-gp');
+  gpEl.textContent = fmt(grossProfit);
+  gpEl.className = 'metric-value' + (grossProfit<0?' bad':' good');
+
+  const gmEl = $id('out-gm');
+  gmEl.textContent = fmtPct(grossMargin);
+  gmEl.className = 'metric-value' + (grossMargin<0?' bad':grossMargin<20?' warn':' good');
+
+  // Waterfall table
+  let running = gross;
+  let rows = `<tr class="subtotal">
+    <td>Gross revenue</td>
+    <td style="text-align:right;color:var(--teal)">${fmt(gross)}</td>
+    <td style="text-align:right">100.0%</td>
+    <td style="text-align:right;color:var(--teal)">${fmt(running)}</td>
+  </tr>`;
+
+  deductions.forEach(d => {
+    running -= d.amount;
+    const pct = gross>0 ? d.amount/gross*100 : 0;
+    rows += `<tr>
+      <td style="padding-left:20px">${d.label}</td>
+      <td style="text-align:right;color:var(--red)">(${fmt(d.amount)})</td>
+      <td style="text-align:right;color:var(--red)">(${fmtPct(pct)})</td>
+      <td style="text-align:right">${fmt(running)}</td>
+    </tr>`;
+  });
+
+  rows += `<tr class="total">
+    <td>Net revenue</td>
+    <td style="text-align:right;color:var(--teal)">${fmt(netRevenue)}</td>
+    <td style="text-align:right;color:var(--teal)">${fmtPct(100-tradePct)}</td>
+    <td style="text-align:right;color:var(--teal)">${fmt(netRevenue)}</td>
+  </tr>`;
+
+  if(cogs > 0){
+    rows += `<tr>
+      <td style="padding-left:20px">COGS</td>
+      <td style="text-align:right;color:var(--red)">(${fmt(cogs)})</td>
+      <td style="text-align:right;color:var(--red)">(${fmtPct(netRevenue>0?cogs/netRevenue*100:0)}% of net)</td>
+      <td style="text-align:right">${fmt(netRevenue-cogs)}</td>
+    </tr>
+    <tr class="total">
+      <td>Gross profit</td>
+      <td style="text-align:right;color:${grossProfit>=0?'var(--teal)':'var(--red)'}">${grossProfit>=0?fmt(grossProfit):'('+fmt(Math.abs(grossProfit))+')' }</td>
+      <td style="text-align:right;color:${grossMargin>=0?'var(--teal)':'var(--red)'}">${fmtPct(grossMargin)}</td>
+      <td></td>
+    </tr>`;
+  }
+
+  $id('wfBody').innerHTML = rows;
+
+  // Chart
+  if(typeof Chart==='undefined') return;
+
+  // Round all amounts to whole dollars
+  const dedAmts = deductions.map(d => Math.round(d.amount));
+  const grossR  = Math.round(gross);
+  const netR    = dedAmts.reduce((s,v) => s - v, grossR);
+  const maxDed  = dedAmts.length ? Math.max(...dedAmts) : 0;
+
+  // Labels: truncate long strings, no arrays
+  const labels = [
+    'Gross revenue',
+    ...deductions.map(d => d.label.length > 22 ? d.label.slice(0,20).trimEnd()+'…' : d.label),
+    'Net revenue',
+  ];
+
+  // Data: gross and net are positive bars (0 → value);
+  // each deduction is a NEGATIVE bar (0 → −amount) so the chart has a clear negative side
+  const chartData   = [grossR, ...dedAmts.map(a => -a), netR];
+  const chartColors = [
+    'rgba(24,95,165,0.75)',
+    ...dedAmts.map(() => 'rgba(226,75,74,0.72)'),
+    'rgba(29,158,117,0.75)',
+  ];
+
+  const yMax = grossR * 1.08;
+  const yMin = -(maxDed * 1.6);
+
+  if(wfChart) wfChart.destroy();
+  wfChart = new Chart($id('wfChart'), {
+    type: 'bar',
+    data:{
+      labels,
+      datasets:[{
+        data: chartData,
+        backgroundColor: chartColors,
+        borderRadius: 3,
+        borderSkipped: 'start',
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      animation:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          callbacks:{
+            label: ctx => {
+              const i = ctx.dataIndex;
+              if(i === 0) return fmt(grossR)+' gross revenue';
+              if(i === chartData.length-1) return fmt(netR)+' net revenue';
+              const amt = dedAmts[i-1];
+              const pct = grossR > 0 ? amt/grossR*100 : 0;
+              return '−'+fmt(amt)+' ('+fmtPct(pct)+' of gross)';
+            }
+          }
+        }
+      },
+      scales:{
+        x:{ticks:{color:'#9ca3af',font:{size:10},maxRotation:40},grid:{display:false}},
+        y:{
+          min: yMin,
+          max: yMax,
+          grid:{color:'rgba(0,0,0,0.05)'},
+          ticks:{
+            color:'#9ca3af',
+            font:{size:11},
+            callback: v => {
+              const abs = Math.abs(v);
+              const str = abs >= 1000 ? '$'+(abs/1000).toFixed(0)+'K' : '$'+abs;
+              return v < 0 ? '−'+str : str;
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+// ── Init ────────────────────────────────────────
+buildChannelPills();
+buildDeductions();
+
+// Update badges when gross revenue changes
+$id('grossRevenue').addEventListener('input', () => {
+  const ch = CHANNELS[activeChannel];
+  ch.deductions.forEach(d => updateBadge(d.key));
+});
+</script>
+</body>
+</html>
