@@ -67,16 +67,21 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 @media(max-width:640px){.field-row{grid-template-columns:1fr;}.growth-banner{grid-template-columns:1fr;}h1{font-size:20px;}.proc-table{font-size:11px;}.proc-table th,.proc-table td{padding:6px 7px;}}
 
 /* ── Export bar ─────────────────── */
-.export-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:20px;padding-top:16px;border-top:0.5px solid var(--border);}
-.save-confirm{font-size:12px;color:var(--teal,#1D9E75);display:none;font-weight:500;margin-right:auto;}
-.ebtn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:9px;padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .15s;white-space:nowrap;}
+.export-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-top:28px;}
+.export-bar-left{flex:1;min-width:160px;}
+.export-bar-left strong{font-size:13px;font-weight:600;color:var(--text);display:block;margin-bottom:3px;}
+.export-bar-hint{font-size:12px;color:var(--muted);}
+.save-confirm{font-size:12px;color:var(--teal,#1D9E75);display:none;font-weight:500;}
+.ebtn{display:inline-flex;align-items:center;gap:7px;border:none;border-radius:9px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .15s;white-space:nowrap;}
 .ebtn:hover{opacity:.85;}
 .ebtn-hub{background:#185FA5;color:#fff;}
-.ebtn-csv{background:#f1f3f6;color:#374151;border:1px solid rgba(15,23,36,0.1);}
+.ebtn-csv{background:var(--surface);color:var(--text);border:1px solid var(--border);}
 .ebtn-xlsx{background:#1D6F42;color:#fff;}
 .ebtn-pdf{background:#c0392b;color:#fff;}
+.ebtn-reset{background:var(--surface);color:var(--muted);border:1px solid var(--border);}
 @media print{@page{size:letter;margin:1.4cm 1.6cm;}body{background:#fff;font-size:12px;}.no-print{display:none!important;}.print-only{display:block!important;}}
 .print-only{display:none;}
+@media(max-width:640px){.export-bar{flex-direction:column;align-items:flex-start;}}
 </style>
 <style id="pdf-styles">
 .pdf-cover{padding:32px 0 20px;border-bottom:2px solid #0c1f3a;margin-bottom:20px;}
@@ -213,11 +218,30 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 <p class="chart-note">PO payments go out at days 1, 30, and 60. Inventory arrives after lead time. Sales receipts come in after your payment terms. The gap between them is your cash-to-cash cycle.</p>
 
 <div class="export-bar no-print">
-  <span class="save-confirm" id="saveConfirm">&#10003; Saved to Export Hub</span>
-  <button class="ebtn ebtn-hub" onclick="saveForExport()">Save to Hub</button>
-  <button class="ebtn ebtn-csv" onclick="exportCSV()">CSV</button>
-  <button class="ebtn ebtn-xlsx" onclick="exportExcel()">Excel</button>
-  <button class="ebtn ebtn-pdf" onclick="exportPDF()">PDF</button>
+  <div class="export-bar-left">
+    <strong>Export results</strong>
+    <span class="save-confirm" id="saveConfirm">&#10003; Saved to Export Hub</span><span class="export-bar-hint" id="exportHint">Save to Hub or download as CSV, Excel, or PDF</span>
+  </div>
+  <button class="ebtn ebtn-hub" onclick="saveForExport()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    Save to Hub
+  </button>
+  <button class="ebtn ebtn-csv" onclick="exportCSV()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    CSV
+  </button>
+  <button class="ebtn ebtn-xlsx" onclick="exportExcel()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+    Excel
+  </button>
+  <button class="ebtn ebtn-pdf" onclick="exportPDF()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    PDF
+  </button>
+  <button class="ebtn ebtn-reset" onclick="resetForm()" title="Reset all inputs to defaults">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.85"/></svg>
+    Reset
+  </button>
 </div>
 <div id="pdfReport" class="print-only"></div>
 <footer>
@@ -418,6 +442,14 @@ function calc(){
   });
 }
 document.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',calc));
+function resetForm(){
+  document.querySelectorAll('input,select').forEach(el=>{
+    const def=el.getAttribute('value');
+    if(el.tagName==='SELECT'){ el.selectedIndex=0; }
+    else if(def!==null){ el.value=def; }
+  });
+  calc();
+}
 if(document.readyState === 'complete'){ calc(); } else { window.addEventListener('load', calc); }
 
 const getVal = id => { const el=document.getElementById(id); return el ? (el.value||'--') : '--'; };
@@ -434,7 +466,7 @@ function saveForExport(){
   const data = { toolId:'demand-planning', toolLabel:'Demand Planning & Safety Stock', savedAt: new Date().toISOString(), metrics };
   localStorage.setItem('cpg_export_demand-planning', JSON.stringify(data));
   const c = document.getElementById('saveConfirm');
-  if(c){ c.style.display='inline'; setTimeout(()=>c.style.display='none', 3000); }
+  const h=document.getElementById('exportHint'); if(c){ c.style.display='inline'; if(h) h.style.display='none'; setTimeout(()=>{ c.style.display='none'; if(h) h.style.display='inline'; }, 3000); }
 }
 
 function exportCSV(){

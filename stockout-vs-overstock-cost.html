@@ -70,6 +70,36 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 .footer-right a{color:var(--hint);text-decoration:none;font-size:12px;}
 .footer-right a:hover{color:var(--accent);}
 @media(max-width:640px){.two-col{grid-template-columns:1fr;}h1{font-size:20px;}.ss-row{grid-template-columns:1fr;}}
+
+/* ── Export bar ─────────────────── */
+.export-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-top:28px;}
+.export-bar-left{flex:1;min-width:160px;}
+.export-bar-left strong{font-size:13px;font-weight:600;color:var(--text);display:block;margin-bottom:3px;}
+.export-bar-hint{font-size:12px;color:var(--muted);}
+.save-confirm{font-size:12px;color:var(--teal,#1D9E75);display:none;font-weight:500;}
+.ebtn{display:inline-flex;align-items:center;gap:7px;border:none;border-radius:9px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .15s;white-space:nowrap;}
+.ebtn:hover{opacity:.85;}
+.ebtn-hub{background:#185FA5;color:#fff;}
+.ebtn-csv{background:var(--surface);color:var(--text);border:1px solid var(--border);}
+.ebtn-xlsx{background:#1D6F42;color:#fff;}
+.ebtn-pdf{background:#c0392b;color:#fff;}
+.ebtn-reset{background:var(--surface);color:var(--muted);border:1px solid var(--border);}
+@media print{@page{size:letter;margin:1.4cm 1.6cm;}body{background:#fff;font-size:12px;}.no-print{display:none!important;}.print-only{display:block!important;}}
+.print-only{display:none;}
+@media(max-width:640px){.export-bar{flex-direction:column;align-items:flex-start;}}
+
+</style>
+<style id="pdf-styles">
+.pdf-cover{padding:32px 0 20px;border-bottom:2px solid #0c1f3a;margin-bottom:20px;}
+.pdf-brand{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#185FA5;margin-bottom:6px;}
+.pdf-title{font-size:24px;font-weight:700;color:#0f1724;margin-bottom:4px;}
+.pdf-meta{font-size:11px;color:#6b7280;margin-top:4px;}
+.pdf-section{margin-top:18px;margin-bottom:6px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9ca3af;border-bottom:0.5px solid #e5e7eb;padding-bottom:4px;}
+.pdf-tbl{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px;}
+.pdf-tbl th{font-size:10px;font-weight:600;color:#9ca3af;text-transform:uppercase;padding:6px 10px;border-bottom:1px solid #e5e7eb;text-align:left;background:#f8fafb;}
+.pdf-tbl td{padding:7px 10px;border-bottom:0.5px solid #f1f3f6;color:#374151;}
+.pdf-tbl tr:last-child td{border-bottom:none;}
+.pdf-footer{margin-top:32px;padding-top:12px;border-top:0.5px solid #e5e7eb;display:flex;justify-content:space-between;font-size:10px;color:#9ca3af;}
 </style>
 </head>
 <body>
@@ -248,13 +278,33 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 <div class="chart-wrap"><canvas id="ssChart" role="img" aria-label="Safety stock cost curve chart"></canvas></div>
 <p class="chart-note">Stockout cost falls as safety stock rises. Overstock cost rises. Total cost is U-shaped — the bottom is your optimal safety stock level.</p>
 
-<div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:20px;padding-top:16px;border-top:0.5px solid var(--border);">
-  <span id="saveConfirm" style="font-size:12px;color:#1D9E75;display:none;font-weight:500;">✓ Saved for export</span>
-  <button onclick="saveForExport()" style="display:inline-flex;align-items:center;gap:7px;background:#185FA5;color:#fff;border:none;border-radius:9px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-    Save for Export
+<div class="export-bar no-print">
+  <div class="export-bar-left">
+    <strong>Export results</strong>
+    <span class="save-confirm" id="saveConfirm">&#10003; Saved to Export Hub</span><span class="export-bar-hint" id="exportHint">Save to Hub or download as CSV, Excel, or PDF</span>
+  </div>
+  <button class="ebtn ebtn-hub" onclick="saveForExport()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    Save to Hub
+  </button>
+  <button class="ebtn ebtn-csv" onclick="exportCSV()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    CSV
+  </button>
+  <button class="ebtn ebtn-xlsx" onclick="exportExcel()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+    Excel
+  </button>
+  <button class="ebtn ebtn-pdf" onclick="exportPDF()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    PDF
+  </button>
+  <button class="ebtn ebtn-reset" onclick="resetForm()" title="Reset all inputs to defaults">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.85"/></svg>
+    Reset
   </button>
 </div>
+<div id="pdfReport" class="print-only"></div>
 <footer>
   <div class="footer-left">Built by <strong>Sam Pellerito</strong> — CPG Operations Tools</div>
   <div class="footer-right"><a href="index.html">← All tools</a></div>
@@ -262,6 +312,7 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 if(typeof Chart==='undefined'){
   var _s=document.createElement('script');
@@ -473,20 +524,118 @@ function render(){
 
 updateSliderLabel();
 
+const getVal = id => { const el=document.getElementById(id); return el ? (el.value||'\u2014') : '\u2014'; };
+const getTxt = id => { const el=document.getElementById(id); return el ? el.textContent.trim()||'\u2014' : '\u2014'; };
+
 function saveForExport(){
-  const ids = [
-    { name:'Annual stockout cost',  id:'out-stockoutCost',  sentiment:'bad' },
-    { name:'Annual overstock cost', id:'out-overstockCost', sentiment:'warn' },
-    { name:'Total inventory cost',  id:'out-totalCost',     sentiment:'' },
-    { name:'Optimal safety stock',  id:'out-optSS',         sentiment:'good' },
-    { name:'Safety stock units',    id:'out-ssUnits',       sentiment:'' },
-    { name:'Units at risk / yr',    id:'out-unitsRisk',     sentiment:'bad' },
+  const metrics = [
+    {name:'Annual stockout cost', formatted: getTxt('out-stockoutCost'), sentiment:'bad'},
+    {name:'Annual overstock cost', formatted: getTxt('out-overstockCost'), sentiment:'warn'},
+    {name:'Total annual inventory cost', formatted: getTxt('out-totalCost'), sentiment:''},
+    {name:'Optimal safety stock (days)', formatted: getTxt('out-optSS'), sentiment:'good'},
+    {name:'Safety stock units at slider', formatted: getTxt('out-ssUnits'), sentiment:''},
+    {name:'Units at risk per year', formatted: getTxt('out-unitsRisk'), sentiment:'bad'}
   ];
-  const metrics = ids.map(m => ({ name: m.name, formatted: (document.getElementById(m.id)||{}).textContent||'—', sentiment: m.sentiment }));
   const data = { toolId:'stockout-overstock', toolLabel:'Stockout vs Overstock Cost', savedAt: new Date().toISOString(), metrics };
   localStorage.setItem('cpg_export_stockout-overstock', JSON.stringify(data));
   const c = document.getElementById('saveConfirm');
-  if(c){ c.style.display='block'; setTimeout(()=>c.style.display='none',3000); }
+  const h=document.getElementById('exportHint'); if(c){ c.style.display='inline'; if(h) h.style.display='none'; setTimeout(()=>{ c.style.display='none'; if(h) h.style.display='inline'; }, 3000); }
+}
+
+function exportCSV(){
+  const q = s => '"'+String(s||'').replace(/"/g,'""')+'"';
+  const now = new Date().toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  const rows = [];
+  rows.push([q('Stockout vs Overstock Cost — CPG Operations Tool'), q('Exported: '+now)]);
+  rows.push([]);
+  rows.push([q('── INPUTS ──')]);
+  rows.push([q('Monthly demand (units)'), q(getVal('monthlyDemand'))]);
+  rows.push([q('Demand variability CV (%)'), q(getVal('demandCV'))]);
+  rows.push([q('Selling price / unit ($)'), q(getVal('sellPrice'))]);
+  rows.push([q('Unit cost ($)'), q(getVal('unitCost'))]);
+  rows.push([q('Stockout duration (days)'), q(getVal('outDuration'))]);
+  rows.push([q('Lost sales rate (%)'), q(getVal('outLostPct'))]);
+  rows.push([q('Stockout events per year'), q(getVal('outEventsPerYear'))]);
+  rows.push([q('Carrying cost rate (%)'), q(getVal('overCarryRate'))]);
+  rows.push([q('Shelf life (months)'), q(getVal('overShelfLife'))]);
+  rows.push([q('Obsolescence rate (%)'), q(getVal('overObsPct'))]);
+  rows.push([]);
+  rows.push([q('── RESULTS ──')]);
+  rows.push([q('Metric'), q('Value')]);
+  rows.push([q('Annual stockout cost'), q(getTxt('out-stockoutCost'))]);
+  rows.push([q('Annual overstock cost'), q(getTxt('out-overstockCost'))]);
+  rows.push([q('Total annual inventory cost'), q(getTxt('out-totalCost'))]);
+  rows.push([q('Optimal safety stock (days)'), q(getTxt('out-optSS'))]);
+  rows.push([q('Safety stock units at slider'), q(getTxt('out-ssUnits'))]);
+  rows.push([q('Units at risk per year'), q(getTxt('out-unitsRisk'))]);
+  const csv = rows.map(r=>r.join(',')).join('\r\n');
+  const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='stockout-overstock-'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
+}
+
+function exportExcel(){
+  if(typeof XLSX==='undefined'){alert('Excel library loading — try again in a moment.');return;}
+  const now = new Date().toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  const wb = XLSX.utils.book_new();
+  const rows = [
+    ['Stockout vs Overstock Cost', '', 'Exported: '+now],
+    [],
+    ['── INPUTS ──'],
+    ['Monthly demand (units)', getVal('monthlyDemand')],
+    ['Demand variability CV (%)', getVal('demandCV')],
+    ['Selling price / unit ($)', getVal('sellPrice')],
+    ['Unit cost ($)', getVal('unitCost')],
+    ['Stockout duration (days)', getVal('outDuration')],
+    ['Lost sales rate (%)', getVal('outLostPct')],
+    ['Stockout events per year', getVal('outEventsPerYear')],
+    ['Carrying cost rate (%)', getVal('overCarryRate')],
+    ['Shelf life (months)', getVal('overShelfLife')],
+    ['Obsolescence rate (%)', getVal('overObsPct')],
+    [],
+    ['── RESULTS ──'],
+    ['Metric','Value'],
+    ['Annual stockout cost', getTxt('out-stockoutCost')],
+    ['Annual overstock cost', getTxt('out-overstockCost')],
+    ['Total annual inventory cost', getTxt('out-totalCost')],
+    ['Optimal safety stock (days)', getTxt('out-optSS')],
+    ['Safety stock units at slider', getTxt('out-ssUnits')],
+    ['Units at risk per year', getTxt('out-unitsRisk')],
+  ];
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = [{wch:36},{wch:22}];
+  XLSX.utils.book_append_sheet(wb, ws, 'Results');
+  XLSX.writeFile(wb, 'stockout-overstock-'+new Date().toISOString().slice(0,10)+'.xlsx');
+}
+
+function exportPDF(){
+  const now = new Date().toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const inp = [['Monthly demand (units)', getVal('monthlyDemand')], ['Demand variability CV (%)', getVal('demandCV')], ['Selling price / unit ($)', getVal('sellPrice')], ['Unit cost ($)', getVal('unitCost')], ['Stockout duration (days)', getVal('outDuration')], ['Lost sales rate (%)', getVal('outLostPct')], ['Stockout events per year', getVal('outEventsPerYear')], ['Carrying cost rate (%)', getVal('overCarryRate')], ['Shelf life (months)', getVal('overShelfLife')], ['Obsolescence rate (%)', getVal('overObsPct')]];
+  const met = [['Annual stockout cost', getTxt('out-stockoutCost')], ['Annual overstock cost', getTxt('out-overstockCost')], ['Total annual inventory cost', getTxt('out-totalCost')], ['Optimal safety stock (days)', getTxt('out-optSS')], ['Safety stock units at slider', getTxt('out-ssUnits')], ['Units at risk per year', getTxt('out-unitsRisk')]];
+  const inputRows = inp.map(r=>`<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td></tr>`).join('');
+  const metRows   = met.map(r=>`<tr><td>${esc(r[0])}</td><td style="font-weight:600">${esc(r[1])}</td></tr>`).join('');
+  document.getElementById('pdfReport').innerHTML = `
+    <div class="pdf-cover">
+      <p class="pdf-brand">CPG Operations Tool</p>
+      <h2 class="pdf-title">Stockout vs Overstock Cost</h2>
+      <p class="pdf-meta">Annual cost of running out vs carrying too much &middot; ${now}</p>
+    </div>
+    <p class="pdf-section">Inputs</p>
+    <table class="pdf-tbl"><thead><tr><th>Parameter</th><th>Value</th></tr></thead><tbody>${inputRows}</tbody></table>
+    <p class="pdf-section" style="margin-top:18px">Results</p>
+    <table class="pdf-tbl"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody>${metRows}</tbody></table>
+    <div class="pdf-footer"><span>Stockout vs Overstock Cost — CPG Operations Tools — Sam Pellerito</span><span>Exported ${now}</span></div>`;
+  setTimeout(()=>window.print(),120);
+}
+function resetForm(){
+  document.querySelectorAll('input,select').forEach(el=>{
+    const def=el.getAttribute('value');
+    if(el.tagName==='SELECT'){ el.selectedIndex=0; }
+    else if(def!==null){ el.value=def; }
+  });
+  if(typeof calc==='function') calc();
+  if(typeof render==='function') render();
 }
 </script>
 </body>

@@ -71,16 +71,18 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 .footer-right a{color:var(--hint);text-decoration:none;font-size:12px;}
 .footer-right a:hover{color:var(--accent);}
 /* Export bar */
-.export-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:28px;padding:18px 20px;background:var(--card);border:1px solid var(--border);border-radius:12px;}
-.export-bar-label{font-size:12px;color:var(--muted);font-weight:500;margin-right:4px;flex:1;min-width:120px;}
-.export-bar-label strong{color:var(--text);display:block;font-size:13px;margin-bottom:2px;}
-.btn-export{display:inline-flex;align-items:center;gap:7px;border:none;border-radius:9px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .15s;}
+.export-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-top:28px;}
+.export-bar-left{flex:1;min-width:160px;}
+.export-bar-left strong{font-size:13px;font-weight:600;color:var(--text);display:block;margin-bottom:3px;}
+.export-bar-hint{font-size:12px;color:var(--muted);}
+.save-confirm{font-size:12px;color:var(--teal,#1D9E75);display:none;font-weight:500;}
+.btn-export{display:inline-flex;align-items:center;gap:7px;border:none;border-radius:9px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .15s;}
 .btn-export:hover{opacity:.82;}
 .btn-hub{background:#185FA5;color:#fff;}
 .btn-csv{background:var(--surface);color:var(--text);border:1px solid var(--border);}
 .btn-xlsx{background:#1D6F42;color:#fff;}
-.btn-pdf{background:var(--accent);color:#fff;}
-.save-confirm{font-size:12px;color:var(--teal,#1D9E75);display:none;font-weight:500;margin-right:auto;}
+.btn-pdf{background:#c0392b;color:#fff;}
+.btn-reset{background:var(--surface);color:var(--muted);border:1px solid var(--border);}
 /* Print / PDF */
 @media print{
   @page{size:letter;margin:1.4cm 1.6cm;}
@@ -199,12 +201,14 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 
 <!-- Export bar (screen only) -->
 <div class="export-bar no-print">
-  <div class="export-bar-label">
+  <div class="export-bar-left">
     <strong>Export results</strong>
-    Includes inputs, deduction rates, formula, and summary
+    <span class="save-confirm" id="saveConfirm">&#10003; Saved to Export Hub</span><span class="export-bar-hint" id="exportHint">Save to Hub or download as CSV, Excel, or PDF</span>
   </div>
-  <span class="save-confirm" id="saveConfirm">&#10003; Saved to Export Hub</span>
-  <button class="btn-export btn-hub" onclick="saveForExport()">Save to Hub</button>
+  <button class="btn-export btn-hub" onclick="saveForExport()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    Save to Hub
+  </button>
   <button class="btn-export btn-csv" onclick="exportCSV()">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
     CSV
@@ -216,6 +220,10 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
   <button class="btn-export btn-pdf" onclick="exportPDF()">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
     PDF
+  </button>
+  <button class="btn-export btn-reset" onclick="resetForm()" title="Reset all inputs to defaults">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.85"/></svg>
+    Reset
   </button>
 </div>
 
@@ -574,6 +582,25 @@ function render(){
 buildToggles();
 buildEditors();
 
+function resetForm(){
+  // Reset global inputs
+  const globalInputs = ['grossRevenue','totalCOGS'];
+  globalInputs.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){ const def=el.getAttribute('value'); if(def!==null) el.value=def; }
+  });
+  // Reset all channel deduction inputs and revenue inputs
+  document.querySelectorAll('.ded-input,.rev-input').forEach(el=>{
+    const def=el.getAttribute('value'); if(def!==null) el.value=def;
+  });
+  // Reset channel toggles to defaults
+  activeChannels.clear();
+  ['grocery','mass','dtc','amazon'].forEach(ck=>activeChannels.add(ck));
+  buildToggles();
+  updateEditorVisibility();
+  render();
+}
+
 /* ── Save to Export Hub ──────────────────────────────────────────── */
 function saveForExport(){
   if(activeChannels.size === 0){ alert('Run a calculation first.'); return; }
@@ -586,7 +613,7 @@ function saveForExport(){
   const data = { toolId:'channel-margin', toolLabel:'Channel Margin Waterfall', savedAt: new Date().toISOString(), metrics };
   localStorage.setItem('cpg_export_channel-margin', JSON.stringify(data));
   const c = document.getElementById('saveConfirm');
-  if(c){ c.style.display='inline'; setTimeout(()=>c.style.display='none', 3000); }
+  const h=document.getElementById('exportHint'); if(c){ c.style.display='inline'; if(h) h.style.display='none'; setTimeout(()=>{ c.style.display='none'; if(h) h.style.display='inline'; }, 3000); }
 }
 
 /* ── Shared: gather all export data ─────────────────────────────── */
