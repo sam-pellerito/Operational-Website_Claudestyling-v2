@@ -34,6 +34,11 @@ h1{font-size:24px;font-weight:600;color:var(--text);margin-bottom:6px;}
 .ch-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
 .ch-card-title{font-size:14px;font-weight:600;color:var(--text);}
 .ch-card-net{font-size:13px;font-weight:700;color:var(--teal);}
+.rev-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px;padding:9px 11px;background:rgba(24,95,165,0.05);border-radius:8px;border:1px solid rgba(24,95,165,0.12);}
+.rev-label{font-size:11px;color:var(--accent);font-weight:600;}
+.rev-input{width:120px;padding:5px 9px;border:1.5px solid rgba(24,95,165,0.25);border-radius:6px;font-size:13px;font-weight:600;color:var(--text);background:var(--card);text-align:right;outline:none;}
+.rev-input:focus{border-color:var(--accent);}
+.rev-cogs-note{font-size:10px;color:var(--hint);margin-top:4px;margin-bottom:8px;}
 .ded-row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;}
 .ded-label{font-size:12px;color:var(--muted);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .ded-input{width:72px;padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;color:var(--text);background:var(--card);text-align:right;}
@@ -65,7 +70,52 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 .footer-left strong{color:var(--text);}
 .footer-right a{color:var(--hint);text-decoration:none;font-size:12px;}
 .footer-right a:hover{color:var(--accent);}
-@media(max-width:640px){.field-row{grid-template-columns:1fr;}h1{font-size:20px;}.ch-editors{grid-template-columns:1fr;}.detail-grid{grid-template-columns:1fr;}}
+/* Export bar */
+.export-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:28px;padding:18px 20px;background:var(--card);border:1px solid var(--border);border-radius:12px;}
+.export-bar-label{font-size:12px;color:var(--muted);font-weight:500;margin-right:4px;flex:1;min-width:120px;}
+.export-bar-label strong{color:var(--text);display:block;font-size:13px;margin-bottom:2px;}
+.btn-export{display:inline-flex;align-items:center;gap:7px;border:none;border-radius:9px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .15s;}
+.btn-export:hover{opacity:.82;}
+.btn-csv{background:var(--surface);color:var(--text);border:1px solid var(--border);}
+.btn-xlsx{background:#1D6F42;color:#fff;}
+.btn-pdf{background:var(--accent);color:#fff;}
+/* Print / PDF */
+@media print{
+  @page{size:letter;margin:1.4cm 1.6cm;}
+  body{background:#fff;font-size:11.5px;}
+  .page{padding:0;max-width:100%;}
+  .no-print{display:none!important;}
+  .print-only{display:block!important;}
+  .pdf-section{page-break-inside:avoid;}
+  .print-page-break{page-break-before:always;}
+}
+.print-only{display:none;}
+/* PDF report styles */
+.pdf-cover{padding:32px 0 20px;}
+.pdf-brand{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+.pdf-title{font-size:26px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.pdf-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.pdf-meta-row{display:flex;gap:28px;flex-wrap:wrap;margin-bottom:16px;}
+.pdf-meta-item label{font-size:9.5px;font-weight:700;color:var(--hint);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:2px;}
+.pdf-meta-item span{font-size:13px;font-weight:600;color:var(--text);}
+.pdf-claude-badge{display:inline-flex;align-items:center;gap:7px;background:#fdf4f0;border:1px solid rgba(217,119,87,0.3);border-radius:7px;padding:6px 12px;}
+.pdf-claude-text{font-size:11px;color:#D97757;font-weight:700;}
+.pdf-section-hd{font-size:10px;font-weight:700;color:var(--hint);text-transform:uppercase;letter-spacing:.08em;margin:22px 0 10px;padding-bottom:6px;border-bottom:0.5px solid var(--border);}
+.pdf-tbl{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:6px;}
+.pdf-tbl th{font-size:9.5px;font-weight:700;color:var(--hint);text-transform:uppercase;letter-spacing:.04em;padding:6px 10px;border-bottom:0.5px solid var(--border);background:var(--surface);text-align:right;}
+.pdf-tbl th:first-child{text-align:left;}
+.pdf-tbl td{padding:7px 10px;border-bottom:0.5px solid var(--border);text-align:right;color:var(--muted);}
+.pdf-tbl td:first-child{text-align:left;color:var(--text);}
+.pdf-tbl tr.pdf-subtotal td,.pdf-tbl tr.pdf-total td{font-weight:700;color:var(--text);}
+.pdf-tbl tr.pdf-total td{color:var(--teal);}
+.pdf-tbl tr.pdf-best td{background:rgba(29,158,117,0.06);}
+.pdf-ded-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:6px;}
+.pdf-ded-card{border:1px solid var(--border);border-radius:8px;padding:10px 12px;}
+.pdf-ded-card h4{font-size:11px;font-weight:700;color:var(--text);margin-bottom:7px;}
+.pdf-ded-row{display:flex;justify-content:space-between;font-size:10.5px;padding:3px 0;border-bottom:0.5px solid var(--border);color:var(--muted);}
+.pdf-ded-row:last-child{border-bottom:none;font-weight:700;color:var(--text);}
+.pdf-footer{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:10px;border-top:0.5px solid var(--border);font-size:9.5px;color:var(--hint);}
+@media(max-width:640px){.field-row{grid-template-columns:1fr;}h1{font-size:20px;}.ch-editors{grid-template-columns:1fr;}.detail-grid{grid-template-columns:1fr;}.export-bar{flex-direction:column;align-items:flex-start;}.pdf-ded-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
@@ -80,21 +130,21 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 <header>
   <p class="header-tag">CPG Operations Tool</p>
   <h1>Channel Margin Waterfall</h1>
-  <p class="header-desc">Compare gross-to-net margin across every channel side by side. Same product, same gross revenue — see exactly where margin erodes in retail, DTC, Amazon, and foodservice. Adjust deduction rates to match your actual trade terms.</p>
+  <p class="header-desc">Enter your actual revenue per channel and deduction rates — see exactly where margin erodes in retail, DTC, Amazon, and foodservice side by side. COGS scales proportionally from the rate you enter below.</p>
   <p class="byline">Built by <strong>Sam Pellerito</strong></p>
 </header>
 
-<p class="section-title">Revenue & cost</p>
+<p class="section-title">Reference totals — sets your COGS rate</p>
 <div class="field-row">
   <div class="field">
-    <label>Gross revenue ($)</label>
-    <input type="number" id="grossRevenue" value="500000" step="10000" min="0"/>
-    <span class="field-hint">Total invoiced before any deductions or fees. Same across all channels for comparison.</span>
+    <label>Total gross revenue ($) — all channels</label>
+    <input type="number" id="grossRevenue" value="1000000" step="10000" min="1"/>
+    <span class="field-hint">Combined revenue across all channels. Used with total COGS to compute your COGS rate (%), which then scales to each channel's actual revenue.</span>
   </div>
   <div class="field">
-    <label>COGS ($)</label>
-    <input type="number" id="totalCOGS" value="185000" step="5000" min="0"/>
-    <span class="field-hint">Cost of goods sold — used to calculate gross profit after channel deductions.</span>
+    <label>Total COGS ($) — all channels</label>
+    <input type="number" id="totalCOGS" value="370000" step="5000" min="0"/>
+    <span class="field-hint">Combined cost of goods sold. Sets the COGS % rate — e.g. $370K ÷ $1M = 37% COGS. Each channel's COGS is then its revenue × that rate.</span>
   </div>
 </div>
 
@@ -145,7 +195,30 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 <p class="section-title" style="margin-top:32px;">Gross-to-net detail by channel</p>
 <div class="detail-grid" id="detailGrid"></div>
 
-<footer>
+<!-- Export bar (screen only) -->
+<div class="export-bar no-print">
+  <div class="export-bar-label">
+    <strong>Export results</strong>
+    Includes inputs, deduction rates, formula, and summary
+  </div>
+  <button class="btn-export btn-csv" onclick="exportCSV()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    CSV
+  </button>
+  <button class="btn-export btn-xlsx" onclick="exportExcel()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+    Excel
+  </button>
+  <button class="btn-export btn-pdf" onclick="exportPDF()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    PDF
+  </button>
+</div>
+
+<!-- Print-only PDF report (hidden on screen, shown on print) -->
+<div class="print-only" id="pdfReport"></div>
+
+<footer class="no-print">
   <div class="footer-left">Built by <strong>Sam Pellerito</strong> — CPG Operations Tools</div>
   <div class="footer-right"><a href="index.html">← All tools</a></div>
 </footer>
@@ -153,13 +226,8 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
-<script>
-if(typeof Chart==='undefined'){
-  var _s=document.createElement('script');
-  _s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
-  document.head.appendChild(_s);
-}
-</script>
+<script>if(typeof Chart==='undefined'){var _s=document.createElement('script');_s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';document.head.appendChild(_s);}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" crossorigin="anonymous"></script>
 <script>
 function val(id){ return parseFloat(document.getElementById(id).value)||0; }
 function fmt(n,d=0){ return '$'+Math.abs(n).toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}); }
@@ -244,8 +312,17 @@ const CHANNELS = {
 };
 
 const activeChannels = new Set(['grocery','mass','dtc','amazon']);
+
+// Per-channel revenue defaults
+const DEFAULT_REVENUE = {
+  grocery: 450000, mass: 200000, dtc: 120000,
+  amazon: 180000, drug: 80000, foodservice: 100000,
+};
+
+const userRevenue = {};
 const userPcts = {};
 Object.keys(CHANNELS).forEach(ck => {
+  userRevenue[ck] = DEFAULT_REVENUE[ck] || 100000;
   userPcts[ck] = {};
   CHANNELS[ck].deductions.forEach(d => { userPcts[ck][d.key] = d.pct; });
 });
@@ -272,11 +349,20 @@ function buildEditors(){
     const card = document.createElement('div');
     card.className = 'ch-card' + (activeChannels.has(ck) ? '' : ' hidden');
     card.id = 'editor-'+ck;
+    const cogsRate = (val('grossRevenue')||1) > 0 ? val('totalCOGS')/val('grossRevenue') : 0.37;
+    const channelCogs = Math.round(cogsRate * userRevenue[ck]);
     card.innerHTML = `
       <div class="ch-card-header">
         <span class="ch-card-title">${ch.emoji} ${ch.label}</span>
         <span class="ch-card-net" id="ednet-${ck}">—</span>
       </div>
+      <div class="rev-row">
+        <span class="rev-label">Channel revenue ($)</span>
+        <input class="rev-input" type="number" step="10000" min="0"
+          value="${userRevenue[ck]}"
+          oninput="userRevenue['${ck}']=parseFloat(this.value)||0; updateEditorNet('${ck}')"/>
+      </div>
+      <p class="rev-cogs-note" id="edcogs-${ck}">COGS at current rate: ${fmt(channelCogs)}</p>
       ${ch.deductions.map(d => `
         <div class="ded-row">
           <span class="ded-label" title="${d.label}">${d.label}</span>
@@ -297,40 +383,53 @@ function updateEditorVisibility(){
   });
 }
 
-function updateEditorNet(ck){
-  const gross = val('grossRevenue') || 500000;
-  const totalPct = CHANNELS[ck].deductions.reduce((s,d) => s + (userPcts[ck][d.key]||0), 0);
-  const net = gross * (1 - totalPct/100);
-  const el = $id('ednet-'+ck);
-  if(el) el.textContent = 'Net: '+fmt(net);
+function cogsRate(){
+  const g = val('grossRevenue') || 1;
+  return val('totalCOGS') / g;
 }
 
-function computeChannel(ck, gross, cogs){
+function updateEditorNet(ck){
+  const chGross = userRevenue[ck] || 0;
+  const chCogs  = Math.round(cogsRate() * chGross);
+  const totalPct = CHANNELS[ck].deductions.reduce((s,d) => s + (userPcts[ck][d.key]||0), 0);
+  const net = chGross * (1 - totalPct/100);
+  const gp  = net - chCogs;
+  const gm  = net > 0 ? gp/net*100 : 0;
+  const el = $id('ednet-'+ck);
+  if(el){
+    const gmColor = gm >= 20 ? 'var(--teal)' : gm >= 0 ? 'var(--amber)' : 'var(--red)';
+    el.innerHTML = `Net: ${fmt(net)} · <span style="color:${gmColor}">${fmtPct(gm)} GM</span>`;
+  }
+  const cogsEl = $id('edcogs-'+ck);
+  if(cogsEl) cogsEl.textContent = `COGS at current rate: ${fmt(chCogs)} (${fmtPct(cogsRate()*100)})`;
+}
+
+function computeChannel(ck){
+  const chGross = userRevenue[ck] || 0;
+  const chCogs  = Math.round(cogsRate() * chGross);
   const ch = CHANNELS[ck];
   const deductions = ch.deductions.map(d => ({
     label: d.label,
-    amount: Math.round(userPcts[ck][d.key] / 100 * gross),
+    amount: Math.round(userPcts[ck][d.key] / 100 * chGross),
   }));
   const totalDed = deductions.reduce((s,d) => s+d.amount, 0);
-  const net      = gross - totalDed;
-  const gp       = net - cogs;
+  const net      = chGross - totalDed;
+  const gp       = net - chCogs;
   const gm       = net > 0 ? gp/net*100 : 0;
-  const dedPct   = gross > 0 ? totalDed/gross*100 : 0;
-  return { ch, deductions, totalDed, net, gp, gm, dedPct };
+  const dedPct   = chGross > 0 ? totalDed/chGross*100 : 0;
+  return { ch, chGross, chCogs, deductions, totalDed, net, gp, gm, dedPct };
 }
 
 function render(){
-  const gross = val('grossRevenue');
-  const cogs  = val('totalCOGS');
-
   if(activeChannels.size === 0){
     alert('Select at least one channel to compare.');
     return;
   }
 
   const active  = [...activeChannels];
-  const results = active.map(ck => ({ ck, ...computeChannel(ck, gross, cogs) }));
+  const results = active.map(ck => ({ ck, ...computeChannel(ck) }));
   const best    = results.reduce((a,b) => a.gm > b.gm ? a : b);
+  const totalGross = results.reduce((s,r) => s+r.chGross, 0);
 
   // ── Comparison table ────────────────────────────
   let rows = '';
@@ -338,17 +437,33 @@ function render(){
     const isBest = r.ck === best.ck;
     rows += `<tr class="${isBest?'best':''}">
       <td>${CHANNELS[r.ck].emoji} ${CHANNELS[r.ck].label}${isBest?' ★':''}</td>
-      <td>${fmt(gross)}</td>
+      <td style="font-weight:600">${fmt(r.chGross)}</td>
       <td style="color:var(--red)">(${fmt(r.totalDed)})</td>
       <td style="color:var(--red)">${fmtPct(r.dedPct)}</td>
       <td style="color:var(--teal);font-weight:600">${fmt(r.net)}</td>
-      <td>${fmt(cogs)}</td>
+      <td>${fmt(r.chCogs)}</td>
       <td style="color:${r.gp>=0?'var(--teal)':'var(--red)'};font-weight:600">${r.gp>=0?fmt(r.gp):'('+fmt(Math.abs(r.gp))+')' }</td>
       <td style="color:${r.gm>=20?'var(--teal)':r.gm>=0?'var(--amber)':'var(--red)'};font-weight:700">${fmtPct(r.gm)}</td>
     </tr>`;
   });
+  // Totals row
+  const totDed = results.reduce((s,r)=>s+r.totalDed,0);
+  const totNet = results.reduce((s,r)=>s+r.net,0);
+  const totCogs = results.reduce((s,r)=>s+r.chCogs,0);
+  const totGP = results.reduce((s,r)=>s+r.gp,0);
+  const totGM = totNet > 0 ? totGP/totNet*100 : 0;
+  rows += `<tr style="background:var(--surface);font-weight:700;font-size:12px;">
+    <td>Total / Blended</td>
+    <td>${fmt(totalGross)}</td>
+    <td style="color:var(--red)">(${fmt(totDed)})</td>
+    <td style="color:var(--red)">${fmtPct(totalGross>0?totDed/totalGross*100:0)}</td>
+    <td style="color:var(--teal)">${fmt(totNet)}</td>
+    <td>${fmt(totCogs)}</td>
+    <td style="color:${totGP>=0?'var(--teal)':'var(--red)'}">${totGP>=0?fmt(totGP):'('+fmt(Math.abs(totGP))+')'}</td>
+    <td style="color:${totGM>=20?'var(--teal)':totGM>=0?'var(--amber)':'var(--red)'}">${fmtPct(totGM)}</td>
+  </tr>`;
   $id('cmpBody').innerHTML = rows;
-  $id('bestChannelNote').textContent = `★ ${CHANNELS[best.ck].label} has the highest gross margin at ${fmtPct(best.gm)} in this scenario.`;
+  $id('bestChannelNote').textContent = `★ ${CHANNELS[best.ck].label} has the highest gross margin at ${fmtPct(best.gm)}. Blended margin across all active channels: ${fmtPct(totGM)}.`;
 
   // ── Per-channel waterfall detail ─────────────────
   const detailGrid = $id('detailGrid');
@@ -356,17 +471,15 @@ function render(){
   results.forEach(r => {
     const card = document.createElement('div');
     card.className = 'detail-card';
-    let running = gross;
-    let trows = `<tr class="subtotal"><td>Gross revenue</td><td>${fmt(gross)}</td></tr>`;
+    let trows = `<tr class="subtotal"><td>Gross revenue</td><td>${fmt(r.chGross)}</td></tr>`;
     r.deductions.forEach(d => {
       if(d.amount === 0) return;
-      running -= d.amount;
-      const pct = gross > 0 ? d.amount/gross*100 : 0;
+      const pct = r.chGross > 0 ? d.amount/r.chGross*100 : 0;
       trows += `<tr><td style="padding-left:12px">${d.label}</td><td style="color:var(--red)">(${fmt(d.amount)}) <span style="color:var(--hint);font-weight:400">${fmtPct(pct)}</span></td></tr>`;
     });
     trows += `<tr class="wf-total"><td>Net revenue</td><td>${fmt(r.net)}</td></tr>`;
-    if(cogs > 0){
-      trows += `<tr><td style="padding-left:12px">COGS</td><td style="color:var(--red)">(${fmt(cogs)})</td></tr>
+    if(r.chCogs > 0){
+      trows += `<tr><td style="padding-left:12px">COGS (${fmtPct(cogsRate()*100)} rate)</td><td style="color:var(--red)">(${fmt(r.chCogs)})</td></tr>
                 <tr class="wf-total"><td>Gross profit</td><td style="color:${r.gp>=0?'var(--teal)':'var(--red)'}">${r.gp>=0?fmt(r.gp):'('+fmt(Math.abs(r.gp))+')'}</td></tr>
                 <tr><td>Gross margin</td><td style="color:${r.gm>=20?'var(--teal)':r.gm>=0?'var(--amber)':'var(--red)'}"><strong>${fmtPct(r.gm)}</strong></td></tr>`;
     }
@@ -380,10 +493,11 @@ function render(){
 
   const chLabels   = results.map(r => CHANNELS[r.ck].emoji + ' ' + CHANNELS[r.ck].label);
   const gpData     = results.map(r => Math.max(0, r.gp));
-  const cogsData   = results.map(() => cogs > 0 ? cogs : 0);
+  const cogsData   = results.map(r => r.chCogs > 0 ? r.chCogs : 0);
   const dedData    = results.map(r => r.totalDed);
   const gmData     = results.map(r => parseFloat(r.gm.toFixed(1)));
   const dedDetails = results.map(r => r.deductions.filter(d => d.amount > 0));
+  const maxRev     = Math.max(...results.map(r => r.chGross));
 
   if(cmpChart) cmpChart.destroy();
   cmpChart = new Chart($id('cmpChart'), {
@@ -391,70 +505,37 @@ function render(){
     data:{
       labels: chLabels,
       datasets:[
+        { label:'Gross profit',     data:gpData,   backgroundColor:'rgba(29,158,117,0.75)', borderRadius:0, borderSkipped:'bottom', stack:'revenue', order:2 },
+        { label:'COGS',             data:cogsData, backgroundColor:'rgba(186,117,23,0.65)', borderRadius:0, borderSkipped:'bottom', stack:'revenue', order:2 },
+        { label:'Total deductions', data:dedData,  backgroundColor:'rgba(226,75,74,0.65)',  borderRadius:3, borderSkipped:'bottom', stack:'revenue', order:2 },
         {
-          label: 'Gross profit',
-          data: gpData,
-          backgroundColor: 'rgba(29,158,117,0.75)',
-          borderRadius: 0,
-          borderSkipped: 'bottom',
-          stack: 'revenue',
-          order: 2,
-        },
-        {
-          label: 'COGS',
-          data: cogsData,
-          backgroundColor: 'rgba(186,117,23,0.65)',
-          borderRadius: 0,
-          borderSkipped: 'bottom',
-          stack: 'revenue',
-          order: 2,
-        },
-        {
-          label: 'Total deductions',
-          data: dedData,
-          backgroundColor: 'rgba(226,75,74,0.65)',
-          borderRadius: 3,
-          borderSkipped: 'bottom',
-          stack: 'revenue',
-          order: 2,
-        },
-        {
-          label: 'Gross margin %',
-          data: gmData,
-          type: 'line',
-          borderColor: 'rgba(127,119,221,0.85)',
-          backgroundColor: 'rgba(127,119,221,0.12)',
-          borderWidth: 2.5,
-          pointBackgroundColor: 'rgba(127,119,221,1)',
-          pointRadius: 5,
-          pointHoverRadius: 7,
-          tension: 0.25,
-          yAxisID: 'yPct',
-          order: 1,
+          label:'Gross margin %', data:gmData, type:'line',
+          borderColor:'rgba(127,119,221,0.85)', backgroundColor:'rgba(127,119,221,0.12)',
+          borderWidth:2.5, pointBackgroundColor:'rgba(127,119,221,1)',
+          pointRadius:5, pointHoverRadius:7, tension:0.25, yAxisID:'yPct', order:1,
         }
       ]
     },
     options:{
-      responsive: true,
-      maintainAspectRatio: false,
-      animation: false,
+      responsive:true, maintainAspectRatio:false, animation:false,
       plugins:{
-        legend:{ display: false },
+        legend:{ display:false },
         tooltip:{
-          mode: 'index',
-          intersect: false,
+          mode:'index', intersect:false,
           callbacks:{
             title: ctx => chLabels[ctx[0].dataIndex],
             label: ctx => {
               const i = ctx.dataIndex;
-              if(ctx.dataset.label === 'Gross margin %')    return 'Gross margin: '+ctx.raw.toFixed(1)+'%';
-              if(ctx.dataset.label === 'Gross profit')      return 'Gross profit: '+fmt(ctx.raw);
-              if(ctx.dataset.label === 'COGS')              return 'COGS: '+fmt(ctx.raw);
+              const r = results[i];
+              if(ctx.dataset.label === 'Gross margin %')   return 'Gross margin: '+ctx.raw.toFixed(1)+'%';
+              if(ctx.dataset.label === 'Gross profit')     return 'Gross profit: '+fmt(ctx.raw);
+              if(ctx.dataset.label === 'COGS')             return 'COGS ('+fmtPct(cogsRate()*100)+' rate): '+fmt(ctx.raw);
               if(ctx.dataset.label === 'Total deductions'){
-                return dedDetails[i].map(d => {
-                  const pct = gross > 0 ? d.amount/gross*100 : 0;
+                const hdr = ['Channel revenue: '+fmt(r.chGross), 'Deductions:'];
+                return hdr.concat(dedDetails[i].map(d => {
+                  const pct = r.chGross > 0 ? d.amount/r.chGross*100 : 0;
                   return '  '+d.label+': '+fmt(d.amount)+' ('+fmtPct(pct)+')';
-                });
+                }));
               }
               return '';
             }
@@ -464,16 +545,15 @@ function render(){
       scales:{
         x:{ ticks:{color:'#9ca3af',font:{size:12}}, grid:{display:false} },
         y:{
-          stacked: true,
+          stacked:true,
           ticks:{ color:'#9ca3af', font:{size:11}, callback: v => '$'+(v>=1000?(v/1000).toFixed(0)+'K':v) },
           grid:{ color:'rgba(0,0,0,0.05)' },
-          max: Math.ceil(gross * 1.08 / 50000) * 50000,
+          max: Math.ceil(maxRev * 1.1 / 50000) * 50000,
         },
         yPct:{
-          position: 'right',
+          position:'right',
           ticks:{ color:'rgba(127,119,221,0.8)', font:{size:11}, callback: v => v+'%' },
-          grid:{ display: false },
-          min: 0,
+          grid:{ display:false }, min:0,
           max: Math.ceil(Math.max(...gmData, 60) / 10) * 10 + 10,
           title:{ display:true, text:'Gross margin %', color:'rgba(127,119,221,0.7)', font:{size:10} },
         }
@@ -482,12 +562,327 @@ function render(){
   });
 }
 
-$id('grossRevenue').addEventListener('input', () => {
-  Object.keys(CHANNELS).forEach(ck => updateEditorNet(ck));
+// Refresh COGS notes and net previews when global inputs change
+[$id('grossRevenue'), $id('totalCOGS')].forEach(el => {
+  el.addEventListener('input', () => Object.keys(CHANNELS).forEach(ck => updateEditorNet(ck)));
 });
 
 buildToggles();
 buildEditors();
+
+/* ── Shared: gather all export data ─────────────────────────────── */
+function gatherExportData(){
+  const totalGross = val('grossRevenue');
+  const totalCogs  = val('totalCOGS');
+  const active  = [...activeChannels];
+  const results = active.map(ck => ({ ck, ...computeChannel(ck) }));
+  const best    = results.reduce((a,b) => a.gm > b.gm ? a : b);
+  const now     = new Date().toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  return { totalGross, totalCogs, active, results, best, now };
+}
+
+/* ── CSV export ──────────────────────────────────────────────────── */
+function exportCSV(){
+  if(activeChannels.size === 0){ alert('Run a calculation first.'); return; }
+  const { totalGross, totalCogs, active, results, now } = gatherExportData();
+  const rows = [];
+  const q   = s => '"' + String(s||'').replace(/"/g,'""') + '"';
+  const fmtC = n => '$' + Math.abs(Math.round(n)).toLocaleString();
+  const fmtP = n => n.toFixed(1) + '%';
+
+  rows.push([q('Channel Margin Waterfall — CPG Operations Tool'), q('Exported: '+now)]);
+  rows.push([]);
+
+  // SECTION 1: INPUTS
+  rows.push([q('── INPUTS ──')]);
+  rows.push([q('Total Gross Revenue (all channels)'), q(fmtC(totalGross))]);
+  rows.push([q('Total COGS (all channels)'), q(fmtC(totalCogs))]);
+  rows.push([q('Blended COGS Rate'), q(fmtP(cogsRate()*100))]);
+  rows.push([q('Active Channels'), q(active.map(ck => CHANNELS[ck].label).join(', '))]);
+  rows.push([]);
+  rows.push([q('Channel'), q('Channel Revenue'), q('Channel COGS (at rate)')]);
+  active.forEach(ck => {
+    const r = results.find(x => x.ck === ck);
+    rows.push([q(CHANNELS[ck].label), q(fmtC(r.chGross)), q(fmtC(r.chCogs))]);
+  });
+  rows.push([]);
+
+  // SECTION 2: DEDUCTION RATES
+  rows.push([q('── DEDUCTION RATES (inputs) ──')]);
+  rows.push([q('Channel'), q('Channel Revenue'), q('Deduction Line Item'), q('Rate (%)'), q('Dollar Amount')]);
+  active.forEach(ck => {
+    const ch = CHANNELS[ck];
+    const r  = results.find(x => x.ck === ck);
+    ch.deductions.forEach(d => {
+      const rate = userPcts[ck][d.key] || 0;
+      const amt  = Math.round(rate / 100 * r.chGross);
+      rows.push([q(ch.label), q(fmtC(r.chGross)), q(d.label), q(fmtP(rate)), q(fmtC(amt))]);
+    });
+    const totalRate = ch.deductions.reduce((s,d) => s + (userPcts[ck][d.key]||0), 0);
+    rows.push([q(ch.label + ' TOTAL'), q(''), q('All deductions combined'), q(fmtP(totalRate)), q(fmtC(r.totalDed))]);
+    rows.push([]);
+  });
+
+  // SECTION 3: GROSS-TO-NET FORMULA (per channel)
+  rows.push([q('── GROSS-TO-NET FORMULA (by channel) ──')]);
+  rows.push([q('Channel'), q('Line Item'), q('Amount'), q('Running Total'), q('% of Channel Gross')]);
+  active.forEach(ck => {
+    const r = results.find(x => x.ck === ck);
+    rows.push([q(CHANNELS[ck].label), q('Channel Gross Revenue'), q(fmtC(r.chGross)), q(fmtC(r.chGross)), q('100.0%')]);
+    r.deductions.forEach(d => {
+      if(d.amount === 0) return;
+      const pct = r.chGross > 0 ? d.amount/r.chGross*100 : 0;
+      rows.push([q(''), q('(-) ' + d.label), q('(' + fmtC(d.amount) + ')'), q(''), q('-'+fmtP(pct))]);
+    });
+    const dedPct = r.chGross > 0 ? r.totalDed/r.chGross*100 : 0;
+    rows.push([q(''), q('= Net Revenue'), q(fmtC(r.net)), q(fmtC(r.net)), q(fmtP(100-dedPct))]);
+    rows.push([q(''), q('(-) COGS ('+fmtP(cogsRate()*100)+' rate)'), q('(' + fmtC(r.chCogs) + ')'), q(''), q('-'+fmtP(r.chGross>0?r.chCogs/r.chGross*100:0))]);
+    rows.push([q(''), q('= Gross Profit'), q(fmtC(r.gp)), q(fmtC(r.gp)), q('')]);
+    rows.push([q(''), q('Gross Margin %'), q(fmtP(r.gm)), q(''), q('')]);
+    rows.push([]);
+  });
+
+  // SECTION 4: SUMMARY
+  rows.push([q('── SUMMARY COMPARISON ──')]);
+  rows.push([q('Channel'), q('Channel Revenue'), q('Total Deductions'), q('Deductions %'), q('Net Revenue'), q('COGS'), q('Gross Profit'), q('Gross Margin %')]);
+  results.forEach(r => {
+    rows.push([
+      q(CHANNELS[r.ck].label + (r.ck === results.reduce((a,b)=>a.gm>b.gm?a:b).ck ? ' ★ Best' : '')),
+      q(fmtC(r.chGross)), q('(' + fmtC(r.totalDed) + ')'), q(fmtP(r.dedPct)),
+      q(fmtC(r.net)), q(fmtC(r.chCogs)),
+      q(r.gp >= 0 ? fmtC(r.gp) : '(' + fmtC(Math.abs(r.gp)) + ')'),
+      q(fmtP(r.gm)),
+    ]);
+  });
+  // Blended totals
+  const totGross = results.reduce((s,r)=>s+r.chGross,0);
+  const totDed   = results.reduce((s,r)=>s+r.totalDed,0);
+  const totNet   = results.reduce((s,r)=>s+r.net,0);
+  const totCogs  = results.reduce((s,r)=>s+r.chCogs,0);
+  const totGP    = results.reduce((s,r)=>s+r.gp,0);
+  const totGM    = totNet>0 ? totGP/totNet*100 : 0;
+  rows.push([q('TOTAL / BLENDED'), q(fmtC(totGross)), q('('+fmtC(totDed)+')'), q(fmtP(totGross>0?totDed/totGross*100:0)), q(fmtC(totNet)), q(fmtC(totCogs)), q(fmtC(totGP)), q(fmtP(totGM))]);
+
+  const csv = rows.map(r => r.join(',')).join('\r\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'channel-margin-waterfall-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+/* ── Excel export ────────────────────────────────────────────────── */
+function exportExcel(){
+  if(activeChannels.size === 0){ alert('Run a calculation first.'); return; }
+  if(typeof XLSX === 'undefined'){ alert('Excel library not loaded yet — try again.'); return; }
+  const { totalGross, totalCogs, active, results, now } = gatherExportData();
+  const fmtC = n => '$' + Math.abs(Math.round(n)).toLocaleString();
+  const fmtP = n => n.toFixed(1) + '%';
+  const wb = XLSX.utils.book_new();
+
+  // Sheet 1: Summary
+  const totGross = results.reduce((s,r)=>s+r.chGross,0);
+  const totDed   = results.reduce((s,r)=>s+r.totalDed,0);
+  const totNet   = results.reduce((s,r)=>s+r.net,0);
+  const totCogs2 = results.reduce((s,r)=>s+r.chCogs,0);
+  const totGP    = results.reduce((s,r)=>s+r.gp,0);
+  const totGM    = totNet>0 ? totGP/totNet*100 : 0;
+  const sumRows = [
+    ['Channel Margin Waterfall', '', '', '', '', '', '', 'Exported: '+now],
+    [],
+    ['Channel','Channel Revenue','Total Deductions','Deductions %','Net Revenue','COGS','Gross Profit','Gross Margin %'],
+  ];
+  results.forEach(r => {
+    const isBest = r.ck === results.reduce((a,b)=>a.gm>b.gm?a:b).ck;
+    sumRows.push([
+      CHANNELS[r.ck].label + (isBest ? ' ★' : ''),
+      fmtC(r.chGross), '(' + fmtC(r.totalDed) + ')', fmtP(r.dedPct),
+      fmtC(r.net), fmtC(r.chCogs),
+      r.gp >= 0 ? fmtC(r.gp) : '(' + fmtC(Math.abs(r.gp)) + ')',
+      fmtP(r.gm),
+    ]);
+  });
+  sumRows.push([]);
+  sumRows.push(['TOTAL / BLENDED', fmtC(totGross), '('+fmtC(totDed)+')', fmtP(totGross>0?totDed/totGross*100:0), fmtC(totNet), fmtC(totCogs2), fmtC(totGP), fmtP(totGM)]);
+  const wsSummary = XLSX.utils.aoa_to_sheet(sumRows);
+  wsSummary['!cols'] = [{wch:22},{wch:18},{wch:18},{wch:14},{wch:16},{wch:14},{wch:14},{wch:14}];
+  XLSX.utils.book_append_sheet(wb, wsSummary, 'Summary');
+
+  // Sheet 2: Inputs & Deduction Rates
+  const inputRows = [
+    ['── GLOBAL INPUTS ──'],
+    ['Total Gross Revenue (all channels)', fmtC(totalGross)],
+    ['Total COGS (all channels)', fmtC(totalCogs)],
+    ['Blended COGS Rate', fmtP(cogsRate()*100)],
+    ['Active Channels', active.map(ck => CHANNELS[ck].label).join(', ')],
+    [],
+    ['── PER-CHANNEL REVENUE ──'],
+    ['Channel', 'Channel Revenue', 'Channel COGS (at '+fmtP(cogsRate()*100)+' rate)'],
+  ];
+  active.forEach(ck => {
+    const r = results.find(x=>x.ck===ck);
+    inputRows.push([CHANNELS[ck].label, fmtC(r.chGross), fmtC(r.chCogs)]);
+  });
+  inputRows.push([]);
+  inputRows.push(['── DEDUCTION RATES ──']);
+  inputRows.push(['Channel', 'Channel Revenue', 'Deduction Line Item', 'Rate (%)', 'Dollar Amount']);
+  active.forEach(ck => {
+    const ch = CHANNELS[ck];
+    const r  = results.find(x=>x.ck===ck);
+    ch.deductions.forEach(d => {
+      const rate = userPcts[ck][d.key] || 0;
+      inputRows.push([ch.label, fmtC(r.chGross), d.label, fmtP(rate), fmtC(rate/100*r.chGross)]);
+    });
+    const totalRate = ch.deductions.reduce((s,d) => s + (userPcts[ck][d.key]||0), 0);
+    inputRows.push([ch.label + ' TOTAL', '', 'All deductions combined', fmtP(totalRate), fmtC(r.totalDed)]);
+    inputRows.push([]);
+  });
+  const wsInputs = XLSX.utils.aoa_to_sheet(inputRows);
+  wsInputs['!cols'] = [{wch:22},{wch:18},{wch:32},{wch:12},{wch:18}];
+  XLSX.utils.book_append_sheet(wb, wsInputs, 'Inputs & Rates');
+
+  // Sheet 3: Gross-to-Net Formula
+  const formulaRows = [
+    ['── GROSS-TO-NET FORMULA (by channel) ──'],
+    [],
+    ['Channel', 'Line Item', 'Amount', 'Running Net', '% of Channel Gross'],
+  ];
+  active.forEach(ck => {
+    const r = results.find(x => x.ck === ck);
+    formulaRows.push([CHANNELS[ck].label, 'Channel Gross Revenue', fmtC(r.chGross), fmtC(r.chGross), '100.0%']);
+    r.deductions.forEach(d => {
+      if(d.amount === 0) return;
+      const pct = r.chGross > 0 ? d.amount/r.chGross*100 : 0;
+      formulaRows.push(['', '(-) ' + d.label, '(' + fmtC(d.amount) + ')', '', '-' + fmtP(pct)]);
+    });
+    const dedPct = r.chGross > 0 ? r.totalDed/r.chGross*100 : 0;
+    formulaRows.push(['', '= Net Revenue', fmtC(r.net), fmtC(r.net), fmtP(100-dedPct)]);
+    formulaRows.push(['', '(-) COGS ('+fmtP(cogsRate()*100)+' rate)', '(' + fmtC(r.chCogs) + ')', '', '-' + fmtP(r.chGross>0?r.chCogs/r.chGross*100:0)]);
+    formulaRows.push(['', '= Gross Profit', fmtC(r.gp), fmtC(r.gp), '']);
+    formulaRows.push(['', 'Gross Margin %', fmtP(r.gm), '', '']);
+    formulaRows.push([]);
+  });
+  const wsFormula = XLSX.utils.aoa_to_sheet(formulaRows);
+  wsFormula['!cols'] = [{wch:20},{wch:36},{wch:16},{wch:16},{wch:18}];
+  XLSX.utils.book_append_sheet(wb, wsFormula, 'Gross-to-Net Formula');
+
+  XLSX.writeFile(wb, 'channel-margin-waterfall-' + new Date().toISOString().slice(0,10) + '.xlsx');
+}
+
+/* ── PDF export ──────────────────────────────────────────────────── */
+function exportPDF(){
+  if(activeChannels.size === 0){ alert('Run a calculation first.'); return; }
+  const { totalGross, totalCogs, active, results, now } = gatherExportData();
+  const best = results.reduce((a,b) => a.gm > b.gm ? a : b);
+  const fmtC  = n => '$' + Math.abs(Math.round(n)).toLocaleString();
+  const fmtP  = n => n.toFixed(1) + '%';
+  const esc   = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const totNet = results.reduce((s,r)=>s+r.net,0);
+  const totGP  = results.reduce((s,r)=>s+r.gp,0);
+  const blendedGM = totNet>0 ? totGP/totNet*100 : 0;
+
+  let html = `
+  <div class="pdf-cover">
+    <p class="pdf-brand">CPG Operations Tool</p>
+    <h2 class="pdf-title">Channel Margin Waterfall</h2>
+    <p class="pdf-sub">Gross-to-net analysis across ${active.length} channel${active.length>1?'s':''}</p>
+    <div class="pdf-meta-row">
+      <div class="pdf-meta-item"><label>Total Gross Revenue</label><span>${fmtC(totalGross)}</span></div>
+      <div class="pdf-meta-item"><label>Total COGS</label><span>${fmtC(totalCogs)}</span></div>
+      <div class="pdf-meta-item"><label>Blended COGS Rate</label><span>${fmtP(cogsRate()*100)}</span></div>
+      <div class="pdf-meta-item"><label>Blended Gross Margin</label><span>${fmtP(blendedGM)}</span></div>
+      <div class="pdf-meta-item"><label>Channels Compared</label><span>${active.map(ck=>CHANNELS[ck].label).join(', ')}</span></div>
+      <div class="pdf-meta-item"><label>Exported</label><span>${now}</span></div>
+    </div>
+    <div class="pdf-claude-badge">
+      <svg width="18" height="18" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="#D97757"/><path d="M20 8L28 28H24L22 22H18L16 28H12L20 8ZM19 18H21L20 14Z" fill="white"/></svg>
+      <span class="pdf-claude-text">Powered by Claude</span>
+    </div>
+  </div>
+
+  <p class="pdf-section-hd">Summary comparison</p>
+  <table class="pdf-tbl">
+    <thead><tr>
+      <th style="text-align:left">Channel</th>
+      <th>Channel Revenue</th><th>Total Deductions</th><th>Ded %</th>
+      <th>Net Revenue</th><th>COGS</th><th>Gross Profit</th><th>Gross Margin %</th>
+    </tr></thead>
+    <tbody>
+      ${results.map(r => {
+        const isBest = r.ck === best.ck;
+        const gmColor = r.gm>=20 ? 'var(--teal)' : r.gm>=0 ? 'var(--amber)' : 'var(--red)';
+        return `<tr class="${isBest?'pdf-best':''}">
+          <td>${esc(CHANNELS[r.ck].emoji+' '+CHANNELS[r.ck].label)}${isBest?' ★':''}</td>
+          <td style="font-weight:600">${fmtC(r.chGross)}</td>
+          <td style="color:var(--red)">(${fmtC(r.totalDed)})</td>
+          <td style="color:var(--red)">${fmtP(r.dedPct)}</td>
+          <td style="color:var(--teal);font-weight:600">${fmtC(r.net)}</td>
+          <td>${fmtC(r.chCogs)}</td>
+          <td style="color:${r.gp>=0?'var(--teal)':'var(--red)'};font-weight:600">${r.gp>=0?fmtC(r.gp):'('+fmtC(Math.abs(r.gp))+')' }</td>
+          <td style="color:${gmColor};font-weight:700">${fmtP(r.gm)}</td>
+        </tr>`;
+      }).join('')}
+    </tbody>
+  </table>
+  <p style="font-size:10px;color:var(--hint);margin-bottom:4px">★ ${esc(CHANNELS[best.ck].label)} has the highest gross margin at ${fmtP(best.gm)} · Blended gross margin: ${fmtP(blendedGM)}</p>
+
+  <p class="pdf-section-hd" style="margin-top:18px">Gross-to-net formula by channel</p>
+  <div class="pdf-ded-grid">
+    ${results.map(r => {
+      const rows = `<div class="pdf-ded-row"><span>Channel Revenue</span><span style="font-weight:600">${fmtC(r.chGross)}</span></div>`
+        + r.deductions.filter(d=>d.amount>0).map(d => {
+            const pct = r.chGross>0 ? d.amount/r.chGross*100 : 0;
+            return `<div class="pdf-ded-row"><span style="padding-left:8px;color:var(--red)">(-) ${esc(d.label)}</span><span style="color:var(--red)">(${fmtC(d.amount)}) <span style="font-size:9px;color:var(--hint)">${fmtP(pct)}</span></span></div>`;
+          }).join('')
+        + `<div class="pdf-ded-row" style="color:var(--teal)"><span>= Net Revenue</span><span>${fmtC(r.net)}</span></div>`
+        + (r.chCogs>0 ? `<div class="pdf-ded-row"><span style="padding-left:8px;color:var(--red)">(-) COGS (${fmtP(cogsRate()*100)})</span><span style="color:var(--red)">(${fmtC(r.chCogs)})</span></div>
+            <div class="pdf-ded-row" style="color:${r.gp>=0?'var(--teal)':'var(--red)'}"><span>= Gross Profit</span><span>${r.gp>=0?fmtC(r.gp):'('+fmtC(Math.abs(r.gp))+')' }</span></div>
+            <div class="pdf-ded-row"><span>Gross Margin %</span><span style="font-weight:700;color:${r.gm>=20?'var(--teal)':r.gm>=0?'var(--amber)':'var(--red)'}">${fmtP(r.gm)}</span></div>` : '');
+      return `<div class="pdf-ded-card"><h4>${esc(CHANNELS[r.ck].emoji+' '+CHANNELS[r.ck].label)}</h4>${rows}</div>`;
+    }).join('')}
+  </div>
+
+  <p class="pdf-section-hd" style="margin-top:18px">Inputs &amp; deduction rates used</p>
+  <table class="pdf-tbl">
+    <thead><tr>
+      <th style="text-align:left">Channel</th>
+      <th>Channel Revenue</th>
+      <th style="text-align:left">Deduction Line Item</th>
+      <th>Rate (%)</th><th>$ Amount</th>
+    </tr></thead>
+    <tbody>
+      ${active.map(ck => {
+        const ch = CHANNELS[ck];
+        const r  = results.find(x=>x.ck===ck);
+        return ch.deductions.map((d,i) => {
+          const rate = userPcts[ck][d.key]||0;
+          return `<tr>
+            <td${i===0?'':' style="color:var(--hint)"'}>${i===0?esc(ch.label):''}</td>
+            <td${i===0?` style="font-weight:600"`:' style="color:var(--hint)"'}>${i===0?fmtC(r.chGross):''}</td>
+            <td style="color:var(--muted)">${esc(d.label)}</td>
+            <td>${fmtP(rate)}</td>
+            <td style="color:var(--red)">(${fmtC(rate/100*r.chGross)})</td>
+          </tr>`;
+        }).join('') + `<tr class="pdf-subtotal">
+          <td></td><td></td><td>Total deductions</td>
+          <td>${fmtP(ch.deductions.reduce((s,d)=>s+(userPcts[ck][d.key]||0),0))}</td>
+          <td>(${fmtC(r.totalDed)})</td>
+        </tr><tr><td colspan="5" style="padding:2px 0"></td></tr>`;
+      }).join('')}
+    </tbody>
+  </table>
+
+  <div class="pdf-footer">
+    <span>Channel Margin Waterfall — CPG Operations Tools — Sam Pellerito</span>
+    <span style="display:flex;align-items:center;gap:5px;">
+      <svg width="14" height="14" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="#D97757"/><path d="M20 8L28 28H24L22 22H18L16 28H12L20 8ZM19 18H21L20 14Z" fill="white"/></svg>
+      Powered by Claude · ${now}
+    </span>
+  </div>`;
+
+  document.getElementById('pdfReport').innerHTML = html;
+  setTimeout(() => window.print(), 120);
+}
 </script>
 </body>
 </html>

@@ -68,6 +68,13 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 .footer-right a{color:var(--hint);text-decoration:none;}
 .footer-right a:hover{color:var(--accent);}
 @media(max-width:640px){.field-row,.field-row-3{grid-template-columns:1fr;}h1{font-size:20px;}.line-table{font-size:11px;}}
+
+/* ── Save for Export button ── */
+.save-export-wrap{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:20px;padding-top:16px;border-top:0.5px solid var(--border);}
+.save-export-btn{display:inline-flex;align-items:center;gap:7px;background:var(--accent);color:#fff;border:none;border-radius:9px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .15s;}
+.save-export-btn:hover{opacity:.85;}
+.save-export-confirm{font-size:12px;color:var(--teal);display:none;font-weight:500;}
+
 </style>
 </head>
 <body>
@@ -281,6 +288,15 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 <footer>
   <div class="footer-left">Built by <strong>Sam Pellerito</strong> — CPG Operations Tools</div>
   <div class="footer-right"><a href="index.html">← All tools</a></div>
+
+<div class="save-export-wrap">
+  <span class="save-export-confirm" id="saveConfirm">✓ Saved for export</span>
+  <button class="save-export-btn" onclick="saveForExport()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+    Save for Export
+  </button>
+</div>
+
 </footer>
 
 </div>
@@ -505,6 +521,25 @@ document.addEventListener('input', e => {
 addMaterialRow();
 addMaterialRow();
 addPackagingRow();
+
+function saveForExport(){
+  const metrics = [
+    { name:'Traditional COGS / unit', elementId:'out-tradCogs', sentiment:'' },
+    { name:'Variable cost / unit', elementId:'out-varCost', sentiment:'' },
+    { name:'Full absorption cost / unit', elementId:'out-fullCost', sentiment:'bad' },
+    { name:'Contribution margin', elementId:'out-cm', sentiment:'good' },
+    { name:'Gross margin (trad.)', elementId:'out-gm', sentiment:'good' },
+    { name:'Target cost', elementId:'out-targetCost', sentiment:'' },
+  ].map(m => {
+    const el = document.getElementById(m.elementId);
+    const txt = el ? (el.value !== undefined && el.tagName === 'INPUT' ? el.value : el.textContent).trim() : '—';
+    return { name: m.name, formatted: txt, sentiment: m.sentiment };
+  });
+  const data = { toolId: 'cogs-per-unit', toolLabel: 'COGS Per Unit Builder', savedAt: new Date().toISOString(), metrics };
+  localStorage.setItem('cpg_export_cogs-per-unit', JSON.stringify(data));
+  const confirm = document.getElementById('saveConfirm');
+  if(confirm){ confirm.style.display='block'; setTimeout(()=>confirm.style.display='none', 3000); }
+}
 </script>
 </body>
 </html>

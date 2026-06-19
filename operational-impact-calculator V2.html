@@ -168,6 +168,13 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
   <button class="btn btn-danger" id="clearHistoryBtn">Delete all saved</button>
 </div>
 
+<div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:20px;padding-top:16px;border-top:0.5px solid var(--border);">
+  <span id="saveConfirm" style="font-size:12px;color:#1D9E75;display:none;font-weight:500;">✓ Saved for export</span>
+  <button onclick="saveForExport()" style="display:inline-flex;align-items:center;gap:7px;background:#185FA5;color:#fff;border:none;border-radius:9px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+    Save for Export
+  </button>
+</div>
 <footer>
   <div class="footer-left">Built by <strong>Sam Pellerito</strong> — CPG Operations Tools</div>
   <div class="footer-right"><a href="index.html" style="color:var(--hint);text-decoration:none;">← All tools</a></div>
@@ -302,6 +309,22 @@ $id('clearHistoryBtn').addEventListener('click', () => {
 document.querySelectorAll('input,select,textarea').forEach(el => el.addEventListener('input', render));
 render();
 loadHistory();
+
+function saveForExport(){
+  const ids = [
+    { name:'Marketing budget',         id:'out-budget',      sentiment:'' },
+    { name:'Additional revenue',       id:'out-deltaR',      sentiment:'good' },
+    { name:'Additional customers',     id:'out-deltaC',      sentiment:'good' },
+    { name:'New avg CPA',              id:'out-newCPA',      sentiment:'' },
+    { name:'Incremental contribution', id:'out-contribution',sentiment:'good' },
+    { name:'New gross margin',         id:'out-newMargin',   sentiment:'good' },
+  ];
+  const metrics = ids.map(m => ({ name: m.name, formatted: (document.getElementById(m.id)||{}).textContent||'—', sentiment: m.sentiment }));
+  const data = { toolId:'ops-impact', toolLabel:'Operational Impact Calculator', savedAt: new Date().toISOString(), metrics };
+  localStorage.setItem('cpg_export_ops-impact', JSON.stringify(data));
+  const c = document.getElementById('saveConfirm');
+  if(c){ c.style.display='block'; setTimeout(()=>c.style.display='none',3000); }
+}
 </script>
 </body>
 </html>

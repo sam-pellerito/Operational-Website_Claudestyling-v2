@@ -33,7 +33,15 @@ footer{margin-top:52px;padding-top:20px;border-top:0.5px solid var(--border);dis
 .footer-left{font-size:13px;color:var(--muted);}
 .footer-left strong{color:var(--text);}
 .footer-right{font-size:12px;color:var(--hint);}
-@media(max-width:600px){h1{font-size:22px;}.tool-grid{grid-template-columns:1fr;}}
+/* Report banner */
+.report-banner{display:flex;align-items:center;justify-content:space-between;gap:20px;background:var(--navy,#0c1f3a);border-radius:14px;padding:24px 28px;margin-bottom:36px;flex-wrap:wrap;}
+.report-banner-left{}
+.report-banner-tag{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:6px;}
+.report-banner-title{font-size:17px;font-weight:700;color:#fff;margin-bottom:4px;}
+.report-banner-desc{font-size:13px;color:rgba(255,255,255,0.5);max-width:420px;line-height:1.5;}
+.report-banner-btn{display:inline-flex;align-items:center;gap:8px;background:#D97757;color:#fff;text-decoration:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:700;white-space:nowrap;transition:opacity .15s;flex-shrink:0;}
+.report-banner-btn:hover{opacity:.88;}
+@media(max-width:600px){h1{font-size:22px;}.tool-grid{grid-template-columns:1fr;}.report-banner{flex-direction:column;align-items:flex-start;}}
 </style>
 </head>
 <body>
@@ -45,6 +53,18 @@ footer{margin-top:52px;padding-top:20px;border-top:0.5px solid var(--border);dis
   <p class="header-desc">Calculators and charts covering cost of goods, supply chain planning, and trade economics — built for founders, operators, and anyone running a consumer brand.</p>
   <p class="byline">Built by <strong>Sam Pellerito</strong></p>
 </header>
+
+<div class="report-banner">
+  <div class="report-banner-left">
+    <p class="report-banner-tag">New — Powered by Claude</p>
+    <p class="report-banner-title">Generate a Brand Operations Report</p>
+    <p class="report-banner-desc">Channel margin waterfall, trade spend analysis, and cash-to-cash cycle — combined into a single printable PDF.</p>
+  </div>
+  <a class="report-banner-btn" href="ops-report.html">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+    View Sample Report
+  </a>
+</div>
 
 <p class="section-label">Cost of goods &amp; manufacturing</p>
 <div class="tool-grid">
@@ -114,6 +134,11 @@ footer{margin-top:52px;padding-top:20px;border-top:0.5px solid var(--border);dis
     <div class="tool-name">Operational Impact Calculator</div>
     <div class="tool-desc">Estimate how a one-time operational savings reinvested into marketing affects CPA and gross margin.</div>
     <div class="tag-row"><span class="tag tag-type">Calculator</span><span class="tag tag-live">Live</span></div>
+  </a>
+  <a class="tool-card live" href="export-hub.html" style="border-color:rgba(24,95,165,0.2);background:rgba(24,95,165,0.02);">
+    <div class="tool-name">📤 Export Hub</div>
+    <div class="tool-desc">Collect results from any tool you've saved and export everything as a formatted Excel workbook or PDF report.</div>
+    <div class="tag-row"><span class="tag tag-type">Export</span><span class="tag tag-live">Live</span></div>
   </a>
 </div>
 
