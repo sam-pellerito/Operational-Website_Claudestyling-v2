@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Export Hub — CPG Operations Tools</title>
+<style>
+:root{--bg:#f8fafb;--card:#fff;--surface:#f1f3f6;--border:rgba(15,23,36,0.1);--text:#0f1724;--muted:#6b7280;--hint:#9ca3af;--accent:#185FA5;--teal:#1D9E75;--red:#E24B4A;--purple:#7F77DD;--amber:#BA7517;--claude:#D97757;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Inter,ui-sans-serif,system-ui,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;}
+.page{max-width:960px;margin:0 auto;padding:32px 20px 60px;}
+header{margin-bottom:32px;padding-bottom:24px;border-bottom:0.5px solid var(--border);}
+.header-tag{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+h1{font-size:24px;font-weight:600;color:var(--text);margin-bottom:6px;}
+.header-desc{font-size:14px;color:var(--muted);max-width:620px;line-height:1.6;}
+.byline{font-size:13px;color:var(--muted);margin-top:10px;}
+.byline strong{color:var(--text);}
+.section-title{font-size:11px;font-weight:600;color:var(--hint);letter-spacing:.08em;text-transform:uppercase;margin:28px 0 12px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.field{display:flex;flex-direction:column;gap:5px;}
+.field label{font-size:12px;color:var(--muted);font-weight:500;}
+.field input{padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;color:var(--text);background:var(--card);outline:none;transition:border-color .15s;}
+.field input:focus{border-color:var(--accent);}
+.divider{border:none;border-top:0.5px solid var(--border);margin:24px 0;}
+/* Tool cards */
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-bottom:8px;}
+.tool-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;cursor:pointer;transition:all .15s;position:relative;}
+.tool-card:hover{border-color:rgba(24,95,165,0.3);}
+.tool-card.selected{border-color:var(--accent);background:rgba(24,95,165,0.04);}
+.tool-card.no-data{opacity:0.5;cursor:default;}
+.tool-card.no-data:hover{border-color:var(--border);}
+.tool-check{position:absolute;top:14px;right:14px;width:18px;height:18px;border-radius:4px;border:1.5px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.tool-card.selected .tool-check{background:var(--accent);border-color:var(--accent);}
+.tool-check svg{display:none;}
+.tool-card.selected .tool-check svg{display:block;}
+.tool-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;padding-right:24px;}
+.tool-status{font-size:11px;margin-top:6px;display:flex;align-items:center;gap:5px;}
+.status-dot{width:7px;height:7px;border-radius:50%;display:inline-block;}
+.status-dot.saved{background:var(--teal);}
+.status-dot.empty{background:var(--hint);}
+.tool-saved-time{font-size:11px;color:var(--hint);}
+.tool-metrics-preview{margin-top:10px;padding-top:10px;border-top:0.5px solid var(--border);display:flex;flex-wrap:wrap;gap:8px;}
+.mini-metric{font-size:11px;background:var(--surface);border-radius:6px;padding:3px 8px;color:var(--muted);}
+.mini-metric strong{color:var(--text);}
+/* Export actions */
+.export-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-top:24px;}
+.export-bar-left{flex:1;min-width:160px;}
+.export-bar-left p{font-size:13px;font-weight:600;color:var(--text);}
+.export-bar-left span{font-size:12px;color:var(--muted);}
+.btn{border:none;border-radius:9px;padding:11px 24px;font-size:14px;font-weight:600;cursor:pointer;transition:opacity .15s;display:inline-flex;align-items:center;gap:8px;}
+.btn:hover{opacity:.85;}
+.btn-excel{background:#1D6F42;color:#fff;}
+.btn-pdf{background:var(--accent);color:#fff;}
+.btn-refresh{background:var(--surface);color:var(--muted);font-size:13px;padding:9px 16px;}
+/* Select all row */
+.select-row{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+.select-row button{background:none;border:none;font-size:12px;color:var(--accent);cursor:pointer;padding:0;font-weight:500;}
+.select-row span{font-size:12px;color:var(--hint);}
+/* Empty state */
+.empty-state{text-align:center;padding:40px 20px;color:var(--muted);}
+.empty-state p{font-size:14px;margin-bottom:6px;}
+.empty-state small{font-size:12px;color:var(--hint);}
+/* ── Print / PDF styles ──────────────────────── */
+@media print {
+  @page{size:letter;margin:1.4cm 1.6cm;}
+  body{background:#fff;font-size:12px;}
+  .page{padding:0;max-width:100%;}
+  .no-print{display:none!important;}
+  .print-only{display:block!important;}
+  .print-page-break{page-break-before:always;}
+  .pdf-section{page-break-inside:avoid;}
+}
+.print-only{display:none;}
+/* PDF Report styles */
+.pdf-cover{padding:48px 0 32px;}
+.pdf-cover-tag{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;}
+.pdf-cover-title{font-size:32px;font-weight:700;color:var(--text);margin-bottom:8px;line-height:1.2;}
+.pdf-cover-sub{font-size:15px;color:var(--muted);margin-bottom:32px;}
+.pdf-cover-meta{display:flex;gap:32px;flex-wrap:wrap;margin-bottom:32px;}
+.pdf-meta-item label{font-size:10px;font-weight:600;color:var(--hint);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:2px;}
+.pdf-meta-item span{font-size:14px;font-weight:600;color:var(--text);}
+.pdf-claude-badge{display:inline-flex;align-items:center;gap:8px;background:#fdf4f0;border:1px solid rgba(217,119,87,0.3);border-radius:8px;padding:7px 14px;margin-top:8px;}
+.pdf-claude-icon{width:22px;height:22px;}
+.pdf-claude-text{font-size:11px;color:var(--claude);font-weight:600;}
+.pdf-divider{border:none;border-top:1.5px solid var(--border);margin:24px 0;}
+.pdf-section-header{font-size:11px;font-weight:700;color:var(--hint);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;padding-bottom:8px;border-bottom:0.5px solid var(--border);}
+.pdf-metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.pdf-metric{background:var(--surface);border-radius:8px;padding:12px 14px;}
+.pdf-metric-label{font-size:10px;color:var(--muted);margin-bottom:3px;}
+.pdf-metric-value{font-size:18px;font-weight:700;color:var(--text);}
+.pdf-metric-value.good{color:var(--teal);}
+.pdf-metric-value.bad{color:var(--red);}
+.pdf-metric-value.warn{color:var(--amber);}
+.pdf-table{width:100%;border-collapse:collapse;font-size:11.5px;margin-bottom:8px;}
+.pdf-table th{font-size:9.5px;font-weight:700;color:var(--hint);text-transform:uppercase;letter-spacing:.05em;padding:7px 10px;border-bottom:0.5px solid var(--border);background:var(--surface);text-align:right;}
+.pdf-table th:first-child{text-align:left;}
+.pdf-table td{padding:8px 10px;border-bottom:0.5px solid var(--border);text-align:right;color:var(--muted);}
+.pdf-table td:first-child{text-align:left;color:var(--text);font-weight:500;}
+.pdf-table tr.subtotal td,.pdf-table tr.total td{font-weight:700;color:var(--text);background:rgba(24,95,165,0.04);}
+.pdf-footer{display:flex;justify-content:space-between;align-items:center;margin-top:24px;padding-top:14px;border-top:0.5px solid var(--border);font-size:10px;color:var(--hint);}
+footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.footer-left{font-size:13px;color:var(--muted);}
+.footer-left strong{color:var(--text);}
+.footer-right a{color:var(--hint);text-decoration:none;font-size:12px;}
+.footer-right a:hover{color:var(--accent);}
+@media(max-width:600px){.field-row{grid-template-columns:1fr;}.export-bar{flex-direction:column;align-items:flex-start;}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ── Screen UI (hidden on print) ─────────── -->
+<div class="no-print">
+
+<nav style="margin-bottom:20px;">
+  <a href="index.html" style="font-size:13px;color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+    <span style="font-size:16px;line-height:1;">←</span> All tools
+  </a>
+</nav>
+
+<header>
+  <p class="header-tag">CPG Operations Tools</p>
+  <h1>Export Hub</h1>
+  <p class="header-desc">Select the tools you've saved and export everything to a formatted Excel workbook or a styled PDF report. Use the "Save for Export" button on any tool page to capture your results here.</p>
+  <p class="byline">Built by <strong>Sam Pellerito</strong></p>
+</header>
+
+<p class="section-title">Report details</p>
+<div class="field-row">
+  <div class="field">
+    <label>Brand / company name</label>
+    <input type="text" id="brandName" placeholder="e.g. Oat House Foods" oninput="saveSettings()"/>
+  </div>
+  <div class="field">
+    <label>Reporting period</label>
+    <input type="text" id="reportPeriod" placeholder="e.g. Q1 2026 or FY 2025" oninput="saveSettings()"/>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<p class="section-title">Saved tool results</p>
+<div class="select-row">
+  <button onclick="selectAll()">Select all with data</button>
+  <button onclick="deselectAll()">Deselect all</button>
+  <span id="selectedCount">0 selected</span>
+</div>
+<div class="tool-grid" id="toolGrid"></div>
+<p style="font-size:12px;color:var(--hint);margin-top:8px;">Go to any tool, run your numbers, then click <strong>"Save for Export"</strong> — it will appear here.</p>
+
+<div class="export-bar">
+  <div class="export-bar-left">
+    <p>Ready to export</p>
+    <span id="exportReadyLabel">Select tools above to include them</span>
+  </div>
+  <button class="btn btn-refresh" onclick="refresh()">↺ Refresh</button>
+  <button class="btn btn-excel" onclick="exportExcel()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+    Export to Excel
+  </button>
+  <button class="btn btn-pdf" onclick="exportPDF()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    Export to PDF
+  </button>
+</div>
+
+</div><!-- end .no-print -->
+
+<!-- ── Print-only PDF report ──────────────── -->
+<div class="print-only" id="pdfReport"></div>
+
+<div class="no-print">
+<footer>
+  <div class="footer-left">Built by <strong>Sam Pellerito</strong> — CPG Operations Tools</div>
+  <div class="footer-right"><a href="index.html">← All tools</a></div>
+</footer>
+</div>
+
+</div><!-- end .page -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" crossorigin="anonymous"></script>
+<script>
+// ── Tool registry ───────────────────────────────
+const TOOL_REGISTRY = [
+  { id:'cogs-per-unit',       label:'COGS Per Unit Builder',              href:'cogs-per-unit-builder.html',          icon:'🧮' },
+  { id:'cost-variance',       label:'Standard vs Actual Cost Variance',   href:'standard-vs-actual-cost-variance.html',icon:'📊' },
+  { id:'make-vs-buy',         label:'Make vs Buy Decision',               href:'make-vs-buy-decision.html',           icon:'⚖️' },
+  { id:'moq-optimizer',       label:'MOQ & Run Size Optimizer',           href:'moq-run-size-optimizer.html',         icon:'📦' },
+  { id:'demand-planning',     label:'Demand Planning & Safety Stock',     href:'demand-planning-safety-stock.html',   icon:'📈' },
+  { id:'cash-to-cash',        label:'Cash-to-Cash Cycle',                 href:'cash-to-cash-cycle.html',             icon:'💵' },
+  { id:'stockout-overstock',  label:'Stockout vs Overstock Cost',         href:'stockout-vs-overstock-cost.html',     icon:'⚠️' },
+  { id:'landed-cost',         label:'Landed Cost & Freight',              href:'landed-cost-freight.html',            icon:'🚢' },
+  { id:'trade-spend',         label:'Trade Spend & Net Revenue',          href:'trade-spend-net-revenue.html',        icon:'🏪' },
+  { id:'channel-margin',      label:'Channel Margin Waterfall',           href:'channel-margin-waterfall.html',       icon:'📉' },
+  { id:'ops-impact',          label:'Operational Impact Calculator',      href:'operational-impact-calculator.html',  icon:'⚡' },
+];
+
+// ── State ───────────────────────────────────────
+let savedData = {};    // toolId → export object
+let selected  = new Set();
+
+const STORE_KEY = tool => 'cpg_export_' + tool;
+const SETTINGS_KEY = 'cpg_export_settings';
+
+// ── Load ────────────────────────────────────────
+function loadAll(){
+  savedData = {};
+  TOOL_REGISTRY.forEach(t => {
+    const raw = localStorage.getItem(STORE_KEY(t.id));
+    if(raw){ try{ savedData[t.id] = JSON.parse(raw); } catch(e){} }
+  });
+}
+
+function loadSettings(){
+  try{
+    const s = JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}');
+    if(s.brandName)   document.getElementById('brandName').value   = s.brandName;
+    if(s.reportPeriod) document.getElementById('reportPeriod').value = s.reportPeriod;
+  } catch(e){}
+}
+
+function saveSettings(){
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify({
+    brandName:    document.getElementById('brandName').value,
+    reportPeriod: document.getElementById('reportPeriod').value,
+  }));
+}
+
+// ── UI ──────────────────────────────────────────
+function buildGrid(){
+  const grid = document.getElementById('toolGrid');
+  grid.innerHTML = '';
+
+  TOOL_REGISTRY.forEach(t => {
+    const data    = savedData[t.id];
+    const hasSave = !!data;
+    const isSel   = selected.has(t.id);
+
+    const card = document.createElement('div');
+    card.className = 'tool-card' + (isSel?' selected':'') + (!hasSave?' no-data':'');
+    card.id = 'card-'+t.id;
+    if(hasSave) card.onclick = () => toggleSelect(t.id);
+
+    const when = hasSave ? timeAgo(data.savedAt) : '';
+    const previewHtml = hasSave ? buildPreview(data) : '';
+
+    card.innerHTML = `
+      <div class="tool-check">
+        <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
+          <path d="M1 4L4 7L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="tool-name">${t.icon} ${t.label}</div>
+      <div class="tool-status">
+        <span class="status-dot ${hasSave?'saved':'empty'}"></span>
+        <span style="font-size:11px;color:${hasSave?'var(--teal)':'var(--hint)'}">
+          ${hasSave ? 'Data saved' : 'No data — <a href="'+t.href+'" style="color:var(--accent);text-decoration:none;">open tool →</a>'}
+        </span>
+        ${when ? `<span class="tool-saved-time">${when}</span>` : ''}
+      </div>
+      ${previewHtml}`;
+    grid.appendChild(card);
+  });
+
+  updateCount();
+}
+
+function buildPreview(data){
+  if(!data.metrics || !data.metrics.length) return '';
+  const top = data.metrics.slice(0,3);
+  return '<div class="tool-metrics-preview">'
+    + top.map(m => `<span class="mini-metric">${m.name}: <strong>${m.formatted}</strong></span>`).join('')
+    + '</div>';
+}
+
+function toggleSelect(id){
+  if(!savedData[id]) return;
+  if(selected.has(id)) selected.delete(id);
+  else selected.add(id);
+  buildGrid();
+}
+
+function selectAll(){
+  TOOL_REGISTRY.forEach(t => { if(savedData[t.id]) selected.add(t.id); });
+  buildGrid();
+}
+
+function deselectAll(){
+  selected.clear();
+  buildGrid();
+}
+
+function updateCount(){
+  const n = selected.size;
+  document.getElementById('selectedCount').textContent = n + ' selected';
+  document.getElementById('exportReadyLabel').textContent =
+    n === 0 ? 'Select tools above to include them'
+             : n + ' tool' + (n>1?'s':'') + ' ready to export';
+}
+
+function refresh(){
+  loadAll();
+  buildGrid();
+}
+
+// ── Time helper ─────────────────────────────────
+function timeAgo(iso){
+  try{
+    const diff = (Date.now() - new Date(iso)) / 1000;
+    if(diff < 60)   return 'just now';
+    if(diff < 3600) return Math.round(diff/60)+'m ago';
+    if(diff < 86400) return Math.round(diff/3600)+'h ago';
+    return Math.round(diff/86400)+'d ago';
+  }catch(e){ return ''; }
+}
+
+// ── Excel export ────────────────────────────────
+function exportExcel(){
+  if(selected.size === 0){ alert('Select at least one tool to export.'); return; }
+  if(typeof XLSX === 'undefined'){ alert('Excel library not loaded yet — try again in a moment.'); return; }
+
+  const brand  = document.getElementById('brandName').value   || 'CPG Brand';
+  const period = document.getElementById('reportPeriod').value || 'Export';
+  const wb     = XLSX.utils.book_new();
+
+  // Sheet 1: Executive Summary
+  const summaryRows = [
+    [brand + ' — CPG Operations Export', '', '', period],
+    [],
+    ['Tool', 'Metric', 'Value'],
+  ];
+
+  const selectedTools = TOOL_REGISTRY.filter(t => selected.has(t.id));
+
+  selectedTools.forEach(t => {
+    const data = savedData[t.id];
+    if(!data) return;
+    summaryRows.push([]);
+    summaryRows.push([t.icon + ' ' + t.label]);
+    (data.metrics||[]).forEach(m => {
+      summaryRows.push(['', m.name, m.formatted]);
+    });
+  });
+
+  const wsSummary = XLSX.utils.aoa_to_sheet(summaryRows);
+  wsSummary['!cols'] = [{wch:36},{wch:28},{wch:18},{wch:14}];
+  XLSX.utils.book_append_sheet(wb, wsSummary, 'Summary');
+
+  // One sheet per tool
+  selectedTools.forEach(t => {
+    const data = savedData[t.id];
+    if(!data) return;
+
+    const rows = [[t.icon + ' ' + t.label], []];
+
+    // Metrics block
+    if(data.metrics && data.metrics.length){
+      rows.push(['Metric', 'Value']);
+      data.metrics.forEach(m => rows.push([m.name, m.formatted]));
+      rows.push([]);
+    }
+
+    // Table block
+    if(data.tableHeaders && data.tableRows && data.tableRows.length){
+      rows.push(data.tableHeaders);
+      data.tableRows.forEach(r => rows.push(r));
+    }
+
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    ws['!cols'] = [{wch:32},{wch:18},{wch:18},{wch:18},{wch:18}];
+
+    // Safe sheet name (max 31 chars, no invalid chars)
+    const sheetName = t.label.replace(/[:\\\/\?\*\[\]]/g,'').slice(0,31);
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+  });
+
+  const filename = (brand + ' CPG Ops ' + period).replace(/[^a-zA-Z0-9 ]/g,'').trim() + '.xlsx';
+  XLSX.writeFile(wb, filename);
+}
+
+// ── PDF export ──────────────────────────────────
+function exportPDF(){
+  if(selected.size === 0){ alert('Select at least one tool to export.'); return; }
+
+  const brand  = document.getElementById('brandName').value   || 'CPG Brand';
+  const period = document.getElementById('reportPeriod').value || new Date().toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  const now    = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+
+  const selectedTools = TOOL_REGISTRY.filter(t => selected.has(t.id));
+
+  // Build print HTML
+  let html = `
+    <!-- Cover page -->
+    <div class="pdf-cover pdf-section">
+      <p class="pdf-cover-tag">CPG Operations Report</p>
+      <h2 class="pdf-cover-title">${escHtml(brand)}</h2>
+      <p class="pdf-cover-sub">${escHtml(period)}</p>
+      <div class="pdf-cover-meta">
+        <div class="pdf-meta-item"><label>Generated</label><span>${now}</span></div>
+        <div class="pdf-meta-item"><label>Tools included</label><span>${selectedTools.length}</span></div>
+        <div class="pdf-meta-item"><label>Data source</label><span>CPG Operations Tools</span></div>
+      </div>
+      ${claudeBadge()}
+    </div>
+    <div class="pdf-divider"></div>
+
+    <!-- Tool sections -->
+    ${selectedTools.map((t, i) => {
+      const data = savedData[t.id];
+      if(!data) return '';
+      const breakClass = i > 0 ? 'print-page-break' : '';
+      return `
+        <div class="pdf-section ${breakClass}">
+          <p class="pdf-section-header">${t.icon} ${t.label}</p>
+          ${buildPDFMetrics(data)}
+          ${buildPDFTable(data)}
+          ${i < selectedTools.length - 1 ? '' : claudeFooter(brand, period)}
+        </div>`;
+    }).join('')}
+  `;
+
+  document.getElementById('pdfReport').innerHTML = html;
+
+  setTimeout(() => window.print(), 150);
+}
+
+function claudeBadge(){
+  return `<div class="pdf-claude-badge">
+    ${claudeLogoSVG()}
+    <span class="pdf-claude-text">Powered by Claude</span>
+  </div>`;
+}
+
+function claudeFooter(brand, period){
+  return `<div class="pdf-footer">
+    <span>${escHtml(brand)} — ${escHtml(period)}</span>
+    <span style="display:flex;align-items:center;gap:6px;">${claudeLogoSVG(16)} Powered by Claude · cpg-ops-tools</span>
+  </div>`;
+}
+
+function claudeLogoSVG(size=20){
+  // Anthropic-style abstract mark — simplified geometric representation
+  return `<svg width="${size}" height="${size}" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="40" height="40" rx="8" fill="#D97757"/>
+    <path d="M20 8 L28 28 H24 L22 22 H18 L16 28 H12 L20 8Z M19 18 H21 L20 14 Z" fill="white"/>
+  </svg>`;
+}
+
+function buildPDFMetrics(data){
+  if(!data.metrics || !data.metrics.length) return '';
+  return `<div class="pdf-metric-grid">
+    ${data.metrics.slice(0,6).map(m => {
+      const cls = m.sentiment === 'good' ? 'good' : m.sentiment === 'bad' ? 'bad' : m.sentiment === 'warn' ? 'warn' : '';
+      return `<div class="pdf-metric">
+        <div class="pdf-metric-label">${escHtml(m.name)}</div>
+        <div class="pdf-metric-value ${cls}">${escHtml(m.formatted)}</div>
+        ${m.sub ? `<div style="font-size:10px;color:var(--hint);margin-top:2px">${escHtml(m.sub)}</div>` : ''}
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function buildPDFTable(data){
+  if(!data.tableHeaders || !data.tableRows || !data.tableRows.length) return '';
+  const header = data.tableHeaders.map(h => `<th>${escHtml(h)}</th>`).join('');
+  const rows   = data.tableRows.map(row => {
+    const cls = row._class ? ` class="${row._class}"` : '';
+    const cells = row.filter((_, i) => i !== '_class').map(c => `<td>${escHtml(String(c))}</td>`).join('');
+    return `<tr${cls}>${cells}</tr>`;
+  }).join('');
+  return `<table class="pdf-table"><thead><tr>${header}</tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ── Init ────────────────────────────────────────
+loadAll();
+loadSettings();
+buildGrid();
+</script>
+</body>
+</html>
