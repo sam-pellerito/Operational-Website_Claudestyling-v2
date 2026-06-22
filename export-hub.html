@@ -62,41 +62,70 @@ h1{font-size:24px;font-weight:600;color:var(--text);margin-bottom:6px;}
 .empty-state small{font-size:12px;color:var(--hint);}
 /* ── Print / PDF styles ──────────────────────── */
 @media print {
-  @page{size:letter;margin:1.4cm 1.6cm;}
-  body{background:#fff;font-size:12px;}
+  @page{size:letter;margin:0;}
+  body{background:#fff;}
   .page{padding:0;max-width:100%;}
   .no-print{display:none!important;}
   .print-only{display:block!important;}
-  .print-page-break{page-break-before:always;}
-  .pdf-section{page-break-inside:avoid;}
+  .rpt-section{page-break-inside:avoid;}
+  .rpt-break{page-break-before:always;}
 }
 .print-only{display:none;}
-/* PDF Report styles */
-.pdf-cover{padding:48px 0 32px;}
-.pdf-cover-tag{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;}
-.pdf-cover-title{font-size:32px;font-weight:700;color:var(--text);margin-bottom:8px;line-height:1.2;}
-.pdf-cover-sub{font-size:15px;color:var(--muted);margin-bottom:32px;}
-.pdf-cover-meta{display:flex;gap:32px;flex-wrap:wrap;margin-bottom:32px;}
-.pdf-meta-item label{font-size:10px;font-weight:600;color:var(--hint);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:2px;}
-.pdf-meta-item span{font-size:14px;font-weight:600;color:var(--text);}
-.pdf-claude-badge{display:inline-flex;align-items:center;gap:8px;background:#fdf4f0;border:1px solid rgba(217,119,87,0.3);border-radius:8px;padding:7px 14px;margin-top:8px;}
-.pdf-claude-icon{width:22px;height:22px;}
-.pdf-claude-text{font-size:11px;color:var(--claude);font-weight:600;}
-.pdf-divider{border:none;border-top:1.5px solid var(--border);margin:24px 0;}
-.pdf-section-header{font-size:11px;font-weight:700;color:var(--hint);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;padding-bottom:8px;border-bottom:0.5px solid var(--border);}
-.pdf-metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
-.pdf-metric{background:var(--surface);border-radius:8px;padding:12px 14px;}
-.pdf-metric-label{font-size:10px;color:var(--muted);margin-bottom:3px;}
-.pdf-metric-value{font-size:18px;font-weight:700;color:var(--text);}
-.pdf-metric-value.good{color:var(--teal);}
-.pdf-metric-value.bad{color:var(--red);}
-.pdf-metric-value.warn{color:var(--amber);}
-.pdf-table{width:100%;border-collapse:collapse;font-size:11.5px;margin-bottom:8px;}
-.pdf-table th{font-size:9.5px;font-weight:700;color:var(--hint);text-transform:uppercase;letter-spacing:.05em;padding:7px 10px;border-bottom:0.5px solid var(--border);background:var(--surface);text-align:right;}
-.pdf-table th:first-child{text-align:left;}
-.pdf-table td{padding:8px 10px;border-bottom:0.5px solid var(--border);text-align:right;color:var(--muted);}
-.pdf-table td:first-child{text-align:left;color:var(--text);font-weight:500;}
-.pdf-table tr.subtotal td,.pdf-table tr.total td{font-weight:700;color:var(--text);background:rgba(24,95,165,0.04);}
+
+/* ── Styled PDF report ───────────────────────── */
+/* Variables are already on :root above */
+.rpt{font-family:Inter,ui-sans-serif,system-ui,Arial,sans-serif;font-size:14px;line-height:1.6;color:var(--text);}
+/* Cover */
+.rpt-cover{background:#0c1f3a;padding:52px 52px 44px;position:relative;overflow:hidden;}
+.rpt-cover::before{content:'';position:absolute;top:-60px;right:-80px;width:340px;height:340px;border-radius:50%;background:rgba(255,255,255,0.03);}
+.rpt-cover::after{content:'';position:absolute;bottom:-40px;left:60px;width:200px;height:200px;border-radius:50%;background:rgba(24,95,165,0.15);}
+.rpt-cover-tag{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:14px;}
+.rpt-cover-title{font-size:30px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:8px;}
+.rpt-cover-sub{font-size:14px;color:rgba(255,255,255,0.5);margin-bottom:36px;line-height:1.5;}
+.rpt-cover-meta{display:flex;gap:32px;flex-wrap:wrap;margin-bottom:28px;position:relative;z-index:1;}
+.rpt-cover-meta-item label{font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,0.4);display:block;margin-bottom:4px;}
+.rpt-cover-meta-item span{font-size:16px;font-weight:700;color:#fff;}
+.rpt-cover-rule{border:none;border-top:1px solid rgba(255,255,255,0.1);margin-bottom:24px;}
+.rpt-claude-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(217,119,87,0.15);border:1px solid rgba(217,119,87,0.3);border-radius:8px;padding:8px 14px;position:relative;z-index:1;}
+.rpt-claude-text{font-size:11px;font-weight:700;color:rgba(217,119,87,0.9);}
+/* Section group */
+.rpt-group{padding:10px 52px;background:var(--surface);font-size:9.5px;font-weight:700;color:var(--hint);text-transform:uppercase;letter-spacing:.12em;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+/* Section */
+.rpt-section{padding:36px 52px;}
+.rpt-section+.rpt-section{border-top:1px solid var(--border);}
+.rpt-hd{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.rpt-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background:rgba(24,95,165,0.08);}
+.rpt-title{font-size:17px;font-weight:700;color:var(--text);}
+.rpt-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+/* KPI row */
+.rpt-kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:20px;}
+.rpt-kpi{background:var(--surface);border-radius:10px;padding:13px 15px;}
+.rpt-kpi-label{font-size:9.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;}
+.rpt-kpi-val{font-size:19px;font-weight:700;color:var(--text);}
+.rpt-kpi-val.good{color:var(--teal);}
+.rpt-kpi-val.bad{color:var(--red);}
+.rpt-kpi-val.warn{color:var(--amber);}
+/* Table */
+.rpt-table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:8px;}
+.rpt-table th{font-size:9.5px;font-weight:700;color:var(--hint);text-transform:uppercase;letter-spacing:.05em;padding:8px 12px;border-bottom:1px solid var(--border);background:var(--surface);text-align:right;white-space:nowrap;}
+.rpt-table th:first-child{text-align:left;}
+.rpt-table td{padding:8px 12px;border-bottom:0.5px solid var(--border);text-align:right;color:var(--muted);}
+.rpt-table td:first-child{text-align:left;color:var(--text);font-weight:500;}
+.rpt-table tr:last-child td{border-bottom:none;}
+.rpt-table tr.subtotal td{font-weight:700;color:var(--text);background:rgba(24,95,165,0.03);border-top:1px solid var(--border);}
+.rpt-table tr.total td{font-weight:700;color:var(--teal);border-top:1px solid var(--border);}
+/* Insight */
+.rpt-insight{border-left:3px solid var(--accent);background:rgba(24,95,165,0.04);border-radius:0 8px 8px 0;padding:11px 15px;font-size:12.5px;color:var(--muted);margin-top:16px;line-height:1.6;}
+.rpt-insight.good{border-color:var(--teal);background:rgba(29,158,117,0.08);}
+.rpt-insight.bad{border-color:var(--red);background:rgba(226,75,74,0.08);}
+.rpt-insight.warn{border-color:var(--amber);background:rgba(186,117,23,0.08);}
+/* Footer */
+.rpt-footer{background:#0c1f3a;padding:22px 52px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+.rpt-footer-left{font-size:11.5px;color:rgba(255,255,255,0.45);}
+.rpt-footer-left strong{color:rgba(255,255,255,0.8);}
+.rpt-footer-badge{display:flex;align-items:center;gap:7px;}
+.rpt-footer-badge-text{font-size:11px;font-weight:700;color:rgba(217,119,87,0.8);}
+/* Legacy compat */
 .pdf-footer{display:flex;justify-content:space-between;align-items:center;margin-top:24px;padding-top:14px;border-top:0.5px solid var(--border);font-size:10px;color:var(--hint);}
 footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
 .footer-left{font-size:13px;color:var(--muted);}
@@ -378,6 +407,15 @@ function exportExcel(){
   XLSX.writeFile(wb, filename);
 }
 
+// ── Tool category groups ────────────────────────
+const TOOL_GROUPS = [
+  { label: 'Cost Structure',              ids: ['cogs-per-unit','cost-variance'] },
+  { label: 'Procurement & Planning',      ids: ['make-vs-buy','moq-optimizer','demand-planning'] },
+  { label: 'Working Capital & Risk',      ids: ['cash-to-cash','stockout-overstock'] },
+  { label: 'Channel Economics & Trade',   ids: ['landed-cost','trade-spend','channel-margin'] },
+  { label: 'Strategic Impact',            ids: ['ops-impact'] },
+];
+
 // ── PDF export ──────────────────────────────────
 function exportPDF(){
   if(selected.size === 0){ alert('Select at least one tool to export.'); return; }
@@ -385,61 +423,67 @@ function exportPDF(){
   const brand  = document.getElementById('brandName').value   || 'CPG Brand';
   const period = document.getElementById('reportPeriod').value || new Date().toLocaleDateString('en-US',{month:'long',year:'numeric'});
   const now    = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
-
   const selectedTools = TOOL_REGISTRY.filter(t => selected.has(t.id));
 
-  // Build print HTML
-  let html = `
-    <!-- Cover page -->
-    <div class="pdf-cover pdf-section">
-      <p class="pdf-cover-tag">CPG Operations Report</p>
-      <h2 class="pdf-cover-title">${escHtml(brand)}</h2>
-      <p class="pdf-cover-sub">${escHtml(period)}</p>
-      <div class="pdf-cover-meta">
-        <div class="pdf-meta-item"><label>Generated</label><span>${now}</span></div>
-        <div class="pdf-meta-item"><label>Tools included</label><span>${selectedTools.length}</span></div>
-        <div class="pdf-meta-item"><label>Data source</label><span>CPG Operations Tools</span></div>
+  // Build cover
+  let html = `<div class="rpt">
+    <div class="rpt-cover">
+      <p class="rpt-cover-tag">CPG Operations Report</p>
+      <h2 class="rpt-cover-title">${escHtml(brand)}</h2>
+      <p class="rpt-cover-sub">${escHtml(period)}</p>
+      <hr class="rpt-cover-rule"/>
+      <div class="rpt-cover-meta">
+        <div class="rpt-cover-meta-item"><label>Generated</label><span>${now}</span></div>
+        <div class="rpt-cover-meta-item"><label>Tools included</label><span>${selectedTools.length}</span></div>
       </div>
-      ${claudeBadge()}
-    </div>
-    <div class="pdf-divider"></div>
+      <div class="rpt-claude-badge">
+        ${claudeLogoSVG(18)}
+        <span class="rpt-claude-text">Powered by Claude &middot; CPG Operations Tools</span>
+      </div>
+    </div>`;
 
-    <!-- Tool sections -->
-    ${selectedTools.map((t, i) => {
+  // Build grouped sections
+  TOOL_GROUPS.forEach(group => {
+    const groupTools = selectedTools.filter(t => group.ids.includes(t.id));
+    if(!groupTools.length) return;
+
+    html += `<div class="rpt-group">${escHtml(group.label)}</div>`;
+
+    groupTools.forEach(t => {
       const data = savedData[t.id];
-      if(!data) return '';
-      const breakClass = i > 0 ? 'print-page-break' : '';
-      return `
-        <div class="pdf-section ${breakClass}">
-          <p class="pdf-section-header">${t.icon} ${t.label}</p>
+      if(!data) return;
+      html += `
+        <div class="rpt-section">
+          <div class="rpt-hd">
+            <div class="rpt-icon">${t.icon}</div>
+            <div>
+              <div class="rpt-title">${escHtml(t.label)}</div>
+              ${data.savedAt ? `<div class="rpt-sub">Saved ${timeAgo(data.savedAt)}</div>` : ''}
+            </div>
+          </div>
           ${buildPDFMetrics(data)}
           ${buildPDFTable(data)}
-          ${i < selectedTools.length - 1 ? '' : claudeFooter(brand, period)}
+          ${buildPDFInsight(data)}
         </div>`;
-    }).join('')}
-  `;
+    });
+  });
+
+  // Footer
+  html += `
+    <div class="rpt-footer">
+      <div class="rpt-footer-left"><strong>${escHtml(brand)}</strong> &mdash; ${escHtml(period)}</div>
+      <div class="rpt-footer-badge">
+        ${claudeLogoSVG(16)}
+        <span class="rpt-footer-badge-text">Powered by Claude</span>
+      </div>
+    </div>
+  </div>`;
 
   document.getElementById('pdfReport').innerHTML = html;
-
   setTimeout(() => window.print(), 150);
 }
 
-function claudeBadge(){
-  return `<div class="pdf-claude-badge">
-    ${claudeLogoSVG()}
-    <span class="pdf-claude-text">Powered by Claude</span>
-  </div>`;
-}
-
-function claudeFooter(brand, period){
-  return `<div class="pdf-footer">
-    <span>${escHtml(brand)} — ${escHtml(period)}</span>
-    <span style="display:flex;align-items:center;gap:6px;">${claudeLogoSVG(16)} Powered by Claude · cpg-ops-tools</span>
-  </div>`;
-}
-
 function claudeLogoSVG(size=20){
-  // Anthropic-style abstract mark — simplified geometric representation
   return `<svg width="${size}" height="${size}" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect width="40" height="40" rx="8" fill="#D97757"/>
     <path d="M20 8 L28 28 H24 L22 22 H18 L16 28 H12 L20 8Z M19 18 H21 L20 14 Z" fill="white"/>
@@ -448,12 +492,12 @@ function claudeLogoSVG(size=20){
 
 function buildPDFMetrics(data){
   if(!data.metrics || !data.metrics.length) return '';
-  return `<div class="pdf-metric-grid">
+  return `<div class="rpt-kpi-row">
     ${data.metrics.slice(0,6).map(m => {
-      const cls = m.sentiment === 'good' ? 'good' : m.sentiment === 'bad' ? 'bad' : m.sentiment === 'warn' ? 'warn' : '';
-      return `<div class="pdf-metric">
-        <div class="pdf-metric-label">${escHtml(m.name)}</div>
-        <div class="pdf-metric-value ${cls}">${escHtml(m.formatted)}</div>
+      const cls = m.sentiment==='good'?'good':m.sentiment==='bad'?'bad':m.sentiment==='warn'?'warn':'';
+      return `<div class="rpt-kpi">
+        <div class="rpt-kpi-label">${escHtml(m.name)}</div>
+        <div class="rpt-kpi-val ${cls}">${escHtml(m.formatted)}</div>
         ${m.sub ? `<div style="font-size:10px;color:var(--hint);margin-top:2px">${escHtml(m.sub)}</div>` : ''}
       </div>`;
     }).join('')}
@@ -468,7 +512,17 @@ function buildPDFTable(data){
     const cells = row.filter((_, i) => i !== '_class').map(c => `<td>${escHtml(String(c))}</td>`).join('');
     return `<tr${cls}>${cells}</tr>`;
   }).join('');
-  return `<table class="pdf-table"><thead><tr>${header}</tr></thead><tbody>${rows}</tbody></table>`;
+  return `<table class="rpt-table"><thead><tr>${header}</tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function buildPDFInsight(data){
+  if(!data.metrics || !data.metrics.length) return '';
+  // Find the most meaningful metric to surface as an insight
+  const best = data.metrics.find(m => m.sentiment === 'good') || data.metrics[0];
+  const worst = data.metrics.find(m => m.sentiment === 'bad');
+  const m = worst || best;
+  const cls = m.sentiment==='good'?'good':m.sentiment==='bad'?'bad':m.sentiment==='warn'?'warn':'';
+  return `<div class="rpt-insight ${cls}"><strong>${escHtml(m.name)}:</strong> ${escHtml(m.formatted)}</div>`;
 }
 
 function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
