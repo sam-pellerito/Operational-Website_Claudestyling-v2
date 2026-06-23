@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Standard vs Actual Cost Variance — Sam Pellerito</title>
-<meta name="description" content="See where production overruns happen — yield loss, material waste, labor inefficiency, and overhead variance. Built by Sam Pellerito."/>
+<meta name="description" content="Compare your expected production cost to what actually happened, then see which overruns hurt margin the most. Built by Sam Pellerito."/>
 <style>
 :root{--bg:#f8fafb;--card:#fff;--surface:#f1f3f6;--border:rgba(15,23,36,0.1);--text:#0f1724;--muted:#6b7280;--hint:#9ca3af;--accent:#185FA5;--teal:#1D9E75;--red:#E24B4A;--purple:#7F77DD;--amber:#BA7517;}
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -68,6 +68,27 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 .footer-right a:hover{color:var(--accent);}
 @media(max-width:640px){.field-row,.field-row-3{grid-template-columns:1fr;}h1{font-size:20px;}.col-label{grid-template-columns:1fr 1fr 1fr;}}
 
+/* ── How to use block ── */
+.how-to{background:rgba(24,95,165,0.04);border:1px solid rgba(24,95,165,0.12);border-radius:10px;padding:14px 18px;margin:16px 0 0;display:flex;gap:20px;flex-wrap:wrap;}
+.how-to-step{display:flex;align-items:flex-start;gap:8px;min-width:160px;flex:1;}
+.how-to-num{width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.how-to-text{font-size:12px;color:var(--muted);line-height:1.5;}
+/* ── Load sample button ── */
+.sample-btn{display:inline-flex;align-items:center;gap:6px;background:rgba(29,158,117,0.08);border:1px solid rgba(29,158,117,0.2);border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;color:var(--teal);cursor:pointer;transition:all .15s;margin-top:14px;}
+.sample-btn:hover{background:rgba(29,158,117,0.15);}
+/* ── Diagnosis box ── */
+.diagnosis{border-radius:10px;padding:14px 18px;margin-bottom:20px;border-left:3px solid;}
+.diagnosis.unfav{background:rgba(226,75,74,0.06);border-color:var(--red);}
+.diagnosis.fav{background:rgba(29,158,117,0.06);border-color:var(--teal);}
+.diagnosis.neutral{background:var(--surface);border-color:var(--border);}
+.diagnosis-label{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--hint);margin-bottom:4px;}
+.diagnosis-text{font-size:14px;color:var(--text);line-height:1.5;}
+/* ── Related tools ── */
+.related-tools{margin-top:36px;padding-top:20px;border-top:0.5px solid var(--border);}
+.related-title{font-size:11px;font-weight:600;color:var(--hint);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;}
+.related-grid{display:flex;flex-wrap:wrap;gap:8px;}
+.related-link{display:inline-flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:13px;color:var(--text);text-decoration:none;transition:border-color .15s;}
+.related-link:hover{border-color:rgba(24,95,165,0.3);color:var(--accent);}
 /* ── Save for Export button ── */
 .save-export-wrap{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:20px;padding-top:16px;border-top:0.5px solid var(--border);}
 .save-export-btn{display:inline-flex;align-items:center;gap:7px;background:var(--accent);color:#fff;border:none;border-radius:9px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .15s;}
@@ -118,8 +139,19 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 <header>
   <p class="header-tag">CPG Operations Tool</p>
   <h1>Standard vs Actual Cost Variance</h1>
-  <p class="header-desc">See exactly where production overruns happen — yield loss, material waste, labor inefficiency, overhead absorption, and co-man fee drift. Enter your standard (budgeted) costs and actual results to instantly identify and quantify every variance.</p>
-  <p class="byline">Built by <strong>Sam Pellerito</strong></p>
+  <p class="header-desc">Compare your expected production cost to what actually happened, then see which overruns hurt margin the most.</p>
+  <p style="font-size:13px;color:var(--hint);margin-top:6px;">Use this after a production run, co-man invoice, or batch closeout to find whether margin was lost to materials, labor, overhead, yield, or fees.</p>
+  <div class="how-to">
+    <div class="how-to-step"><div class="how-to-num">1</div><div class="how-to-text">Enter your planned run assumptions (standard costs &amp; budgeted units)</div></div>
+    <div class="how-to-step"><div class="how-to-num">2</div><div class="how-to-text">Enter what actually happened (actual quantities, rates, and output)</div></div>
+    <div class="how-to-step"><div class="how-to-num">3</div><div class="how-to-text">Review the diagnosis box — it calls out your largest unfavorable variance</div></div>
+    <div class="how-to-step"><div class="how-to-num">4</div><div class="how-to-text">Export or save to the hub for your operations report</div></div>
+  </div>
+  <button class="sample-btn" onclick="loadSample()">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+    Load sample production run (Chocolate Protein Bar)
+  </button>
+  <p class="byline" style="margin-top:10px;">Built by <strong>Sam Pellerito</strong></p>
 </header>
 
 <!-- ── Run info ──────────────────────────────────────── -->
@@ -150,19 +182,20 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
     <span>Standard</span><span style="color:var(--amber)">Actual</span><span style="text-align:right">Variance</span>
   </div>
   <div class="field-row-3">
-    <div class="field"><label>Std qty per unit</label><input type="number" id="matStdQty" value="1.05" step="0.001" min="0"/></div>
-    <div class="field"><label>Act qty per unit <span style="color:var(--amber)">●</span></label><input type="number" id="matActQty" value="1.12" step="0.001" min="0" class="actual"/></div>
+    <div class="field"><label>Expected material qty per finished unit</label><input type="number" id="matStdQty" value="1.05" step="0.001" min="0"/></div>
+    <div class="field"><label>Actual material qty per finished unit <span style="color:var(--amber)">●</span></label><input type="number" id="matActQty" value="1.12" step="0.001" min="0" class="actual"/></div>
     <div class="field"><label>Usage variance / unit ($)</label><input type="number" id="matUsageVar" readonly style="background:var(--surface);color:var(--muted)"/></div>
   </div>
   <div class="field-row-3">
-    <div class="field"><label>Std cost per qty ($)</label><input type="number" id="matStdRate" value="2.80" step="0.01" min="0"/></div>
-    <div class="field"><label>Act cost per qty ($) <span style="color:var(--amber)">●</span></label><input type="number" id="matActRate" value="2.95" step="0.01" min="0" class="actual"/></div>
+    <div class="field"><label>Standard cost per input unit ($)</label><input type="number" id="matStdRate" value="2.80" step="0.01" min="0"/></div>
+    <div class="field"><label>Actual cost per input unit ($) <span style="color:var(--amber)">●</span></label><input type="number" id="matActRate" value="2.95" step="0.01" min="0" class="actual"/></div>
     <div class="field"><label>Price variance / unit ($)</label><input type="number" id="matPriceVar" readonly style="background:var(--surface);color:var(--muted)"/></div>
   </div>
   <div class="field-row">
     <div class="field"><label>Standard yield (%)</label><input type="number" id="matStdYield" value="96" step="0.1" min="0" max="100"/></div>
     <div class="field"><label>Actual yield (%) <span style="color:var(--amber)">●</span></label><input type="number" id="matActYield" value="93" step="0.1" min="0" max="100" class="actual"/></div>
   </div>
+  <p style="font-size:11px;color:var(--hint);margin-top:-4px;">💡 Use qty per unit for price/usage variance. Use yield % when scrap or rework affects how much usable output you get from input — both are included in the total material variance.</p>
 </div>
 
 <!-- ══════════════════════════════════════════════════
@@ -211,8 +244,16 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
     <div class="field"><label>Spending variance ($)</label><input type="number" id="ohSpendVar" readonly style="background:var(--surface);color:var(--muted)"/></div>
   </div>
   <div class="field-row-3">
-    <div class="field"><label>Std units (budgeted)</label><input type="number" id="ohStdUnits" value="1000" step="1" min="1"/></div>
-    <div class="field"><label>Act units produced <span style="color:var(--amber)">●</span></label><input type="number" id="ohActUnits" value="950" step="1" min="1" class="actual"/></div>
+    <div class="field">
+      <label>Budgeted units for overhead absorption</label>
+      <input type="number" id="ohStdUnits" readonly style="background:var(--surface);color:var(--muted);" title="Auto-filled from Standard run size above"/>
+      <span style="font-size:10px;color:var(--hint);margin-top:3px;">Auto-filled from standard run size</span>
+    </div>
+    <div class="field">
+      <label>Actual units produced</label>
+      <input type="number" id="ohActUnits" readonly style="background:var(--surface);color:var(--muted);" title="Auto-filled from Units produced above"/>
+      <span style="font-size:10px;color:var(--hint);margin-top:3px;">Auto-filled from actual units above</span>
+    </div>
     <div class="field"><label>Volume variance ($)</label><input type="number" id="ohVolVar" readonly style="background:var(--surface);color:var(--muted)"/></div>
   </div>
 </div>
@@ -257,6 +298,11 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
   <div class="metric"><p class="metric-label">Actual gross margin</p><p class="metric-value" id="out-actGM">—</p><p class="metric-sub">as produced %</p></div>
 </div>
 
+<div id="diagnosisBox" class="diagnosis neutral" style="display:none">
+  <div class="diagnosis-label">Run diagnosis</div>
+  <div class="diagnosis-text" id="diagnosisText"></div>
+</div>
+
 <p class="section-title">Variance breakdown by category</p>
 <table class="var-table" aria-label="Variance breakdown">
   <thead>
@@ -285,32 +331,42 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 <div class="chart-wrap"><canvas id="waterfallChart" role="img" aria-label="Variance waterfall chart">Waterfall chart.</canvas></div>
 <p class="chart-note">Each bar shows the incremental cost added (unfavorable, red) or saved (favorable, green) vs standard. The final bar is your actual cost per unit.</p>
 
+<div class="related-tools no-print">
+  <p class="related-title">Related tools</p>
+  <div class="related-grid">
+    <a class="related-link" href="../01-cogs-per-unit-builder/cogs-per-unit-builder V2.html">📦 COGS per unit builder</a>
+    <a class="related-link" href="../04-moq-run-size-optimizer/moq-run-size-optimizer.html">📐 MOQ &amp; run size optimizer</a>
+    <a class="related-link" href="../03-make-vs-buy-decision/make-vs-buy-decision.html">⚖️ Make vs buy decision</a>
+    <a class="related-link" href="../08-landed-cost-freight/landed-cost-freight.html">🚢 Landed cost &amp; freight</a>
+  </div>
+</div>
+
 <footer>
   <div class="footer-left">Built by <strong>Sam Pellerito</strong> — CPG Operations Tools</div>
   <div class="footer-right"><a href="index.html">← All tools</a></div>
 
 <div class="export-bar no-print">
   <div class="export-bar-left">
-    <strong>Export results</strong>
-    <span class="save-confirm" id="saveConfirm">&#10003; Saved to Export Hub</span><span class="export-bar-hint" id="exportHint">Save to Hub or download as CSV, Excel, or PDF</span>
+    <strong>Export this variance report</strong>
+    <span class="save-confirm" id="saveConfirm">&#10003; Saved to Export Hub</span><span class="export-bar-hint" id="exportHint">Save to hub for multi-tool report, or download directly</span>
   </div>
   <button class="ebtn ebtn-hub" onclick="saveForExport()">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-    Save to Hub
+    Save to Export Hub
   </button>
   <button class="ebtn ebtn-csv" onclick="exportCSV()">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-    CSV
+    Download CSV
   </button>
   <button class="ebtn ebtn-xlsx" onclick="exportExcel()">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-    Excel
+    Download Excel
   </button>
   <button class="ebtn ebtn-pdf" onclick="exportPDF()">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-    PDF
+    Download PDF
   </button>
-  <button class="ebtn ebtn-reset" onclick="resetForm()" title="Reset all inputs to defaults">
+  <button class="ebtn ebtn-reset" onclick="resetForm(this)" title="Reset all inputs to defaults">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.85"/></svg>
     Reset
   </button>
@@ -351,6 +407,12 @@ function render(){
   const units = val('unitsProduced') || 1;
   const stdUnits = val('unitsStandard') || 1;
   const sell = val('sellPrice');
+
+  // Auto-sync overhead unit fields from top-level inputs
+  const ohStdEl = document.getElementById('ohStdUnits');
+  const ohActEl = document.getElementById('ohActUnits');
+  if(ohStdEl) ohStdEl.value = stdUnits;
+  if(ohActEl) ohActEl.value = units;
 
   /* ── Material ── */
   const mStdQty = val('matStdQty'), mActQty = val('matActQty');
@@ -426,6 +488,35 @@ function render(){
   const totalVarRun = totalVar * units;
   const stdGM = sell ? ((sell - stdCost) / sell * 100) : 0;
   const actGM = sell ? ((sell - actCost) / sell * 100) : 0;
+
+  /* ── Diagnosis ── */
+  const varCategories = [
+    { label: 'material price',      perUnit: matPriceVar,         total: matPriceVar * units },
+    { label: 'material usage/yield', perUnit: matUsageVar + yieldAdj, total: (matUsageVar + yieldAdj) * units },
+    { label: 'labor rate',          perUnit: laborRateVar,         total: laborRateVar * units },
+    { label: 'labor efficiency',    perUnit: laborEffVar,          total: laborEffVar * units },
+    { label: 'overhead spending',   perUnit: ohSpendVar,           total: ohSpendVar * units },
+    { label: 'overhead volume',     perUnit: ohVolVar,             total: ohVolVar * units },
+    { label: 'co-man fees',         perUnit: comanFeeVar,          total: comanFeeVar * units },
+    { label: 'co-man setup',        perUnit: comanSetupVar,        total: comanSetupVar * units },
+  ];
+  const unfav = varCategories.filter(c => c.perUnit > 0.005).sort((a,b) => b.total - a.total);
+  const dBox = $id('diagnosisBox');
+  const dText = $id('diagnosisText');
+  if(dBox && dText){
+    if(totalVar > 0.005 && unfav.length > 0){
+      const worst = unfav[0];
+      dText.textContent = `Your largest unfavorable variance is ${worst.label}, adding ${fmt(worst.perUnit)} per unit and ${fmt(Math.abs(worst.total), 0)} across this ${units.toLocaleString()}-unit run. Total run overrun: ${fmt(Math.abs(totalVarRun), 0)} unfavorable — actual gross margin is ${fmtPct(actGM)} vs ${fmtPct(stdGM)} budgeted.`;
+      dBox.className = 'diagnosis unfav';
+      dBox.style.display = '';
+    } else if(totalVar < -0.005){
+      dText.textContent = `This run came in under budget — a ${fmt(Math.abs(totalVar))} per unit favorable variance (${fmt(Math.abs(totalVarRun), 0)} across the run). Actual gross margin of ${fmtPct(actGM)} beat the ${fmtPct(stdGM)} target.`;
+      dBox.className = 'diagnosis fav';
+      dBox.style.display = '';
+    } else {
+      dBox.style.display = 'none';
+    }
+  }
 
   /* ── Key metrics ── */
   $id('out-stdCost').textContent = fmt(stdCost);
@@ -628,7 +719,54 @@ function exportPDF(){
     <div class="pdf-footer"><span>Standard vs Actual Cost Variance — CPG Operations Tools — Sam Pellerito</span><span>Exported ${now}</span></div>`;
   setTimeout(()=>window.print(),120);
 }
-function resetForm(){
+
+function loadSample(){
+  // Chocolate Protein Bar — sample production run
+  const set = (id, v) => { const el = document.getElementById(id); if(el){ el.value = v; } };
+  set('skuName',         'Chocolate Protein Bar');
+  set('unitsStandard',   '10000');
+  set('unitsProduced',   '9200');
+  set('sellPrice',       '2.50');
+  // Materials
+  set('matStdQty',       '0.85');
+  set('matActQty',       '0.92');
+  set('matStdRate',      '1.20');
+  set('matActRate',      '1.26');
+  set('matStdYield',     '97');
+  set('matActYield',     '94');
+  // Labor
+  set('laborStdHrs',     '0.025');
+  set('laborActHrs',     '0.031');
+  set('laborStdRate',    '18.00');
+  set('laborActRate',    '19.50');
+  // Overhead
+  set('ohStdPU',         '0.42');
+  set('ohActTotal',      '4100');
+  // Co-man
+  set('comanStd',        '0.38');
+  set('comanAct',        '0.44');
+  set('comanStdSetup',   '350');
+  set('comanActSetup',   '425');
+  render();
+}
+
+function flashResetBtn(btn){
+  if(!btn) return;
+  const orig = btn.innerHTML;
+  btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 12 4 9"/></svg> ✓ Cleared';
+  btn.style.background = 'rgba(29,158,117,0.12)';
+  btn.style.color = 'var(--teal)';
+  btn.style.borderColor = 'rgba(29,158,117,0.3)';
+  setTimeout(()=>{
+    btn.innerHTML = orig;
+    btn.style.background = '';
+    btn.style.color = '';
+    btn.style.borderColor = '';
+  }, 2000);
+}
+function resetForm(btn){
+  localStorage.removeItem('cpg_export_cost-variance');
+  flashResetBtn(btn);
   document.querySelectorAll('input,select').forEach(el=>{
     const def=el.getAttribute('value');
     if(el.tagName==='SELECT'){ el.selectedIndex=0; }
