@@ -82,6 +82,31 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 @media print{@page{size:letter;margin:1.4cm 1.6cm;}body{background:#fff;font-size:12px;}.no-print{display:none!important;}.print-only{display:block!important;}}
 .print-only{display:none;}
 @media(max-width:640px){.export-bar{flex-direction:column;align-items:flex-start;}}
+/* ── How to use ── */
+.how-to{background:rgba(24,95,165,0.04);border:1px solid rgba(24,95,165,0.12);border-radius:10px;padding:14px 18px;margin:16px 0 0;display:flex;gap:20px;flex-wrap:wrap;}
+.how-to-step{display:flex;align-items:flex-start;gap:8px;min-width:160px;flex:1;}
+.how-to-num{width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.how-to-text{font-size:12px;color:var(--muted);line-height:1.5;}
+/* ── Sample button ── */
+.sample-btn{display:inline-flex;align-items:center;gap:6px;background:rgba(29,158,117,0.08);border:1px solid rgba(29,158,117,0.2);border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;color:var(--teal);cursor:pointer;transition:all .15s;margin-top:14px;}
+.sample-btn:hover{background:rgba(29,158,117,0.15);}
+/* ── Recommendation box ── */
+.rec-box{border-radius:12px;padding:16px 20px;margin-bottom:20px;border:1px solid rgba(29,158,117,0.25);background:rgba(29,158,117,0.06);}
+.rec-label{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--teal);margin-bottom:6px;}
+.rec-headline{font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.rec-detail{font-size:13px;color:var(--muted);line-height:1.5;}
+/* ── Warning flags ── */
+.flags-list{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
+.flag-item{border-radius:8px;padding:10px 14px;font-size:13px;line-height:1.4;}
+.flag-warn{background:#FEF3C7;color:#92400E;}
+.flag-ok{background:#D1FAE5;color:#065F46;}
+.flag-info{background:rgba(24,95,165,0.06);color:var(--accent);}
+/* ── Related tools ── */
+.related-tools{margin-top:36px;padding-top:20px;border-top:0.5px solid var(--border);}
+.related-title{font-size:11px;font-weight:600;color:var(--hint);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;}
+.related-grid{display:flex;flex-wrap:wrap;gap:8px;}
+.related-link{display:inline-flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:13px;color:var(--text);text-decoration:none;transition:border-color .15s;}
+.related-link:hover{border-color:rgba(24,95,165,0.3);color:var(--accent);}
 </style>
 <style id="pdf-styles">
 .pdf-cover{padding:32px 0 20px;border-bottom:2px solid #0c1f3a;margin-bottom:20px;}
@@ -107,12 +132,25 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 
 <header>
   <p class="header-tag">CPG Operations Tool</p>
-  <h1>Demand Planning &amp; Cash Flow Calculator</h1>
-  <p class="header-desc">Model your 90-day inventory buffer, safety stock, and reorder points — with procurement commitment broken out by demand vs safety stock, lead time sensitivity, and a month-over-month sales &amp; marketing growth projection showing how cash fluctuates as your brand scales.</p>
-  <p class="byline">Built by <strong>Sam Pellerito</strong></p>
+  <h1>90-Day Inventory &amp; Working Capital Planner</h1>
+  <p class="header-desc">Estimate how much inventory and cash you need over the next 90 days based on demand, lead time, safety stock, payment terms, and sales growth. Shows the timing gap between when you pay for inventory and when customer cash comes back in.</p>
+  <p style="font-size:13px;color:var(--hint);margin-top:6px;">Use this before placing purchase orders, launching a growth campaign, negotiating supplier lead times, or checking whether you have enough cash to support inventory growth.</p>
+  <div class="how-to">
+    <div class="how-to-step"><div class="how-to-num">1</div><div class="how-to-text">Enter current daily sales and demand variability</div></div>
+    <div class="how-to-step"><div class="how-to-num">2</div><div class="how-to-text">Enter supplier lead time and lead time variability</div></div>
+    <div class="how-to-step"><div class="how-to-num">3</div><div class="how-to-text">Add expected month-over-month growth</div></div>
+    <div class="how-to-step"><div class="how-to-num">4</div><div class="how-to-text">Enter unit economics, cash on hand, and payment terms</div></div>
+    <div class="how-to-step"><div class="how-to-num">5</div><div class="how-to-text">Review how much inventory to buy, cash tied up, and when cash gets tight</div></div>
+  </div>
+  <button class="sample-btn" onclick="loadSample()">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+    Load sample CPG SKU
+  </button>
+  <p class="byline" style="margin-top:10px;">Built by <strong>Sam Pellerito</strong></p>
 </header>
 
 <p class="section-title">Demand &amp; supply inputs</p>
+<p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Safety stock is extra inventory held to protect against demand spikes or supplier delays. More variability, longer lead times, and higher service levels all increase the safety stock required.</p>
 <div class="field-row">
   <div class="field"><label>Average daily sales — month 1 (units)</label><input type="number" id="avgDemand" value="50" min="1"/></div>
   <div class="field"><label>Demand variability — std dev (units/day)</label><input type="number" id="demandSD" value="12" min="0"/></div>
@@ -150,14 +188,16 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
       <option value="1.96">97.5%</option>
       <option value="2.33">99%</option>
     </select>
+    <span style="font-size:11px;color:var(--hint);margin-top:2px;">Higher service levels reduce stockout risk but require more safety stock and more cash tied up in inventory.</span>
   </div>
   <div class="field"><label>Holding cost (% of unit cost / year)</label><input type="number" id="holdingPct" value="25" min="1" max="100"/></div>
 </div>
 
 <div class="divider"></div>
-<div id="alertBox" class="alert-box" style="display:none"></div>
+<div id="flagsList" class="flags-list" style="display:none"></div>
 
-<p class="section-title">Procurement commitment — inventory purchase vs safety stock</p>
+<p class="section-title">Planned purchase orders and cash required</p>
+<p style="font-size:13px;color:var(--muted);margin-bottom:10px;">This table shows how many units you are buying to cover expected sales versus how many units are extra buffer. The safety stock portion is cash tied up before it becomes revenue.</p>
 <table class="proc-table" aria-label="Procurement breakdown by demand inventory and safety stock per purchase order">
   <thead>
     <tr>
@@ -177,6 +217,11 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 <p class="chart-note" style="margin-top:6px">Safety stock cost is cash tied up as buffer — not generating revenue until sold. Reducing lead time directly shrinks this number.</p>
 
 <p class="section-title">90-day cash summary</p>
+<div id="recBox" class="rec-box" style="display:none;">
+  <div class="rec-label">Working capital snapshot</div>
+  <div class="rec-headline" id="recHeadline"></div>
+  <div class="rec-detail" id="recDetail"></div>
+</div>
 <div class="metric-grid">
   <div class="metric"><p class="metric-label">Peak cash needed</p><p class="metric-value" id="out-peak">—</p><p class="metric-sub">working capital req.</p></div>
   <div class="metric"><p class="metric-label">Cash low point</p><p class="metric-value" id="out-cashlow">—</p><p class="metric-sub">day <span id="out-cashlow-day">—</span></p></div>
@@ -186,6 +231,7 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 </div>
 
 <p class="section-title">Lead time sensitivity — cash outlay &amp; safety stock cost</p>
+<p style="font-size:13px;color:var(--muted);margin-bottom:10px;">Use this table to see how much cash a shorter lead time is worth — useful when negotiating with suppliers.</p>
 <table class="sens-table" aria-label="Lead time sensitivity analysis showing how cash outlay and safety stock costs change">
   <thead><tr>
     <th>Lead time</th>
@@ -219,7 +265,7 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 
 <div class="export-bar no-print">
   <div class="export-bar-left">
-    <strong>Export results</strong>
+    <strong>Export this demand &amp; cash flow plan</strong>
     <span class="save-confirm" id="saveConfirm">&#10003; Saved to Export Hub</span><span class="export-bar-hint" id="exportHint">Save to Hub or download as CSV, Excel, or PDF</span>
   </div>
   <button class="ebtn ebtn-hub" onclick="saveForExport()">
@@ -238,7 +284,7 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
     PDF
   </button>
-  <button class="ebtn ebtn-reset" onclick="resetForm()" title="Reset all inputs to defaults">
+  <button class="ebtn ebtn-reset" onclick="resetForm(this)" title="Reset all inputs to defaults">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.85"/></svg>
     Reset
   </button>
@@ -248,6 +294,33 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
   <div class="footer-left">Built by <strong>Sam Pellerito</strong> — CPG Operations Tools</div>
   <div class="footer-right"><a href="index.html" style="color:var(--hint);text-decoration:none;">← All tools</a></div>
 </footer>
+
+<div class="related-tools no-print">
+  <p class="related-title">Related tools</p>
+  <div class="related-grid">
+    <a class="related-link" href="../04-moq-run-size-optimizer/moq-run-size-optimizer.html">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      MOQ & Run Size Optimizer
+    </a>
+    <a class="related-link" href="../06-cash-to-cash-cycle/cash-to-cash-cycle.html">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.85"/></svg>
+      Cash-to-Cash Cycle
+    </a>
+    <a class="related-link" href="../07-stockout-vs-overstock-cost/stockout-vs-overstock-cost.html">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Stockout vs Overstock Cost
+    </a>
+    <a class="related-link" href="../08-landed-cost-freight/landed-cost-freight.html">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+      Landed Cost & Freight
+    </a>
+    <a class="related-link" href="../04-moq-run-size-optimizer/moq-run-size-optimizer.html">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Operational Impact Calculator
+    </a>
+  </div>
+</div>
+
 
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
@@ -373,17 +446,54 @@ function calc(){
   document.getElementById('out-rev').textContent=fmt(sim.totalRev);
   document.getElementById('out-cashend').textContent=fmt(sim.cashArr[90]||0);
 
-  const box=document.getElementById('alertBox');
-  box.style.display='block';
-  if(sim.minCash<0){
-    box.className='alert-box alert-warn';
-    box.textContent='⚠ Cash goes negative on day '+sim.minDay+'. You need at least '+fmt(Math.abs(sim.minCash))+' more in working capital to sustain this growth trajectory.';
-  } else if(sim.minCash<startCash*0.15){
-    box.className='alert-box alert-warn';
-    box.textContent='⚠ Cash dips to '+fmt(sim.minCash)+' on day '+sim.minDay+' — running very lean. Consider a credit line or negotiate extended supplier terms.';
+  // ── Recommendation box ──
+  const rb = document.getElementById('recBox');
+  rb.style.display = 'block';
+  document.getElementById('recHeadline').textContent =
+    'You need '+fmt(Math.max(0,sim.peakNeed))+' of peak working capital. '
+    +'Cash low point is '+fmt(sim.minCash)+' on day '+sim.minDay+'.';
+  let detailText = 'Safety stock accounts for '+fmt(sim.totalSSCost)+' of cash tied up in inventory before it becomes revenue.';
+  if(lt > 10){
+    const ltShort = Math.max(7, Math.round(lt) - 10);
+    const ss1s=calcSS(d1,sd_d,ltShort,val('leadSD'),z);
+    const ss2s=calcSS(d2,sd_d,ltShort,val('leadSD'),z);
+    const ss3s=calcSS(d3,sd_d,ltShort,val('leadSD'),z);
+    const simShort=runSim(d1,d2,d3,ss1s,ss2s,ss3s,ltShort,uc,price,startCash,dso);
+    const saving = sim.totalSSCost - simShort.totalSSCost;
+    if(saving > 0){
+      detailText += ' Shortening lead time from '+Math.round(lt)+' to '+ltShort+' days would reduce safety stock cash by approximately '+fmt(saving)+'.';
+    }
+  }
+  document.getElementById('recDetail').textContent = detailText;
+
+  // ── Warning flags ──
+  const flagsList = document.getElementById('flagsList');
+  const flags = [];
+  if(sim.minCash < 0){
+    flags.push({cls:'flag-warn', msg:'⚠ Cash goes negative on day '+sim.minDay+'. You need at least '+fmt(Math.abs(sim.minCash))+' more in working capital to sustain this growth trajectory.'});
+  } else if(sim.minCash < startCash*0.15){
+    flags.push({cls:'flag-warn', msg:'⚠ Cash dips to '+fmt(sim.minCash)+' on day '+sim.minDay+' — running very lean. Consider a credit line or negotiate extended supplier terms.'});
   } else {
-    box.className='alert-box alert-ok';
-    box.textContent='✓ Cash stays positive through 90 days. Lowest point is '+fmt(sim.minCash)+' on day '+sim.minDay+'.';
+    flags.push({cls:'flag-ok', msg:'✓ Cash stays positive through 90 days. Lowest point is '+fmt(sim.minCash)+' on day '+sim.minDay+'.'});
+  }
+  if(ss1 > d1 * 30){
+    flags.push({cls:'flag-warn', msg:'⚠ Safety stock ('+fmtN(ss1)+' units) exceeds one full month of demand. This is a large buffer — consider whether variability assumptions are realistic.'});
+  }
+  if(lt >= 30){
+    flags.push({cls:'flag-warn', msg:'⚠ Lead time ('+Math.round(lt)+' days) equals or exceeds your 30-day reorder cycle. Orders may overlap — inventory planning becomes critical.'});
+  }
+  if(dso > lt){
+    flags.push({cls:'flag-info', msg:'ℹ Payment terms ('+dso+' days to collect) are longer than your lead time ('+Math.round(lt)+' days). You pay suppliers before customers pay you — this widens your cash-to-cash gap.'});
+  }
+  const m3VsM1 = d3 / d1;
+  if(m3VsM1 > 1.5){
+    flags.push({cls:'flag-info', msg:'ℹ Month 3 demand is '+m3VsM1.toFixed(1)+'× month 1. Your third purchase order will be significantly larger than the first — make sure cash is available for that step-up.'});
+  }
+  if(flags.length){
+    flagsList.style.display='flex';
+    flagsList.innerHTML=flags.map(f=>`<div class="flag-item ${f.cls}">${f.msg}</div>`).join('');
+  } else {
+    flagsList.style.display='none';
   }
 
   const ltScenarios=[7,14,21,28,35,42];
@@ -442,7 +552,35 @@ function calc(){
   });
 }
 document.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',calc));
-function resetForm(){
+
+function loadSample(){
+  document.getElementById('avgDemand').value  = '500';
+  document.getElementById('demandSD').value   = '125';
+  document.getElementById('leadTime').value   = '30';
+  document.getElementById('leadSD').value     = '5';
+  document.getElementById('growth1').value    = '20';
+  document.getElementById('growth2').value    = '15';
+  document.getElementById('unitCost').value   = '1.25';
+  document.getElementById('unitPrice').value  = '3.99';
+  document.getElementById('startCash').value  = '50000';
+  document.getElementById('dso').value        = '30';
+  // Set service level to 95%
+  const sl = document.getElementById('serviceLevel');
+  for(let i=0;i<sl.options.length;i++){ if(sl.options[i].value==='1.65'){ sl.selectedIndex=i; break; } }
+  document.getElementById('holdingPct').value = '25';
+  calc();
+}
+
+function flashResetBtn(btn){
+  if(!btn) return;
+  const orig=btn.innerHTML;
+  btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 12 4 9"/></svg> ✓ Cleared';
+  btn.style.background='rgba(29,158,117,0.12)'; btn.style.color='var(--teal)'; btn.style.borderColor='rgba(29,158,117,0.3)';
+  setTimeout(()=>{ btn.innerHTML=orig; btn.style.background=''; btn.style.color=''; btn.style.borderColor=''; }, 2000);
+}
+function resetForm(btn){
+  localStorage.removeItem('cpg_export_demand-planning');
+  flashResetBtn(btn);
   document.querySelectorAll('input,select').forEach(el=>{
     const def=el.getAttribute('value');
     if(el.tagName==='SELECT'){ el.selectedIndex=0; }
