@@ -73,61 +73,101 @@ h1{font-size:24px;font-weight:600;color:var(--text);margin-bottom:6px;}
 }
 .print-only{display:none;}
 
-/* ── Styled PDF report ───────────────────────── */
-/* Variables are already on :root above */
-.rpt{font-family:Inter,ui-sans-serif,system-ui,Arial,sans-serif;font-size:14px;line-height:1.6;color:var(--text);}
+/* ── PDF Report — exact match to sample design ── */
+.rpt{font-family:Inter,ui-sans-serif,system-ui,Arial,sans-serif;font-size:14px;line-height:1.6;color:var(--text);background:var(--card);}
 /* Cover */
 .rpt-cover{background:#0c1f3a;padding:52px 52px 44px;position:relative;overflow:hidden;}
 .rpt-cover::before{content:'';position:absolute;top:-60px;right:-80px;width:340px;height:340px;border-radius:50%;background:rgba(255,255,255,0.03);}
 .rpt-cover::after{content:'';position:absolute;bottom:-40px;left:60px;width:200px;height:200px;border-radius:50%;background:rgba(24,95,165,0.15);}
 .rpt-cover-tag{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:14px;}
-.rpt-cover-title{font-size:30px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:8px;}
-.rpt-cover-sub{font-size:14px;color:rgba(255,255,255,0.5);margin-bottom:36px;line-height:1.5;}
-.rpt-cover-meta{display:flex;gap:32px;flex-wrap:wrap;margin-bottom:28px;position:relative;z-index:1;}
+.rpt-cover-title{font-size:32px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:8px;}
+.rpt-cover-sub{font-size:15px;color:rgba(255,255,255,0.55);margin-bottom:36px;max-width:500px;line-height:1.5;}
+.rpt-cover-meta{display:flex;gap:32px;flex-wrap:wrap;margin-bottom:32px;position:relative;z-index:1;}
 .rpt-cover-meta-item label{font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,0.4);display:block;margin-bottom:4px;}
 .rpt-cover-meta-item span{font-size:16px;font-weight:700;color:#fff;}
-.rpt-cover-rule{border:none;border-top:1px solid rgba(255,255,255,0.1);margin-bottom:24px;}
-.rpt-claude-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(217,119,87,0.15);border:1px solid rgba(217,119,87,0.3);border-radius:8px;padding:8px 14px;position:relative;z-index:1;}
+.rpt-cover-rule{border:none;border-top:1px solid rgba(255,255,255,0.1);margin-bottom:28px;}
+.rpt-cover-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;position:relative;z-index:1;}
+.rpt-cover-kpi{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:16px;}
+.rpt-cover-kpi-label{font-size:9.5px;color:rgba(255,255,255,0.45);font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;}
+.rpt-cover-kpi-val{font-size:20px;font-weight:700;color:#fff;margin-bottom:2px;}
+.rpt-cover-kpi-val.teal{color:#4ECCA3;}
+.rpt-cover-kpi-val.amber{color:#F0B429;}
+.rpt-cover-kpi-val.bad{color:#FF6B6B;}
+.rpt-cover-kpi-sub{font-size:10.5px;color:rgba(255,255,255,0.38);}
+.rpt-claude-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(217,119,87,0.15);border:1px solid rgba(217,119,87,0.3);border-radius:8px;padding:8px 14px;margin-top:28px;position:relative;z-index:1;}
 .rpt-claude-text{font-size:11px;font-weight:700;color:rgba(217,119,87,0.9);}
 /* Section group */
 .rpt-group{padding:10px 52px;background:var(--surface);font-size:9.5px;font-weight:700;color:var(--hint);text-transform:uppercase;letter-spacing:.12em;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
 /* Section */
-.rpt-section{padding:36px 52px;}
+.rpt-section{padding:40px 52px;}
 .rpt-section+.rpt-section{border-top:1px solid var(--border);}
-.rpt-hd{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.rpt-hd{display:flex;align-items:center;gap:12px;margin-bottom:24px;}
 .rpt-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background:rgba(24,95,165,0.08);}
 .rpt-title{font-size:17px;font-weight:700;color:var(--text);}
 .rpt-sub{font-size:12px;color:var(--muted);margin-top:2px;}
 /* KPI row */
-.rpt-kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:20px;}
-.rpt-kpi{background:var(--surface);border-radius:10px;padding:13px 15px;}
-.rpt-kpi-label{font-size:9.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;}
-.rpt-kpi-val{font-size:19px;font-weight:700;color:var(--text);}
+.rpt-kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:24px;}
+.rpt-kpi{background:var(--surface);border-radius:10px;padding:14px 16px;}
+.rpt-kpi-label{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;}
+.rpt-kpi-val{font-size:21px;font-weight:700;color:var(--text);}
 .rpt-kpi-val.good{color:var(--teal);}
 .rpt-kpi-val.bad{color:var(--red);}
 .rpt-kpi-val.warn{color:var(--amber);}
+.rpt-kpi-val.blue{color:var(--accent);}
+.rpt-kpi-sub{font-size:11px;color:var(--hint);margin-top:3px;}
 /* Table */
-.rpt-table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:8px;}
+.rpt-table{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:8px;}
 .rpt-table th{font-size:9.5px;font-weight:700;color:var(--hint);text-transform:uppercase;letter-spacing:.05em;padding:8px 12px;border-bottom:1px solid var(--border);background:var(--surface);text-align:right;white-space:nowrap;}
 .rpt-table th:first-child{text-align:left;}
-.rpt-table td{padding:8px 12px;border-bottom:0.5px solid var(--border);text-align:right;color:var(--muted);}
+.rpt-table td{padding:9px 12px;border-bottom:0.5px solid var(--border);text-align:right;color:var(--muted);}
 .rpt-table td:first-child{text-align:left;color:var(--text);font-weight:500;}
 .rpt-table tr:last-child td{border-bottom:none;}
 .rpt-table tr.subtotal td{font-weight:700;color:var(--text);background:rgba(24,95,165,0.03);border-top:1px solid var(--border);}
 .rpt-table tr.total td{font-weight:700;color:var(--teal);border-top:1px solid var(--border);}
+/* Bar chart */
+.rpt-bar-wrap{margin-bottom:20px;}
+.rpt-bar-track{height:28px;border-radius:6px;overflow:hidden;display:flex;margin-bottom:8px;}
+.rpt-bar-seg{height:100%;display:flex;align-items:center;padding:0 8px;font-size:10px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;min-width:0;}
+.rpt-bar-legend{display:flex;gap:14px;flex-wrap:wrap;}
+.rpt-bar-legend span{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);}
+.rpt-leg{width:11px;height:11px;border-radius:3px;flex-shrink:0;display:inline-block;}
+/* CCC diagram */
+.rpt-ccc-formula{display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:16px;flex-wrap:wrap;}
+.rpt-ccc{display:flex;border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:20px;}
+.rpt-ccc-seg{flex:1;padding:16px 12px;text-align:center;min-width:0;}
+.rpt-ccc-lbl{font-size:9.5px;font-weight:700;color:var(--hint);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;}
+.rpt-ccc-val{font-size:20px;font-weight:700;margin-bottom:3px;}
+.rpt-ccc-sub{font-size:10.5px;color:var(--hint);}
+/* Compare grid */
+.rpt-cmp{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+.rpt-cmp-card{border:1px solid var(--border);border-radius:10px;padding:18px 20px;}
+.rpt-cmp-card.winner{border-color:var(--teal);background:rgba(29,158,117,0.08);}
+.rpt-cmp-head{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
+.rpt-cmp-head.win{color:var(--teal);}
+.rpt-cmp-big{font-size:28px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.rpt-cmp-card.winner .rpt-cmp-big{color:var(--teal);}
+.rpt-cmp-sub{font-size:11.5px;color:var(--muted);margin-bottom:12px;}
+.rpt-cmp-row{display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;border-bottom:0.5px solid var(--border);}
+.rpt-cmp-row:last-child{border:none;}
+.rpt-cmp-row span:first-child{color:var(--muted);}
+/* Channel bars */
+.rpt-ch-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.rpt-ch-label{font-size:12px;font-weight:600;color:var(--text);width:96px;flex-shrink:0;}
+.rpt-ch-track{flex:1;height:28px;background:var(--surface);border-radius:6px;overflow:hidden;display:flex;}
+.rpt-ch-bar{height:100%;display:flex;align-items:center;padding:0 8px;font-size:10px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;}
+.rpt-ch-pct{font-size:13px;font-weight:700;width:52px;text-align:right;flex-shrink:0;}
 /* Insight */
-.rpt-insight{border-left:3px solid var(--accent);background:rgba(24,95,165,0.04);border-radius:0 8px 8px 0;padding:11px 15px;font-size:12.5px;color:var(--muted);margin-top:16px;line-height:1.6;}
+.rpt-insight{border-left:3px solid var(--accent);background:rgba(24,95,165,0.04);border-radius:0 8px 8px 0;padding:12px 16px;font-size:12.5px;color:var(--muted);margin-top:16px;line-height:1.6;}
+.rpt-insight strong{color:var(--text);}
 .rpt-insight.good{border-color:var(--teal);background:rgba(29,158,117,0.08);}
 .rpt-insight.bad{border-color:var(--red);background:rgba(226,75,74,0.08);}
 .rpt-insight.warn{border-color:var(--amber);background:rgba(186,117,23,0.08);}
 /* Footer */
-.rpt-footer{background:#0c1f3a;padding:22px 52px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+.rpt-footer{background:#0c1f3a;padding:24px 52px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
 .rpt-footer-left{font-size:11.5px;color:rgba(255,255,255,0.45);}
 .rpt-footer-left strong{color:rgba(255,255,255,0.8);}
 .rpt-footer-badge{display:flex;align-items:center;gap:7px;}
 .rpt-footer-badge-text{font-size:11px;font-weight:700;color:rgba(217,119,87,0.8);}
-/* Legacy compat */
-.pdf-footer{display:flex;justify-content:space-between;align-items:center;margin-top:24px;padding-top:14px;border-top:0.5px solid var(--border);font-size:10px;color:var(--hint);}
 footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
 .footer-left{font-size:13px;color:var(--muted);}
 .footer-left strong{color:var(--text);}
@@ -410,11 +450,11 @@ function exportExcel(){
 
 // ── Tool category groups ────────────────────────
 const TOOL_GROUPS = [
-  { label: 'Cost Structure',              ids: ['cogs-per-unit','cost-variance'] },
-  { label: 'Procurement & Planning',      ids: ['make-vs-buy','moq-optimizer','demand-planning'] },
-  { label: 'Working Capital & Risk',      ids: ['cash-to-cash','stockout-overstock'] },
-  { label: 'Channel Economics & Trade',   ids: ['landed-cost','trade-spend','channel-margin'] },
-  { label: 'Strategic Impact',            ids: ['ops-impact'] },
+  { label: 'Cost Structure',            ids: ['cogs-per-unit','cost-variance'] },
+  { label: 'Procurement & Planning',    ids: ['make-vs-buy','moq-optimizer','demand-planning'] },
+  { label: 'Working Capital & Risk',    ids: ['cash-to-cash','stockout-overstock'] },
+  { label: 'Channel Economics & Trade', ids: ['landed-cost','trade-spend','channel-margin'] },
+  { label: 'Strategic Impact',          ids: ['ops-impact'] },
 ];
 
 // ── PDF export ──────────────────────────────────
@@ -426,92 +466,95 @@ function exportPDF(){
   const now    = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
   const selectedTools = TOOL_REGISTRY.filter(t => selected.has(t.id));
 
-  // Build cover
+  // Cover KPIs — pull top metric from first 4 tools that have a good/notable metric
+  const coverKPIs = [];
+  selectedTools.forEach(t => {
+    if(coverKPIs.length >= 4) return;
+    const data = savedData[t.id];
+    if(!data || !data.metrics) return;
+    const m = data.metrics.find(x=>x.sentiment==='good') || data.metrics[0];
+    if(m) coverKPIs.push({ label: m.name, value: m.formatted, sentiment: m.sentiment, tool: t.label });
+  });
+  while(coverKPIs.length < 4) coverKPIs.push({ label:'—', value:'—', sentiment:'', tool:'' });
+
+  const coverKPIHtml = coverKPIs.map(k=>{
+    const valCls = k.sentiment==='good'?'teal':k.sentiment==='warn'?'amber':k.sentiment==='bad'?'bad':'';
+    return `<div class="rpt-cover-kpi">
+      <div class="rpt-cover-kpi-label">${escHtml(k.label)}</div>
+      <div class="rpt-cover-kpi-val ${valCls}">${escHtml(k.value)}</div>
+      <div class="rpt-cover-kpi-sub">${escHtml(k.tool)}</div>
+    </div>`;
+  }).join('');
+
   let html = `<div class="rpt">
     <div class="rpt-cover">
-      <p class="rpt-cover-tag">CPG Operations Report</p>
-      <h2 class="rpt-cover-title">${escHtml(brand)}</h2>
-      <p class="rpt-cover-sub">${escHtml(period)}</p>
-      <hr class="rpt-cover-rule"/>
+      <p class="rpt-cover-tag">CPG Operations Report &middot; ${escHtml(period)}</p>
+      <h1 class="rpt-cover-title">${escHtml(brand)}</h1>
+      <p class="rpt-cover-sub">Operations analysis across ${selectedTools.length} tool${selectedTools.length>1?'s':''} — cost structure, procurement, working capital, and channel economics.</p>
       <div class="rpt-cover-meta">
         <div class="rpt-cover-meta-item"><label>Generated</label><span>${now}</span></div>
         <div class="rpt-cover-meta-item"><label>Tools included</label><span>${selectedTools.length}</span></div>
       </div>
+      <hr class="rpt-cover-rule"/>
+      <div class="rpt-cover-kpis">${coverKPIHtml}</div>
       <div class="rpt-claude-badge">
         ${claudeLogoSVG(18)}
         <span class="rpt-claude-text">Powered by Claude &middot; CPG Operations Tools</span>
       </div>
     </div>`;
 
-  // Build grouped sections
   TOOL_GROUPS.forEach(group => {
     const groupTools = selectedTools.filter(t => group.ids.includes(t.id));
     if(!groupTools.length) return;
-
     html += `<div class="rpt-group">${escHtml(group.label)}</div>`;
-
     groupTools.forEach(t => {
       const data = savedData[t.id];
       if(!data) return;
-      html += `
-        <div class="rpt-section">
-          <div class="rpt-hd">
-            <div class="rpt-icon">${t.icon}</div>
-            <div>
-              <div class="rpt-title">${escHtml(t.label)}</div>
-              ${data.savedAt ? `<div class="rpt-sub">Saved ${timeAgo(data.savedAt)}</div>` : ''}
-            </div>
+      html += `<div class="rpt-section">
+        <div class="rpt-hd">
+          <div class="rpt-icon">${t.icon}</div>
+          <div>
+            <div class="rpt-title">${escHtml(t.label)}</div>
+            ${data.savedAt ? `<div class="rpt-sub">Saved ${timeAgo(data.savedAt)}</div>` : ''}
           </div>
-          ${buildPDFMetrics(data)}
-          ${buildPDFChart(data)}
-          ${buildPDFTable(data)}
-          ${buildPDFInsight(data)}
-        </div>`;
+        </div>
+        ${buildPDFMetrics(data)}
+        ${buildPDFChart(data)}
+        ${buildPDFTable(data)}
+        ${buildPDFInsight(data)}
+      </div>`;
     });
   });
 
-  // Footer
-  html += `
-    <div class="rpt-footer">
-      <div class="rpt-footer-left"><strong>${escHtml(brand)}</strong> &mdash; ${escHtml(period)}</div>
-      <div class="rpt-footer-badge">
-        ${claudeLogoSVG(16)}
-        <span class="rpt-footer-badge-text">Powered by Claude</span>
-      </div>
-    </div>
-  </div>`;
+  html += `<div class="rpt-footer">
+    <div class="rpt-footer-left"><strong>${escHtml(brand)}</strong> &mdash; ${escHtml(period)}</div>
+    <div class="rpt-footer-badge">${claudeLogoSVG(16)}<span class="rpt-footer-badge-text">Powered by Claude</span></div>
+  </div></div>`;
 
   document.getElementById('pdfReport').innerHTML = html;
   setTimeout(() => window.print(), 150);
 }
 
 function claudeLogoSVG(size=20){
-  return `<svg width="${size}" height="${size}" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="40" height="40" rx="8" fill="#D97757"/>
-    <path d="M20 8 L28 28 H24 L22 22 H18 L16 28 H12 L20 8Z M19 18 H21 L20 14 Z" fill="white"/>
-  </svg>`;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" rx="8" fill="#D97757"/><path d="M20 8L28 28H24L22 22H18L16 28H12L20 8ZM19 18H21L20 14Z" fill="white"/></svg>`;
 }
+
+function parseN(s){ return parseFloat(String(s||'').replace(/[^0-9.-]/g,''))||0; }
 
 function buildPDFMetrics(data){
   if(!data.metrics || !data.metrics.length) return '';
-  return `<div class="rpt-kpi-row">
-    ${data.metrics.slice(0,6).map(m => {
-      const cls = m.sentiment==='good'?'good':m.sentiment==='bad'?'bad':m.sentiment==='warn'?'warn':'';
-      return `<div class="rpt-kpi">
-        <div class="rpt-kpi-label">${escHtml(m.name)}</div>
-        <div class="rpt-kpi-val ${cls}">${escHtml(m.formatted)}</div>
-        ${m.sub ? `<div style="font-size:10px;color:var(--hint);margin-top:2px">${escHtml(m.sub)}</div>` : ''}
-      </div>`;
-    }).join('')}
-  </div>`;
+  return `<div class="rpt-kpi-row">${data.metrics.slice(0,6).map(m=>{
+    const cls = m.sentiment==='good'?'good':m.sentiment==='bad'?'bad':m.sentiment==='warn'?'warn':'';
+    return `<div class="rpt-kpi"><div class="rpt-kpi-label">${escHtml(m.name)}</div><div class="rpt-kpi-val ${cls}">${escHtml(m.formatted)}</div></div>`;
+  }).join('')}</div>`;
 }
 
 function buildPDFTable(data){
   if(!data.tableHeaders || !data.tableRows || !data.tableRows.length) return '';
-  const header = data.tableHeaders.map(h => `<th>${escHtml(h)}</th>`).join('');
-  const rows   = data.tableRows.map(row => {
+  const header = data.tableHeaders.map(h=>`<th>${escHtml(h)}</th>`).join('');
+  const rows   = data.tableRows.map(row=>{
     const cls = row._class ? ` class="${row._class}"` : '';
-    const cells = row.filter((_, i) => i !== '_class').map(c => `<td>${escHtml(String(c))}</td>`).join('');
+    const cells = row.filter((_,i)=>i!=='_class'&&row[i]!==undefined).map(c=>`<td>${escHtml(String(c))}</td>`).join('');
     return `<tr${cls}>${cells}</tr>`;
   }).join('');
   return `<table class="rpt-table"><thead><tr>${header}</tr></thead><tbody>${rows}</tbody></table>`;
@@ -519,94 +562,78 @@ function buildPDFTable(data){
 
 function buildPDFInsight(data){
   if(!data.metrics || !data.metrics.length) return '';
-  const best  = data.metrics.find(m => m.sentiment === 'good') || data.metrics[0];
-  const worst = data.metrics.find(m => m.sentiment === 'bad');
+  const worst = data.metrics.find(m=>m.sentiment==='bad');
+  const best  = data.metrics.find(m=>m.sentiment==='good') || data.metrics[0];
   const m = worst || best;
   const cls = m.sentiment==='good'?'good':m.sentiment==='bad'?'bad':m.sentiment==='warn'?'warn':'';
   return `<div class="rpt-insight ${cls}"><strong>${escHtml(m.name)}:</strong> ${escHtml(m.formatted)}</div>`;
 }
 
-// ── Chart renderers ──────────────────────────────
 function buildPDFChart(data){
   if(data.chartData){
-    const t = data.chartData.type;
-    if(t==='bar_stack')  return buildBarStack(data.chartData);
-    if(t==='compare')    return buildCompareGrid(data.chartData);
+    if(data.chartData.type==='bar_stack') return buildBarStack(data.chartData);
+    if(data.chartData.type==='compare')   return buildCompareGrid(data.chartData);
   }
-  return buildPDFChartFromMetrics(data);
+  return buildChartFromMetrics(data.metrics||[]);
 }
 
-function buildPDFChartFromMetrics(data){
-  const m = data.metrics || [];
-  // CCC diagram
-  const dio = m.find(x=>x.name.startsWith('DIO'));
-  const dso = m.find(x=>x.name.startsWith('DSO'));
-  const dpo = m.find(x=>x.name.startsWith('DPO'));
-  const ccc = m.find(x=>x.name.toLowerCase().includes('cash conversion')||x.name.toLowerCase().includes('cash-to-cash'));
-  if(dio && dso && dpo && ccc){
-    return buildCCCDiagram(parseN(dio.formatted), parseN(dso.formatted), parseN(dpo.formatted), parseN(ccc.formatted));
-  }
-  // Channel bars
-  const chMetrics = m.filter(x=>x.name.endsWith(' GM%'));
-  if(chMetrics.length >= 2) return buildChannelBars(chMetrics);
+function buildChartFromMetrics(metrics){
+  const dio = metrics.find(x=>x.name.startsWith('DIO'));
+  const dso = metrics.find(x=>x.name.startsWith('DSO'));
+  const dpo = metrics.find(x=>x.name.startsWith('DPO'));
+  const ccc = metrics.find(x=>x.name.toLowerCase().includes('cash conversion'));
+  if(dio&&dso&&dpo&&ccc) return buildCCCDiagram(parseN(dio.formatted),parseN(dso.formatted),parseN(dpo.formatted),parseN(ccc.formatted));
+  const ch = metrics.filter(x=>x.name.endsWith(' GM%'));
+  if(ch.length>=2) return buildChannelBars(ch);
   return '';
 }
 
-function parseN(s){ return parseFloat(String(s||'').replace(/[^0-9.-]/g,''))||0; }
-
 function buildBarStack(cd){
-  const segs = cd.segments || [];
-  const total = segs.reduce((s,sg)=>s+(sg.value||0), 0);
+  const segs = cd.segments||[];
+  const total = segs.reduce((s,sg)=>s+(sg.value||0),0);
   if(!total) return '';
-
   const bars = segs.map(sg=>{
-    const pct = (sg.value/total)*100;
-    const lbl = pct>9 ? sg.label+' '+pct.toFixed(0)+'%' : (pct>4 ? pct.toFixed(0)+'%' : '');
-    return `<div style="background:${sg.color};height:100%;width:${pct.toFixed(1)}%;display:flex;align-items:center;padding:0 6px;font-size:10px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;min-width:0">${escHtml(lbl)}</div>`;
+    const pct=(sg.value/total)*100;
+    const lbl=pct>9?sg.label+' '+pct.toFixed(0)+'%':pct>4?pct.toFixed(0)+'%':'';
+    return `<div class="rpt-bar-seg" style="background:${sg.color};width:${pct.toFixed(1)}%">${escHtml(lbl)}</div>`;
   }).join('');
-
-  const gpPct = cd.gpPct || 0;
-  const gpBar = gpPct>0 ? `<div style="background:rgba(29,158,117,0.75);height:100%;flex:1;display:flex;align-items:center;padding:0 6px;font-size:10px;font-weight:700;color:#fff">GP ${gpPct.toFixed(0)}%</div>` : '';
-
-  const legend = segs.map(sg=>`<span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><span style="width:10px;height:10px;border-radius:2px;background:${sg.color};display:inline-block;flex-shrink:0"></span>${escHtml(sg.label)} ($${sg.value.toFixed(2)})</span>`).join('');
-
-  return `<div style="margin-bottom:18px">
+  const gpPct=cd.gpPct||0;
+  const gpBar=gpPct>0?`<div class="rpt-bar-seg" style="background:rgba(29,158,117,0.75);flex:1">GP ${gpPct.toFixed(0)}%</div>`:'';
+  const legend=segs.map(sg=>`<span><span class="rpt-leg" style="background:${sg.color}"></span>${escHtml(sg.label)} ($${sg.value.toFixed(2)})</span>`).join('');
+  return `<div class="rpt-bar-wrap">
     <div style="font-size:11px;color:var(--muted);margin-bottom:6px">${escHtml(cd.totalLabel||'Cost breakdown')}</div>
-    <div style="height:28px;border-radius:6px;overflow:hidden;display:flex;margin-bottom:8px">${bars}${gpBar}</div>
-    <div style="display:flex;gap:14px;flex-wrap:wrap">${legend}</div>
+    <div class="rpt-bar-track">${bars}${gpBar}</div>
+    <div class="rpt-bar-legend">${legend}</div>
   </div>`;
 }
 
 function buildCompareGrid(cd){
-  const fn = (item, highlight) => {
-    const rows = (item.rows||[]).map(r=>`<div style="display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:0.5px solid var(--border)"><span style="color:var(--muted)">${escHtml(r.label)}</span><span>${escHtml(r.value)}</span></div>`).join('');
-    return `<div style="border:1px solid ${highlight?'var(--teal)':'var(--border)'};border-radius:10px;padding:16px 18px;background:${highlight?'rgba(29,158,117,0.08)':'transparent'}">
-      <div style="font-size:11px;font-weight:700;color:${highlight?'var(--teal)':'var(--muted)'};text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">${highlight?'&#9733; ':''}${escHtml(item.label)}</div>
-      <div style="font-size:24px;font-weight:700;color:${highlight?'var(--teal)':'var(--text)'};margin-bottom:2px">${escHtml(item.mainValue)}</div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:12px">${escHtml(item.mainSub||'')}</div>
+  const card=(item,win)=>{
+    const rows=(item.rows||[]).map(r=>`<div class="rpt-cmp-row"><span>${escHtml(r.label)}</span><span>${escHtml(r.value)}</span></div>`).join('');
+    return `<div class="rpt-cmp-card${win?' winner':''}">
+      <div class="rpt-cmp-head${win?' win':''}">${win?'&#9733; ':''}${escHtml(item.label)}</div>
+      <div class="rpt-cmp-big">${escHtml(item.mainValue)}</div>
+      <div class="rpt-cmp-sub">${escHtml(item.mainSub||'')}</div>
       ${rows}
     </div>`;
   };
-  const afterWins = cd.winner==='after';
-  return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
-    ${fn(cd.before, !afterWins)}
-    ${fn(cd.after, afterWins)}
-  </div>`;
+  const afterWins=cd.winner==='after';
+  return `<div class="rpt-cmp">${card(cd.before,!afterWins)}${card(cd.after,afterWins)}</div>`;
 }
 
-function buildCCCDiagram(dio, dso, dpo, ccc){
-  const seg = (lbl,val,bg,col) => `<div style="flex:1;padding:14px 10px;text-align:center;background:${bg}">
-    <div style="font-size:9px;font-weight:700;color:var(--hint);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px">${lbl}</div>
-    <div style="font-size:19px;font-weight:700;color:${col}">${val.toFixed(1)}d</div>
+function buildCCCDiagram(dio,dso,dpo,ccc){
+  const seg=(lbl,v,cls,col)=>`<div class="rpt-ccc-seg" style="background:${cls}">
+    <div class="rpt-ccc-lbl">${lbl}</div>
+    <div class="rpt-ccc-val" style="color:${col}">${v.toFixed(1)}d</div>
   </div>`;
-  return `<div style="margin-bottom:16px">
-    <div style="font-size:12px;color:var(--muted);text-align:center;margin-bottom:12px">
+  return `<div>
+    <div class="rpt-ccc-formula">
       <strong style="color:var(--accent)">${dio.toFixed(1)}d DIO</strong> +
-      <strong style="color:var(--amber)">${dso.toFixed(1)}d DSO</strong> −
+      <strong style="color:var(--amber)">${dso.toFixed(1)}d DSO</strong> &minus;
       <strong style="color:var(--teal)">${dpo.toFixed(1)}d DPO</strong> =
       <strong style="color:var(--purple)">${ccc.toFixed(1)}d CCC</strong>
     </div>
-    <div style="display:flex;border-radius:10px;overflow:hidden;border:1px solid var(--border)">
+    <div class="rpt-ccc">
       ${seg('DIO',dio,'rgba(24,95,165,0.08)','var(--accent)')}
       ${seg('DSO',dso,'rgba(186,117,23,0.08)','var(--amber)')}
       ${seg('DPO',dpo,'rgba(29,158,117,0.08)','var(--teal)')}
@@ -616,20 +643,17 @@ function buildCCCDiagram(dio, dso, dpo, ccc){
 }
 
 function buildChannelBars(chMetrics){
-  const bars = chMetrics.map(m=>{
-    const pct = parseN(m.formatted);
-    const lbl = m.name.replace(' GM%','');
-    const color = pct>=50?'rgba(29,158,117,0.8)':pct>=40?'rgba(186,117,23,0.7)':'rgba(226,75,74,0.7)';
-    const txtColor = pct>=50?'var(--teal)':pct>=40?'var(--amber)':'var(--red)';
-    return `<div style="display:flex;align-items:center;gap:12px;margin-bottom:9px">
-      <div style="font-size:12px;font-weight:600;color:var(--text);width:88px;flex-shrink:0">${escHtml(lbl)}</div>
-      <div style="flex:1;height:26px;background:var(--surface);border-radius:6px;overflow:hidden;display:flex">
-        <div style="background:${color};height:100%;width:${Math.min(pct,100).toFixed(1)}%;display:flex;align-items:center;padding:0 8px;font-size:10px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden">${pct.toFixed(1)}% GM</div>
-      </div>
-      <div style="font-size:13px;font-weight:700;color:${txtColor};width:44px;text-align:right;flex-shrink:0">${pct.toFixed(1)}%</div>
+  return `<div style="margin-bottom:16px">${chMetrics.map(m=>{
+    const pct=parseN(m.formatted);
+    const lbl=m.name.replace(' GM%','');
+    const color=pct>=50?'rgba(29,158,117,0.8)':pct>=40?'rgba(186,117,23,0.7)':'rgba(226,75,74,0.7)';
+    const txtColor=pct>=50?'var(--teal)':pct>=40?'var(--amber)':'var(--red)';
+    return `<div class="rpt-ch-row">
+      <div class="rpt-ch-label">${escHtml(lbl)}</div>
+      <div class="rpt-ch-track"><div class="rpt-ch-bar" style="background:${color};width:${Math.min(pct,100).toFixed(1)}%">${pct.toFixed(1)}% GM</div></div>
+      <div class="rpt-ch-pct" style="color:${txtColor}">${pct.toFixed(1)}%</div>
     </div>`;
-  }).join('');
-  return `<div style="margin-bottom:16px">${bars}</div>`;
+  }).join('')}</div>`;
 }
 
 function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
