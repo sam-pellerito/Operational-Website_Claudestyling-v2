@@ -64,6 +64,7 @@ h1{font-size:24px;font-weight:600;color:var(--text);margin-bottom:6px;}
 @media print {
   @page{size:letter;margin:0;}
   body{background:#fff;}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
   .page{padding:0;max-width:100%;}
   .no-print{display:none!important;}
   .print-only{display:block!important;}
@@ -462,6 +463,7 @@ function exportPDF(){
             </div>
           </div>
           ${buildPDFMetrics(data)}
+          ${buildPDFChart(data)}
           ${buildPDFTable(data)}
           ${buildPDFInsight(data)}
         </div>`;
@@ -517,12 +519,117 @@ function buildPDFTable(data){
 
 function buildPDFInsight(data){
   if(!data.metrics || !data.metrics.length) return '';
-  // Find the most meaningful metric to surface as an insight
-  const best = data.metrics.find(m => m.sentiment === 'good') || data.metrics[0];
+  const best  = data.metrics.find(m => m.sentiment === 'good') || data.metrics[0];
   const worst = data.metrics.find(m => m.sentiment === 'bad');
   const m = worst || best;
   const cls = m.sentiment==='good'?'good':m.sentiment==='bad'?'bad':m.sentiment==='warn'?'warn':'';
   return `<div class="rpt-insight ${cls}"><strong>${escHtml(m.name)}:</strong> ${escHtml(m.formatted)}</div>`;
+}
+
+// ── Chart renderers ──────────────────────────────
+function buildPDFChart(data){
+  if(data.chartData){
+    const t = data.chartData.type;
+    if(t==='bar_stack')  return buildBarStack(data.chartData);
+    if(t==='compare')    return buildCompareGrid(data.chartData);
+  }
+  return buildPDFChartFromMetrics(data);
+}
+
+function buildPDFChartFromMetrics(data){
+  const m = data.metrics || [];
+  // CCC diagram
+  const dio = m.find(x=>x.name.startsWith('DIO'));
+  const dso = m.find(x=>x.name.startsWith('DSO'));
+  const dpo = m.find(x=>x.name.startsWith('DPO'));
+  const ccc = m.find(x=>x.name.toLowerCase().includes('cash conversion')||x.name.toLowerCase().includes('cash-to-cash'));
+  if(dio && dso && dpo && ccc){
+    return buildCCCDiagram(parseN(dio.formatted), parseN(dso.formatted), parseN(dpo.formatted), parseN(ccc.formatted));
+  }
+  // Channel bars
+  const chMetrics = m.filter(x=>x.name.endsWith(' GM%'));
+  if(chMetrics.length >= 2) return buildChannelBars(chMetrics);
+  return '';
+}
+
+function parseN(s){ return parseFloat(String(s||'').replace(/[^0-9.-]/g,''))||0; }
+
+function buildBarStack(cd){
+  const segs = cd.segments || [];
+  const total = segs.reduce((s,sg)=>s+(sg.value||0), 0);
+  if(!total) return '';
+
+  const bars = segs.map(sg=>{
+    const pct = (sg.value/total)*100;
+    const lbl = pct>9 ? sg.label+' '+pct.toFixed(0)+'%' : (pct>4 ? pct.toFixed(0)+'%' : '');
+    return `<div style="background:${sg.color};height:100%;width:${pct.toFixed(1)}%;display:flex;align-items:center;padding:0 6px;font-size:10px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;min-width:0">${escHtml(lbl)}</div>`;
+  }).join('');
+
+  const gpPct = cd.gpPct || 0;
+  const gpBar = gpPct>0 ? `<div style="background:rgba(29,158,117,0.75);height:100%;flex:1;display:flex;align-items:center;padding:0 6px;font-size:10px;font-weight:700;color:#fff">GP ${gpPct.toFixed(0)}%</div>` : '';
+
+  const legend = segs.map(sg=>`<span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><span style="width:10px;height:10px;border-radius:2px;background:${sg.color};display:inline-block;flex-shrink:0"></span>${escHtml(sg.label)} ($${sg.value.toFixed(2)})</span>`).join('');
+
+  return `<div style="margin-bottom:18px">
+    <div style="font-size:11px;color:var(--muted);margin-bottom:6px">${escHtml(cd.totalLabel||'Cost breakdown')}</div>
+    <div style="height:28px;border-radius:6px;overflow:hidden;display:flex;margin-bottom:8px">${bars}${gpBar}</div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap">${legend}</div>
+  </div>`;
+}
+
+function buildCompareGrid(cd){
+  const fn = (item, highlight) => {
+    const rows = (item.rows||[]).map(r=>`<div style="display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:0.5px solid var(--border)"><span style="color:var(--muted)">${escHtml(r.label)}</span><span>${escHtml(r.value)}</span></div>`).join('');
+    return `<div style="border:1px solid ${highlight?'var(--teal)':'var(--border)'};border-radius:10px;padding:16px 18px;background:${highlight?'rgba(29,158,117,0.08)':'transparent'}">
+      <div style="font-size:11px;font-weight:700;color:${highlight?'var(--teal)':'var(--muted)'};text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">${highlight?'&#9733; ':''}${escHtml(item.label)}</div>
+      <div style="font-size:24px;font-weight:700;color:${highlight?'var(--teal)':'var(--text)'};margin-bottom:2px">${escHtml(item.mainValue)}</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px">${escHtml(item.mainSub||'')}</div>
+      ${rows}
+    </div>`;
+  };
+  const afterWins = cd.winner==='after';
+  return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
+    ${fn(cd.before, !afterWins)}
+    ${fn(cd.after, afterWins)}
+  </div>`;
+}
+
+function buildCCCDiagram(dio, dso, dpo, ccc){
+  const seg = (lbl,val,bg,col) => `<div style="flex:1;padding:14px 10px;text-align:center;background:${bg}">
+    <div style="font-size:9px;font-weight:700;color:var(--hint);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px">${lbl}</div>
+    <div style="font-size:19px;font-weight:700;color:${col}">${val.toFixed(1)}d</div>
+  </div>`;
+  return `<div style="margin-bottom:16px">
+    <div style="font-size:12px;color:var(--muted);text-align:center;margin-bottom:12px">
+      <strong style="color:var(--accent)">${dio.toFixed(1)}d DIO</strong> +
+      <strong style="color:var(--amber)">${dso.toFixed(1)}d DSO</strong> −
+      <strong style="color:var(--teal)">${dpo.toFixed(1)}d DPO</strong> =
+      <strong style="color:var(--purple)">${ccc.toFixed(1)}d CCC</strong>
+    </div>
+    <div style="display:flex;border-radius:10px;overflow:hidden;border:1px solid var(--border)">
+      ${seg('DIO',dio,'rgba(24,95,165,0.08)','var(--accent)')}
+      ${seg('DSO',dso,'rgba(186,117,23,0.08)','var(--amber)')}
+      ${seg('DPO',dpo,'rgba(29,158,117,0.08)','var(--teal)')}
+      ${seg('CCC',ccc,'rgba(127,119,221,0.10)','var(--purple)')}
+    </div>
+  </div>`;
+}
+
+function buildChannelBars(chMetrics){
+  const bars = chMetrics.map(m=>{
+    const pct = parseN(m.formatted);
+    const lbl = m.name.replace(' GM%','');
+    const color = pct>=50?'rgba(29,158,117,0.8)':pct>=40?'rgba(186,117,23,0.7)':'rgba(226,75,74,0.7)';
+    const txtColor = pct>=50?'var(--teal)':pct>=40?'var(--amber)':'var(--red)';
+    return `<div style="display:flex;align-items:center;gap:12px;margin-bottom:9px">
+      <div style="font-size:12px;font-weight:600;color:var(--text);width:88px;flex-shrink:0">${escHtml(lbl)}</div>
+      <div style="flex:1;height:26px;background:var(--surface);border-radius:6px;overflow:hidden;display:flex">
+        <div style="background:${color};height:100%;width:${Math.min(pct,100).toFixed(1)}%;display:flex;align-items:center;padding:0 8px;font-size:10px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden">${pct.toFixed(1)}% GM</div>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:${txtColor};width:44px;text-align:right;flex-shrink:0">${pct.toFixed(1)}%</div>
+    </div>`;
+  }).join('');
+  return `<div style="margin-bottom:16px">${bars}</div>`;
 }
 
 function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
