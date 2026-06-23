@@ -90,6 +90,43 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 .print-only{display:none;}
 @media(max-width:640px){.export-bar{flex-direction:column;align-items:flex-start;}}
 
+/* ── How-to block ───────────────────── */
+.how-to{background:var(--surface);border-radius:12px;padding:18px 20px;margin-bottom:24px;}
+.how-to-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--hint);margin-bottom:10px;}
+.how-to ol{margin:0;padding-left:18px;}
+.how-to li{font-size:13px;color:var(--muted);margin-bottom:4px;}
+/* ── Sample button ───────────────────── */
+.sample-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:7px 14px;font-size:13px;color:var(--muted);cursor:pointer;transition:background .15s,color .15s;margin-top:12px;margin-right:8px;}
+.sample-btn:hover{background:var(--surface);color:var(--text);}
+/* ── Rec-box ─────────────────────────── */
+.rec-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:16px;display:none;}
+.rec-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--teal);margin-bottom:6px;}
+.rec-headline{font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px;line-height:1.4;}
+.rec-detail{font-size:13px;color:var(--muted);line-height:1.5;}
+.rec-largest{font-size:12px;color:var(--accent);margin-top:8px;font-weight:500;}
+/* ── Flags list ──────────────────────── */
+.flags-list{display:none;margin-bottom:16px;}
+.flag-warn,.flag-info{font-size:13px;padding:10px 14px;border-radius:8px;margin-bottom:6px;line-height:1.5;}
+.flag-warn{background:rgba(186,117,23,0.08);border-left:3px solid var(--amber);color:var(--text);}
+.flag-info{background:rgba(24,95,165,0.06);border-left:3px solid var(--accent);color:var(--text);}
+/* ── Channel comparison ──────────────── */
+.compare-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:6px;}
+.compare-table th{font-size:10.5px;font-weight:600;color:var(--hint);text-transform:uppercase;letter-spacing:.05em;padding:8px 12px;border-bottom:0.5px solid var(--border);background:var(--surface);text-align:right;}
+.compare-table th:first-child{text-align:left;}
+.compare-table td{padding:10px 12px;border-bottom:0.5px solid var(--border);text-align:right;color:var(--muted);}
+.compare-table td:first-child{text-align:left;color:var(--text);font-weight:500;}
+.compare-table tr.compare-active td{background:rgba(24,95,165,0.04);font-weight:600;color:var(--text);}
+.compare-table tr.compare-active td:first-child::after{content:' ✓';color:var(--accent);font-size:11px;}
+/* ── Related tools ───────────────────── */
+.related-tools{margin-top:40px;padding-top:24px;border-top:0.5px solid var(--border);}
+.related-tools-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--hint);margin-bottom:14px;}
+.related-tools-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;}
+.related-tool-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;text-decoration:none;display:block;transition:border-color .15s,box-shadow .15s;}
+.related-tool-card:hover{border-color:var(--accent);box-shadow:0 2px 8px rgba(24,95,165,0.1);}
+.rtc-tag{font-size:10px;font-weight:600;color:var(--hint);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;}
+.rtc-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.rtc-desc{font-size:11.5px;color:var(--muted);}
+
 </style>
 <style id="pdf-styles">
 .pdf-cover{padding:32px 0 20px;border-bottom:2px solid #0c1f3a;margin-bottom:20px;}
@@ -116,9 +153,24 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 <header>
   <p class="header-tag">CPG Operations Tool</p>
   <h1>Trade Spend &amp; Net Revenue</h1>
-  <p class="header-desc">See what lands in your pocket after every channel-specific deduction. Select your channel and the right cost structure loads automatically — retail trade spend, DTC fulfillment, Amazon fees, or foodservice margins.</p>
+  <p class="header-desc">Calculate true net revenue and gross margin after trade spend, platform fees, fulfillment, distributor margins, and other channel deductions. See what you actually keep from each dollar of gross revenue.</p>
+  <p style="font-size:13px;color:var(--muted);margin-top:8px;max-width:620px;"><strong style="color:var(--text);">Use this before</strong> approving a promotion, comparing sales channels, reviewing retailer deductions, or deciding whether a channel is actually profitable.</p>
   <p class="byline">Built by <strong>Sam Pellerito</strong></p>
 </header>
+
+<div class="how-to">
+  <p class="how-to-title">How to use this tool</p>
+  <ol>
+    <li><strong>Select your channel</strong> — default deduction rates load automatically for retail, DTC, Amazon, or foodservice.</li>
+    <li><strong>Enter gross revenue</strong> — total invoiced before any deductions or allowances.</li>
+    <li><strong>Enter COGS</strong> — product-level cost only. Do not include fulfillment, platform fees, or freight if those are already entered as channel deductions below.</li>
+    <li><strong>Adjust deductions</strong> — use the defaults or enter your actual spend. Toggle between $ and % of gross.</li>
+    <li><strong>Click Calculate</strong> to see net revenue, gross margin, and a side-by-side channel comparison.</li>
+  </ol>
+  <button class="sample-btn" onclick="loadSample('grocery')">Load sample retail promotion</button>
+  <button class="sample-btn" onclick="loadSample('amazon')">Load sample Amazon</button>
+  <button class="sample-btn" onclick="loadSample('dtc')">Load sample DTC</button>
+</div>
 
 <!-- ── Channel selector ──────────────────────── -->
 <p class="section-title">Select your channel</p>
@@ -136,7 +188,7 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
   <div class="field">
     <label>COGS ($)</label>
     <input type="number" id="totalCOGS" value="185000" step="5000" min="0"/>
-    <span class="field-hint">Used to calculate gross profit after all deductions.</span>
+    <span class="field-hint">Use product-level COGS only. Do not double-count fulfillment, platform fees, freight, or trade spend if those are already entered below as channel deductions.</span>
   </div>
 </div>
 
@@ -156,6 +208,15 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 
 <!-- ── Results ───────────────────────────────── -->
 <p class="section-title">Net revenue summary</p>
+
+<div class="rec-box" id="recBox">
+  <p class="rec-label">Channel profitability snapshot</p>
+  <p class="rec-headline" id="recHeadline"></p>
+  <p class="rec-detail" id="recDetail"></p>
+  <p class="rec-largest" id="recLargest"></p>
+</div>
+<div class="flags-list" id="flagsList"></div>
+
 <div class="metric-grid">
   <div class="metric"><p class="metric-label">Gross revenue</p><p class="metric-value" id="out-gross">—</p><p class="metric-sub">before deductions</p></div>
   <div class="metric"><p class="metric-label">Total deductions</p><p class="metric-value bad" id="out-trade">—</p><p class="metric-sub">all channel costs</p></div>
@@ -190,9 +251,27 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 <div class="chart-wrap"><canvas id="wfChart" role="img" aria-label="Gross to net waterfall chart"></canvas></div>
 <p class="chart-note">Gross and net revenue are shown as positive bars (above zero). Each deduction is shown as a negative bar below zero — the deeper the bar, the larger the cost.</p>
 
+<!-- ── Channel comparison ──────────────────────── -->
+<p class="section-title">Channel comparison — at current gross revenue & COGS</p>
+<p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Uses each channel's default deduction rates applied to your current gross revenue and COGS. Your active channel is highlighted.</p>
+<table class="compare-table" id="compareTable" aria-label="Channel comparison">
+  <thead>
+    <tr>
+      <th>Channel</th>
+      <th style="text-align:right">Total deductions</th>
+      <th style="text-align:right">Deductions %</th>
+      <th style="text-align:right">Net revenue</th>
+      <th style="text-align:right">Gross profit</th>
+      <th style="text-align:right">Gross margin</th>
+    </tr>
+  </thead>
+  <tbody id="compareBody"></tbody>
+</table>
+<p class="chart-note">Comparison uses default deduction rates. Actual rates will vary by account and contract terms.</p>
+
 <div class="export-bar no-print">
   <div class="export-bar-left">
-    <strong>Export results</strong>
+    <strong>Export this trade spend analysis</strong>
     <span class="save-confirm" id="saveConfirm">&#10003; Saved to Export Hub</span><span class="export-bar-hint" id="exportHint">Save to Hub or download as CSV, Excel, or PDF</span>
   </div>
   <button class="ebtn ebtn-hub" onclick="saveForExport()">
@@ -211,7 +290,7 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
     PDF
   </button>
-  <button class="ebtn ebtn-reset" onclick="resetForm()" title="Reset all inputs to defaults">
+  <button class="ebtn ebtn-reset" onclick="resetForm(this)" title="Reset all inputs to defaults">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.85"/></svg>
     Reset
   </button>
@@ -221,6 +300,32 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
   <div class="footer-left">Built by <strong>Sam Pellerito</strong> — CPG Operations Tools</div>
   <div class="footer-right"><a href="index.html">← All tools</a></div>
 </footer>
+
+<div class="related-tools">
+  <p class="related-tools-title">Related tools</p>
+  <div class="related-tools-grid">
+    <a href="../10-channel-margin-waterfall/channel-margin-waterfall.html" class="related-tool-card">
+      <p class="rtc-tag">Trade Economics</p>
+      <p class="rtc-name">Channel Margin Waterfall</p>
+      <p class="rtc-desc">Build a per-unit margin waterfall from retail price down to brand contribution.</p>
+    </a>
+    <a href="../02-cogs-builder/cogs-builder.html" class="related-tool-card">
+      <p class="rtc-tag">COGS</p>
+      <p class="rtc-name">COGS Builder</p>
+      <p class="rtc-desc">Calculate per-unit COGS from ingredients, packaging, and co-man costs.</p>
+    </a>
+    <a href="../08-landed-cost-freight/landed-cost-freight.html" class="related-tool-card">
+      <p class="rtc-tag">Supply Chain</p>
+      <p class="rtc-name">Landed Cost & Freight</p>
+      <p class="rtc-desc">Understand your true landed cost before setting channel pricing.</p>
+    </a>
+    <a href="../11-operational-impact/operational-impact.html" class="related-tool-card">
+      <p class="rtc-tag">Trade Economics</p>
+      <p class="rtc-name">Operational Impact Calculator</p>
+      <p class="rtc-desc">Quantify the bottom-line impact of cost changes, price changes, or volume shifts.</p>
+    </a>
+  </div>
+</div>
 
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
@@ -475,6 +580,77 @@ function render(){
   gmEl.textContent = fmtPct(grossMargin);
   gmEl.className = 'metric-value' + (grossMargin<0?' bad':grossMargin<20?' warn':' good');
 
+  // ── Rec-box ──────────────────────────
+  const rb = $id('recBox');
+  rb.style.display = 'block';
+  const kept = fmt(netRevenue);
+  const grossFmt = fmt(gross);
+  $id('recHeadline').textContent =
+    'After deductions, you keep '+kept+' of '+grossFmt+' gross revenue. Deductions consume '+fmtPct(tradePct)+' of sales. Gross margin after COGS is '+fmtPct(grossMargin)+' on net revenue.';
+
+  let interpText = '';
+  if(grossProfit < 0){
+    interpText = 'This channel is not profitable after deductions and COGS. Either reduce costs or increase pricing before committing volume.';
+  } else if(tradePct > 30){
+    interpText = 'This channel is profitable, but deductions are consuming a large share of gross revenue. Focus on reducing your top deduction category.';
+  } else if(grossMargin < 20){
+    interpText = 'Margin is below 20% on net revenue — tight for CPG. Review your COGS and the largest deduction categories for room to negotiate.';
+  } else {
+    interpText = 'Channel economics look healthy at these rates. Use the channel comparison below to see how this stacks up against alternatives.';
+  }
+  $id('recDetail').textContent = interpText;
+
+  // Largest deduction callout
+  if(deductions.length > 0){
+    const largest = deductions.reduce((a,b) => a.amount > b.amount ? a : b);
+    const largestPct = gross > 0 ? largest.amount/gross*100 : 0;
+    $id('recLargest').textContent =
+      'Largest deduction: ' + largest.label + ' — ' + fmt(largest.amount) + ' (' + fmtPct(largestPct) + ' of gross).';
+  } else {
+    $id('recLargest').textContent = '';
+  }
+
+  // ── Flags ────────────────────────────
+  const flags = [];
+  if(tradePct > 30) flags.push({cls:'flag-warn', msg:'Deductions exceed 30% of gross revenue ('+fmtPct(tradePct)+'). This is above typical CPG benchmarks for most channels.'});
+  if(grossMargin < 20 && grossMargin >= 0) flags.push({cls:'flag-warn', msg:'Gross margin on net revenue is '+fmtPct(grossMargin)+'  — below 20%, which is tight for most CPG businesses.'});
+  if(netRevenue > 0 && grossProfit < 0) flags.push({cls:'flag-warn', msg:'Net revenue is positive but gross profit is negative — COGS alone wipes out your net revenue. You are losing money on this channel.'});
+  if(grossProfit < 0 && netRevenue < 0) flags.push({cls:'flag-warn', msg:'COGS plus deductions exceed gross revenue. This channel is deeply unprofitable at current rates.'});
+  if(deductions.length > 0){
+    const largestDed = Math.max(...deductions.map(d=>d.amount));
+    if(totalTrade > 0 && largestDed/totalTrade > 0.5){
+      const largestItem = deductions.find(d=>d.amount===largestDed);
+      flags.push({cls:'flag-info', msg:'One deduction ('+largestItem.label+') accounts for more than half of all deductions. Reducing it would have an outsized impact on net revenue.'});
+    }
+  }
+  const flDiv = $id('flagsList');
+  if(flags.length > 0){
+    flDiv.style.display = 'block';
+    flDiv.innerHTML = flags.map(f=>`<div class="${f.cls}">${f.msg}</div>`).join('');
+  } else {
+    flDiv.style.display = 'none';
+    flDiv.innerHTML = '';
+  }
+
+  // ── Channel comparison ───────────────
+  const compareRows = Object.entries(CHANNELS).map(([key, ch]) => {
+    const defaultDeds = ch.deductions.map(d => d.pct/100*gross).reduce((s,v) => s+v, 0);
+    const netRev  = gross - defaultDeds;
+    const gp      = netRev - cogs;
+    const gm      = netRev > 0 ? gp/netRev*100 : 0;
+    const dedPct  = gross > 0 ? defaultDeds/gross*100 : 0;
+    const isActive = key === activeChannel;
+    return `<tr class="${isActive?'compare-active':''}">
+      <td>${ch.emoji} ${ch.label}</td>
+      <td style="color:var(--red)">(${fmt(defaultDeds)})</td>
+      <td style="color:var(--red)">${fmtPct(dedPct)}</td>
+      <td>${fmt(netRev)}</td>
+      <td style="color:${gp>=0?'var(--teal)':'var(--red)'}">${gp>=0?fmt(gp):'('+fmt(Math.abs(gp))+')'}</td>
+      <td style="color:${gm>=20?'var(--teal)':gm>=0?'var(--amber)':'var(--red)'}">${fmtPct(gm)}</td>
+    </tr>`;
+  }).join('');
+  $id('compareBody').innerHTML = compareRows;
+
   // Waterfall table
   let running = gross;
   let rows = `<tr class="subtotal">
@@ -599,6 +775,59 @@ function render(){
   });
 }
 
+// ── Sample data ─────────────────────────────────
+const SAMPLE_OVERRIDES = {
+  grocery: {
+    grossRevenue: 100000, totalCOGS: 48000,
+    deductions: { tpr: {pct:15}, oi: {pct:0}, mcb: {pct:0}, slot: {pct:0}, spoil: {pct:2}, freight: {pct:3}, epd: {pct:0}, other: {dollar:1500} }
+  },
+  amazon: {
+    grossRevenue: 100000, totalCOGS: 35000,
+    deductions: { referral: {pct:10}, fba: {pct:6}, ads: {pct:12}, coupons: {pct:2.5}, returns: {pct:5}, storage: {pct:1.5}, other: {pct:1} }
+  },
+  dtc: {
+    grossRevenue: 100000, totalCOGS: 30000,
+    deductions: { marketing: {pct:22}, processing: {pct:2.9}, shipping: {pct:9}, returns: {pct:3}, promos: {pct:5}, affiliate: {pct:2}, platform: {pct:1}, other: {pct:0.5} }
+  },
+};
+
+function loadSample(channel){
+  const s = SAMPLE_OVERRIDES[channel];
+  if(!s) return;
+  $id('grossRevenue').value = s.grossRevenue;
+  $id('totalCOGS').value    = s.totalCOGS;
+  if(channel !== activeChannel){
+    activeChannel = channel;
+    buildChannelPills();
+    buildDeductions();
+  }
+  // Apply overrides after deductions are built
+  const ch = CHANNELS[channel];
+  ch.deductions.forEach(d => {
+    const override = s.deductions[d.key];
+    if(!override) return;
+    if(override.dollar !== undefined){
+      modeMap[d.key] = '$';
+      const valEl = $id(d.key+'-val');
+      if(valEl){ valEl.value = override.dollar; valEl.removeAttribute('readonly'); valEl.style.background=''; valEl.style.color=''; }
+      const pctEl = $id(d.key+'-pct');
+      if(pctEl){ pctEl.readOnly=true; pctEl.style.background='var(--surface)'; pctEl.style.color='var(--muted)'; }
+      const btn = $id('btn-'+d.key);
+      if(btn) btn.textContent = '$ amount';
+    } else if(override.pct !== undefined){
+      modeMap[d.key] = '%';
+      const pctEl = $id(d.key+'-pct');
+      if(pctEl){ pctEl.value = override.pct; pctEl.removeAttribute('readonly'); pctEl.style.background=''; pctEl.style.color=''; }
+      const valEl = $id(d.key+'-val');
+      if(valEl){ valEl.readOnly=true; valEl.style.background='var(--surface)'; valEl.style.color='var(--muted)'; }
+      const btn = $id('btn-'+d.key);
+      if(btn) btn.textContent = '% of gross';
+    }
+    updateBadge(d.key);
+  });
+  render();
+}
+
 // ── Init ────────────────────────────────────────
 buildChannelPills();
 buildDeductions();
@@ -697,7 +926,16 @@ function exportPDF(){
     <div class="pdf-footer"><span>Trade Spend & Net Revenue — CPG Operations Tools — Sam Pellerito</span><span>Exported ${now}</span></div>`;
   setTimeout(()=>window.print(),120);
 }
-function resetForm(){
+function flashResetBtn(btn){
+  if(!btn) return;
+  const orig=btn.innerHTML;
+  btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 12 4 9"/></svg> ✓ Cleared';
+  btn.style.background='rgba(29,158,117,0.12)'; btn.style.color='var(--teal)'; btn.style.borderColor='rgba(29,158,117,0.3)';
+  setTimeout(()=>{ btn.innerHTML=orig; btn.style.background=''; btn.style.color=''; btn.style.borderColor=''; }, 2000);
+}
+function resetForm(btn){
+  localStorage.removeItem('cpg_export_trade-spend');
+  flashResetBtn(btn);
   document.querySelectorAll('input,select').forEach(el=>{
     const def=el.getAttribute('value');
     if(el.tagName==='SELECT'){ el.selectedIndex=0; }
