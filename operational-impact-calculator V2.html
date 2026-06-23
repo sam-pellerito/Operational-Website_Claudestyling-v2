@@ -61,6 +61,41 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 .footer-right{font-size:12px;color:var(--hint);}
 @media(max-width:640px){.field-row{grid-template-columns:1fr;}h1{font-size:20px;}.breakdown-table{font-size:11px;}.breakdown-table th,.breakdown-table td{padding:6px 7px;}}
 
+/* ── How-to block ───────────────────── */
+.how-to{background:var(--surface);border-radius:12px;padding:18px 20px;margin-bottom:24px;}
+.how-to-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--hint);margin-bottom:10px;}
+.how-to ol{margin:0;padding-left:18px;}
+.how-to li{font-size:13px;color:var(--muted);margin-bottom:4px;}
+/* ── Sample button ───────────────────── */
+.sample-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:7px 14px;font-size:13px;color:var(--muted);cursor:pointer;transition:background .15s,color .15s;margin-top:12px;}
+.sample-btn:hover{background:var(--surface);color:var(--text);}
+/* ── Rec-box ─────────────────────────── */
+.rec-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:16px;display:none;}
+.rec-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--teal);margin-bottom:6px;}
+.rec-headline{font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px;line-height:1.4;}
+.rec-detail{font-size:13px;color:var(--muted);line-height:1.5;}
+/* ── Flags list ──────────────────────── */
+.flags-list{display:none;margin-bottom:16px;}
+.flag-warn,.flag-info{font-size:13px;padding:10px 14px;border-radius:8px;margin-bottom:6px;line-height:1.5;}
+.flag-warn{background:rgba(186,117,23,0.08);border-left:3px solid var(--amber);color:var(--text);}
+.flag-info{background:rgba(24,95,165,0.06);border-left:3px solid var(--accent);color:var(--text);}
+/* ── Scenario comparison ─────────────── */
+.scenario-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:6px;}
+.scenario-table th{font-size:10.5px;font-weight:600;color:var(--hint);text-transform:uppercase;letter-spacing:.05em;padding:8px 12px;border-bottom:0.5px solid var(--border);background:var(--surface);text-align:right;}
+.scenario-table th:first-child{text-align:left;}
+.scenario-table td{padding:10px 12px;border-bottom:0.5px solid var(--border);text-align:right;color:var(--muted);}
+.scenario-table td:first-child{text-align:left;color:var(--text);font-weight:500;}
+.scenario-table tr.active-scenario td{background:rgba(24,95,165,0.04);font-weight:600;color:var(--text);}
+/* ── Related tools ───────────────────── */
+.related-tools{margin-top:40px;padding-top:24px;border-top:0.5px solid var(--border);}
+.related-tools-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--hint);margin-bottom:14px;}
+.related-tools-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;}
+.related-tool-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;text-decoration:none;display:block;transition:border-color .15s,box-shadow .15s;}
+.related-tool-card:hover{border-color:var(--accent);box-shadow:0 2px 8px rgba(24,95,165,0.1);}
+.rtc-tag{font-size:10px;font-weight:600;color:var(--hint);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;}
+.rtc-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.rtc-desc{font-size:11.5px;color:var(--muted);}
+
 /* ── Export bar ─────────────────── */
 .export-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-top:28px;}
 .export-bar-left{flex:1;min-width:160px;}
@@ -104,9 +139,22 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 <header>
   <p class="header-tag">CPG Operations Tool</p>
   <h1>Operational Impact Calculator</h1>
-  <p class="header-desc">Estimate how a one-time operational savings reinvested into marketing affects customer acquisition cost and gross margin — useful for CPG owners, operators, and investors building the case for efficiency improvements.</p>
+  <p class="header-desc">See how operational savings can fund customer growth, increase revenue, and improve blended margin when reinvested into marketing — or compare keeping savings versus reinvesting them into growth.</p>
+  <p style="font-size:13px;color:var(--muted);margin-top:8px;max-width:600px;"><strong style="color:var(--text);">Use this to</strong> justify an efficiency project, show the value of cost savings, or decide how to allocate a one-time savings windfall.</p>
   <p class="byline">Built by <strong>Sam Pellerito</strong></p>
 </header>
+
+<div class="how-to">
+  <p class="how-to-title">How to use this tool</p>
+  <ol>
+    <li><strong>Enter your current revenue, gross margin, AOV, and CPA</strong> to set a baseline.</li>
+    <li><strong>Enter the one-time operational savings</strong> — from a freight renegotiation, co-man switch, or process improvement.</li>
+    <li><strong>Choose how much of the savings to reinvest</strong> into marketing and set your expected ROAS.</li>
+    <li><strong>Review the effect</strong> on revenue, new customers, CPA, contribution, and gross margin.</li>
+    <li><strong>Compare scenarios</strong> — keep savings, reinvest all, or split — to make the best decision.</li>
+  </ol>
+  <button class="sample-btn" onclick="loadSample()">Load sample scenario</button>
+</div>
 
 <p class="section-title">Business inputs</p>
 <div class="field-row">
@@ -124,15 +172,29 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
   <div class="field"><label>Reinvestment rate into marketing (%)</label><input type="number" id="reinvestmentRate" value="50" step="1" min="0" max="100"/></div>
 </div>
 <div class="field-row">
-  <div class="field"><label>Marketing ROI (revenue per $1 spent)</label><input type="number" id="marketingROI" value="3" step="0.1" min="0"/></div>
-  <div class="field"><label>Contribution margin on incremental revenue (%)</label><input type="number" id="contributionMarginPct" value="40" step="0.1" min="0" max="100"/></div>
+  <div class="field">
+    <label>Marketing ROAS (revenue per $1 spent)</label>
+    <input type="number" id="marketingROI" value="3" step="0.1" min="0"/>
+    <span class="field-hint">ROAS = revenue return, not profit return. Example: 3.0 means every $1 of ad spend generates $3 of revenue. Typical CPG ROAS ranges 2–6× depending on channel.</span>
+  </div>
+  <div class="field">
+    <label>Contribution margin on incremental revenue (%)</label>
+    <input type="number" id="contributionMarginPct" value="40" step="0.1" min="0" max="100"/>
+    <span class="field-hint">Use gross margin for your current business, but a lower margin here for new revenue — after COGS, fulfillment, discounts, and transaction fees tied directly to this campaign. Usually lower than your headline gross margin.</span>
+  </div>
 </div>
 <div class="field-row" style="grid-template-columns:1fr;">
-  <div class="field"><label>Notes (optional)</label><textarea id="notes" placeholder="Context or campaign notes"></textarea></div>
+  <div class="field"><label>Notes (optional)</label><textarea id="notes" placeholder="Context or campaign notes. Example: Freight savings reinvested into Meta ads — Q3 2025 test."></textarea></div>
 </div>
 
 <div class="divider"></div>
-<div id="alertBox" class="alert-box" style="display:none"></div>
+
+<div class="rec-box" id="recBox">
+  <p class="rec-label">What this reinvestment does</p>
+  <p class="rec-headline" id="recHeadline"></p>
+  <p class="rec-detail" id="recDetail"></p>
+</div>
+<div class="flags-list" id="flagsList"></div>
 
 <p class="section-title">Key results</p>
 <div class="metric-grid">
@@ -172,11 +234,57 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
   </tbody>
 </table>
 
+<p style="font-size:12px;color:var(--hint);background:rgba(24,95,165,0.04);border-radius:8px;padding:10px 14px;margin-bottom:16px;">
+  <strong style="color:var(--text);">Model scope:</strong> This treats both the savings and campaign impact as one-time events. It does not assume repeat purchases, customer lifetime value, or recurring savings unless modeled in the optional section below.
+</p>
+
+<!-- ── Optional LTV section ─────────────────── -->
+<p class="section-title">Optional: repeat purchase & lifetime value</p>
+<p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Leave at 0 to use the one-time model above. Populate to see how repeat purchases extend the value of newly acquired customers.</p>
+<div class="field-row">
+  <div class="field">
+    <label>Repeat purchase rate (% of new customers who buy again in Year 1)</label>
+    <input type="number" id="repeatRate" value="0" step="1" min="0" max="100"/>
+    <span class="field-hint">E.g. 30 means 30% of new customers place at least one more order in the next 12 months.</span>
+  </div>
+  <div class="field">
+    <label>Average repeat orders per customer (per year)</label>
+    <input type="number" id="repeatOrders" value="2" step="0.5" min="1"/>
+    <span class="field-hint">How many additional times a repeat customer orders on average.</span>
+  </div>
+</div>
+<div id="ltvBox" style="display:none;background:var(--surface);border-radius:10px;padding:14px 18px;margin-bottom:16px;">
+  <p style="font-size:11px;font-weight:700;color:var(--hint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">LTV-adjusted impact</p>
+  <div class="metric-grid" style="margin-bottom:0;">
+    <div class="metric"><p class="metric-label">Repeat revenue (Year 1)</p><p class="metric-value positive" id="out-repeatRev">—</p><p class="metric-sub">from new customers</p></div>
+    <div class="metric"><p class="metric-label">Total first-year revenue lift</p><p class="metric-value positive" id="out-totalRevLift">—</p><p class="metric-sub">first order + repeat</p></div>
+    <div class="metric"><p class="metric-label">Total first-year contribution</p><p class="metric-value positive" id="out-totalContrib">—</p><p class="metric-sub">at contribution margin</p></div>
+  </div>
+</div>
+
+<!-- ── Keep vs reinvest comparison ────────── -->
+<p class="section-title">Scenario comparison — keep savings vs reinvest</p>
+<p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Compare three ways to use the savings. Your current reinvestment rate is highlighted.</p>
+<table class="scenario-table" aria-label="Keep vs reinvest scenario comparison">
+  <thead>
+    <tr>
+      <th style="text-align:left">Scenario</th>
+      <th>Revenue lift</th>
+      <th>New customers</th>
+      <th>Contribution</th>
+      <th>New gross margin</th>
+      <th>Cash retained</th>
+    </tr>
+  </thead>
+  <tbody id="scenarioBody"></tbody>
+</table>
+<p class="chart-note">Scenario A assumes savings drop directly to gross profit (e.g. a COGS reduction). Scenario C uses your current reinvestment rate.</p>
+
 <div class="divider"></div>
 
-<p class="section-title">Saved calculations</p>
+<p class="section-title">Saved scenarios</p>
 <div id="historyWrap">
-  <p style="font-size:13px;color:var(--hint)" id="historyEmpty">No saved calculations yet. Click Save below to record a scenario.</p>
+  <p style="font-size:13px;color:var(--hint)" id="historyEmpty">No saved scenarios yet. Click Save below to record a scenario.</p>
   <table class="history-table" id="historyTable" style="display:none" aria-label="Saved calculation history">
     <thead>
       <tr>
@@ -200,7 +308,7 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 
 <div class="export-bar no-print">
   <div class="export-bar-left">
-    <strong>Export results</strong>
+    <strong>Export this operational impact analysis</strong>
     <span class="save-confirm" id="saveConfirm">&#10003; Saved to Export Hub</span><span class="export-bar-hint" id="exportHint">Save to Hub or download as CSV, Excel, or PDF</span>
   </div>
   <button class="ebtn ebtn-hub" onclick="saveForExport()">
@@ -219,7 +327,7 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
     PDF
   </button>
-  <button class="ebtn ebtn-reset" onclick="resetForm()" title="Reset all inputs to defaults">
+  <button class="ebtn ebtn-reset" onclick="resetForm(this)" title="Reset all inputs to defaults">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.85"/></svg>
     Reset
   </button>
@@ -229,6 +337,28 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
   <div class="footer-left">Built by <strong>Sam Pellerito</strong> — CPG Operations Tools</div>
   <div class="footer-right"><a href="index.html" style="color:var(--hint);text-decoration:none;">← All tools</a></div>
 </footer>
+
+<div class="related-tools">
+  <p class="related-tools-title">Related tools</p>
+  <div class="related-tools-grid">
+    <a href="../09-trade-spend-net-revenue/trade-spend-net-revenue.html" class="related-tool-card">
+      <p class="rtc-name">Trade Spend &amp; Net Revenue</p>
+      <p class="rtc-desc">Model the margin impact of promotions and trade deductions before you approve them.</p>
+    </a>
+    <a href="../10-channel-margin-waterfall/channel-margin-waterfall.html" class="related-tool-card">
+      <p class="rtc-name">Channel Margin Waterfall</p>
+      <p class="rtc-desc">Compare true gross margin across retail, DTC, Amazon, and foodservice to prioritize channels.</p>
+    </a>
+    <a href="../01-cogs-per-unit-builder/cogs-per-unit-builder.html" class="related-tool-card">
+      <p class="rtc-name">COGS Builder</p>
+      <p class="rtc-desc">Build a clean per-unit COGS for the contribution margin input used in this model.</p>
+    </a>
+    <a href="../08-landed-cost-freight/landed-cost-freight.html" class="related-tool-card">
+      <p class="rtc-name">Landed Cost &amp; Freight</p>
+      <p class="rtc-desc">Identify freight and duty savings opportunities that could feed this reinvestment model.</p>
+    </a>
+  </div>
+</div>
 
 </div>
 <script>
@@ -278,29 +408,129 @@ function render(){
   const cpaEl = $id('out-newCPA');
   cpaEl.className = 'metric-value' + (o.newAvgCPA < o.CPA0 ? ' positive' : o.newAvgCPA > o.CPA0 * 1.1 ? ' warn' : '');
 
-  // Alert
-  const box = $id('alertBox');
-  box.style.display = 'block';
-  if(o.incrementalCPA < o.CPA0){
-    box.className = 'alert-box alert-ok';
-    box.textContent = '✓ Incremental CPA ($' + o.incrementalCPA.toFixed(2) + ') is lower than your current CPA ($' + o.CPA0.toFixed(2) + '). Reinvesting these savings acquires new customers more cheaply than your baseline.';
+  // ── Rec-box ──────────────────────────────────────
+  const recBox = $id('recBox');
+  const S = val('savings');
+  const r = val('reinvestmentRate');
+  if(o.B > 0 && o.deltaR > 0){
+    recBox.style.display = '';
+    $id('recHeadline').textContent =
+      'Reinvesting ' + fmt(o.B) + ' of savings into marketing is projected to generate ' +
+      fmt(o.deltaR) + ' in additional revenue and acquire ' + fmtN(o.deltaC) + ' new customers.';
+    const cpaDiff = o.incrementalCPA - o.CPA0;
+    const cpaLine = cpaDiff < 0
+      ? 'The implied campaign CPA (' + fmtDec(o.incrementalCPA) + ') is lower than your current CPA (' + fmtDec(o.CPA0) + '), so this reinvestment improves blended acquisition efficiency.'
+      : 'The implied campaign CPA (' + fmtDec(o.incrementalCPA) + ') is higher than your current CPA (' + fmtDec(o.CPA0) + '), which dilutes blended efficiency — consider improving ROAS or using a lower-CPA channel.';
+    const marginLine = o.deltaContrib > o.B
+      ? ' Contribution from new revenue (' + fmt(o.deltaContrib) + ') exceeds the marketing spend, so the reinvestment is net-positive on contribution.'
+      : ' Contribution from new revenue (' + fmt(o.deltaContrib) + ') does not yet cover the marketing spend — this is a volume play, not a near-term margin play.';
+    $id('recDetail').textContent = cpaLine + marginLine;
   } else {
-    box.className = 'alert-box alert-warn';
-    box.textContent = '⚠ Incremental CPA ($' + o.incrementalCPA.toFixed(2) + ') is higher than your current CPA ($' + o.CPA0.toFixed(2) + '). Consider improving mROI or redirecting savings before committing to this channel.';
+    recBox.style.display = 'none';
   }
 
-  // Breakdown table
+  // ── Flags ─────────────────────────────────────────
+  const flags = [];
+  if(o.B > 0){
+    if(o.incrementalCPA > o.CPA0)
+      flags.push({type:'warn', msg:'Incremental CPA (' + fmtDec(o.incrementalCPA) + ') exceeds your current CPA (' + fmtDec(o.CPA0) + '). New customers cost more to acquire than your baseline.'});
+    if(o.newMarginPct < o.M0 - 0.5)
+      flags.push({type:'warn', msg:'Blended gross margin drops from ' + fmtPct(o.M0) + ' to ' + fmtPct(o.newMarginPct) + ' — check that contribution margin on new revenue is correctly set.'});
+    if(o.deltaContrib < o.B)
+      flags.push({type:'warn', msg:'Contribution from new revenue (' + fmt(o.deltaContrib) + ') is less than the marketing budget (' + fmt(o.B) + '). The campaign does not pay back on contribution margin alone.'});
+    if(o.mROI > 8)
+      flags.push({type:'warn', msg:'ROAS of ' + o.mROI.toFixed(1) + '× is aggressive. Typical paid media sits between 2–5×. Double-check this assumption.'});
+    const repeatRate = val('repeatRate');
+    if(!repeatRate)
+      flags.push({type:'info', msg:'This model is one-time only. Populate the repeat purchase section below to see how LTV extends the value of newly acquired customers.'});
+  }
+  const fl = $id('flagsList');
+  fl.innerHTML = flags.map(f =>
+    `<div class="flag-${f.type}"><strong>${f.type === 'warn' ? '⚠ ' : 'ℹ '}</strong>${f.msg}</div>`
+  ).join('');
+
+  // ── Scenario comparison ────────────────────────────
+  const rR = val('reinvestmentRate') / 100;
+  const S_val = val('savings');
+  const cm = val('contributionMarginPct') / 100;
+  const M0 = val('currentMarginPct') / 100;
+  const R0 = val('currentRevenue');
+  const mROI = val('marketingROI');
+  const aov = val('aov');
+
+  function scenarioRow(label, reinvestPct, isActive){
+    const budget = S_val * reinvestPct;
+    const retained = S_val - budget;
+    const dR = budget * mROI;
+    const dC = aov ? dR / aov : 0;
+    const dContrib = dR * cm;
+    const totalRev = R0 + dR;
+    const newMargin = totalRev ? ((R0 * M0 + S_val * (1 - reinvestPct) + dContrib) / totalRev * 100) : 0;
+    const activeClass = isActive ? ' class="active-scenario"' : '';
+    return `<tr${activeClass}>
+      <td style="text-align:left;font-weight:${isActive?'700':'400'}">${label}${isActive ? ' <span style="font-size:10px;color:var(--accent);font-weight:600;">← current</span>' : ''}</td>
+      <td>${dR > 0 ? '+' + fmt(dR) : '—'}</td>
+      <td>${dC > 0 ? '+' + fmtN(dC) : '—'}</td>
+      <td>${dContrib > 0 ? '+' + fmt(dContrib) : '—'}</td>
+      <td>${fmtPct(newMargin)}</td>
+      <td>${fmt(retained)}</td>
+    </tr>`;
+  }
+
+  const curPct = val('reinvestmentRate') / 100;
+  const isA = curPct === 0, isB = curPct === 1;
+  const tbody_s = $id('scenarioBody');
+  tbody_s.innerHTML = [
+    scenarioRow('A — Keep all savings (0% reinvested)', 0, isA),
+    scenarioRow('B — Reinvest all savings (100%)', 1, isB),
+    scenarioRow('C — Split at current rate (' + val('reinvestmentRate') + '%)', curPct, !isA && !isB),
+  ].join('');
+
+  // ── LTV section ───────────────────────────────────
+  const repeatRate = val('repeatRate') / 100;
+  const repeatOrders = val('repeatOrders');
+  const ltvBox = $id('ltvBox');
+  if(repeatRate > 0 && o.deltaC > 0){
+    const repeatCustomers = o.deltaC * repeatRate;
+    const repeatRev = repeatCustomers * repeatOrders * o.AOV;
+    const totalRevLift = o.deltaR + repeatRev;
+    const totalContrib = (o.deltaR + repeatRev) * cm;
+    ltvBox.style.display = '';
+    $id('out-repeatRev').textContent = fmt(repeatRev);
+    $id('out-totalRevLift').textContent = fmt(totalRevLift);
+    $id('out-totalContrib').textContent = fmt(totalContrib);
+  } else {
+    ltvBox.style.display = 'none';
+  }
+
+  // ── Breakdown table ────────────────────────────────
   const tbody = $id('breakdownBody');
   const rows = [
     ['Revenue', fmt(o.R0), fmt(o.newRevenue), '+' + fmt(o.deltaR)],
     ['Gross margin %', fmtPct(o.M0), fmtPct(o.newMarginPct), (o.newMarginPct - o.M0 >= 0 ? '+' : '') + (o.newMarginPct - o.M0).toFixed(2) + 'pp'],
     ['Avg CPA', fmtDec(o.CPA0), fmtDec(o.newAvgCPA), (o.newAvgCPA - o.CPA0 >= 0 ? '+' : '') + fmtDec(o.newAvgCPA - o.CPA0)],
-    ['Incremental CPA (implied)', '—', fmtDec(o.incrementalCPA), 'AOV ÷ mROI'],
+    ['Incremental CPA (implied)', '—', fmtDec(o.incrementalCPA), 'AOV ÷ ROAS'],
     ['Customers acquired', fmtN(o.C0), fmtN(o.C0 + o.deltaC), '+' + fmtN(o.deltaC)],
   ];
   tbody.innerHTML = rows.map(([label, before, after, change]) =>
     `<tr><td>${label}</td><td>${before}</td><td>${after}</td><td style="color:${change.startsWith('+')?'#1D9E75':change.startsWith('-')?'#E24B4A':'inherit'}">${change}</td></tr>`
   ).join('');
+}
+
+function loadSample(){
+  // Freight savings reinvested into Meta ads — mid-size food brand
+  $id('currentRevenue').value = 4200000;
+  $id('currentMarginPct').value = 38;
+  $id('aov').value = 52;
+  $id('currentCPA').value = 28;
+  $id('savings').value = 120000;
+  $id('reinvestmentRate').value = 75;
+  $id('marketingROI').value = 3.8;
+  $id('contributionMarginPct').value = 28;
+  $id('repeatRate').value = 30;
+  $id('repeatOrders').value = 2;
+  $id('notes').value = 'Freight savings reinvested into Meta ads — Q3 test';
+  render();
 }
 
 // History
@@ -358,12 +588,24 @@ $id('clearHistoryBtn').addEventListener('click', () => {
 
 document.querySelectorAll('input,select,textarea').forEach(el => el.addEventListener('input', render));
 render();
-function resetForm(){
+function flashResetBtn(btn){
+  if(!btn) return;
+  const orig=btn.innerHTML;
+  btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 12 4 9"/></svg> ✓ Cleared';
+  btn.style.background='rgba(29,158,117,0.12)'; btn.style.color='var(--teal)'; btn.style.borderColor='rgba(29,158,117,0.3)';
+  setTimeout(()=>{ btn.innerHTML=orig; btn.style.background=''; btn.style.color=''; btn.style.borderColor=''; }, 2000);
+}
+function resetForm(btn){
+  localStorage.removeItem('cpg_export_ops-impact');
+  flashResetBtn(btn);
   document.querySelectorAll('input,select').forEach(el=>{
     const def=el.getAttribute('value');
     if(el.tagName==='SELECT'){ el.selectedIndex=0; }
     else if(def!==null){ el.value=def; }
   });
+  // Clear LTV fields that have no default attribute
+  $id('repeatRate').value = 0;
+  $id('notes').value = '';
   render();
 }
 loadHistory();
@@ -380,7 +622,30 @@ function saveForExport(){
     {name:'Incremental contribution', formatted: getTxt('out-contribution'), sentiment:'good'},
     {name:'New projected gross margin', formatted: getTxt('out-newMargin'), sentiment:''}
   ];
-  const data = { toolId:'ops-impact', toolLabel:'Operational Impact Calculator', savedAt: new Date().toISOString(), metrics };
+  const _rev  = val('currentRevenue');
+  const _mPct = val('currentMarginPct');
+  const _cpa  = val('currentCPA');
+  const _fmt  = n => '$' + Math.round(n).toLocaleString();
+  const chartData = {
+    type: 'compare', winner: 'after',
+    before: {
+      label: 'Before Initiative', mainValue: _fmt(_rev), mainSub: 'Current annual revenue',
+      rows: [
+        { label:'Gross margin',  value: _mPct.toFixed(1) + '%' },
+        { label:'Current CPA',   value: '$' + _cpa.toFixed(2) },
+        { label:'Marketing budget from savings', value: '—' },
+      ]
+    },
+    after: {
+      label: 'After Initiative', mainValue: getTxt('out-deltaR') + ' additional', mainSub: 'Revenue lift from reinvestment',
+      rows: [
+        { label:'New gross margin',     value: getTxt('out-newMargin') },
+        { label:'New blended CPA',      value: getTxt('out-newCPA') },
+        { label:'Incremental contribution', value: getTxt('out-contribution') },
+      ]
+    }
+  };
+  const data = { toolId:'ops-impact', toolLabel:'Operational Impact Calculator', savedAt: new Date().toISOString(), metrics, chartData };
   localStorage.setItem('cpg_export_ops-impact', JSON.stringify(data));
   const c = document.getElementById('saveConfirm');
   const h=document.getElementById('exportHint'); if(c){ c.style.display='inline'; if(h) h.style.display='none'; setTimeout(()=>{ c.style.display='none'; if(h) h.style.display='inline'; }, 3000); }
