@@ -52,6 +52,14 @@ h1{font-size:24px;font-weight:600;color:var(--text);margin-bottom:6px;}
 .btn-excel{background:#1D6F42;color:#fff;}
 .btn-pdf{background:var(--accent);color:#fff;}
 .btn-refresh{background:var(--surface);color:var(--muted);font-size:13px;padding:9px 16px;}
+.btn-clear-all{background:rgba(226,75,74,0.08);color:var(--red);border:1px solid rgba(226,75,74,0.2);border-radius:9px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px;}
+.btn-clear-all:hover{background:rgba(226,75,74,0.14);}
+.btn-clear-all.cleared{background:rgba(29,158,117,0.1);color:var(--teal);border-color:rgba(29,158,117,0.3);}
+/* Per-card clear button */
+.card-clear-btn{display:none;position:absolute;top:10px;right:10px;background:rgba(226,75,74,0.08);border:1px solid rgba(226,75,74,0.15);border-radius:6px;padding:3px 8px;font-size:10px;font-weight:600;color:var(--red);cursor:pointer;transition:all .15s;}
+.card-clear-btn:hover{background:rgba(226,75,74,0.18);}
+.tool-card:hover .card-clear-btn{display:block;}
+.tool-card{position:relative;}
 /* Select all row */
 .select-row{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
 .select-row button{background:none;border:none;font-size:12px;color:var(--accent);cursor:pointer;padding:0;font-weight:500;}
@@ -214,6 +222,10 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
   <button onclick="selectAll()">Select all with data</button>
   <button onclick="deselectAll()">Deselect all</button>
   <span id="selectedCount">0 selected</span>
+  <button id="clearAllBtn" class="btn-clear-all" onclick="clearAllData(this)" style="margin-left:auto;">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+    Clear All Data
+  </button>
 </div>
 <div class="tool-grid" id="toolGrid"></div>
 <p style="font-size:12px;color:var(--hint);margin-top:8px;">Go to any tool, run your numbers, then click <strong>"Save for Export"</strong> — it will appear here.</p>
@@ -320,13 +332,15 @@ function buildGrid(){
           <path d="M1 4L4 7L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
+      ${hasSave ? `<button class="card-clear-btn" onclick="event.stopPropagation();clearToolData('${t.id}',this)" title="Clear saved data for this tool">✕ Clear</button>` : ''}
       <div class="tool-name">${t.icon} ${t.label}</div>
       <div class="tool-status">
         <span class="status-dot ${hasSave?'saved':'empty'}"></span>
         <span style="font-size:11px;color:${hasSave?'var(--teal)':'var(--hint)'}">
-          ${hasSave ? 'Data saved' : 'No data — <a href="'+t.href+'" style="color:var(--accent);text-decoration:none;">open tool →</a>'}
+          ${hasSave
+            ? `<strong style="color:var(--teal)">Saved</strong>${when ? ' &middot; '+when : ''}`
+            : 'No data — <a href="'+t.href+'" style="color:var(--accent);text-decoration:none;">open tool →</a>'}
         </span>
-        ${when ? `<span class="tool-saved-time">${when}</span>` : ''}
       </div>
       ${previewHtml}`;
     grid.appendChild(card);
@@ -357,6 +371,28 @@ function selectAll(){
 
 function deselectAll(){
   selected.clear();
+  buildGrid();
+}
+
+function clearAllData(btn){
+  const hasSomeData = TOOL_REGISTRY.some(t => savedData[t.id]);
+  if(!hasSomeData){ return; }
+  if(!confirm('Clear all saved tool data? This cannot be undone.')) return;
+  TOOL_REGISTRY.forEach(t => localStorage.removeItem(STORE_KEY(t.id)));
+  selected.clear();
+  loadAll();
+  buildGrid();
+  // Flash the button
+  const orig = btn.innerHTML;
+  btn.classList.add('cleared');
+  btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 12 4 9"/></svg> ✓ All data cleared';
+  setTimeout(()=>{ btn.classList.remove('cleared'); btn.innerHTML=orig; }, 2500);
+}
+
+function clearToolData(toolId, btn){
+  localStorage.removeItem(STORE_KEY(toolId));
+  selected.delete(toolId);
+  delete savedData[toolId];
   buildGrid();
 }
 
