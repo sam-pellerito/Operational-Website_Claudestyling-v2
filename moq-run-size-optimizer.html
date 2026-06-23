@@ -66,6 +66,25 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 .footer-right a{color:var(--hint);text-decoration:none;font-size:12px;}
 .footer-right a:hover{color:var(--accent);}
 @media(max-width:640px){.field-row,.field-row-3{grid-template-columns:1fr;}h1{font-size:20px;}}
+/* ── How to use block ── */
+.how-to{background:rgba(24,95,165,0.04);border:1px solid rgba(24,95,165,0.12);border-radius:10px;padding:14px 18px;margin:16px 0 0;display:flex;gap:20px;flex-wrap:wrap;}
+.how-to-step{display:flex;align-items:flex-start;gap:8px;min-width:160px;flex:1;}
+.how-to-num{width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.how-to-text{font-size:12px;color:var(--muted);line-height:1.5;}
+/* ── Sample button ── */
+.sample-btn{display:inline-flex;align-items:center;gap:6px;background:rgba(29,158,117,0.08);border:1px solid rgba(29,158,117,0.2);border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;color:var(--teal);cursor:pointer;transition:all .15s;margin-top:14px;}
+.sample-btn:hover{background:rgba(29,158,117,0.15);}
+/* ── Recommendation box ── */
+.rec-box{border-radius:12px;padding:16px 20px;margin-bottom:20px;border:1px solid rgba(29,158,117,0.25);background:rgba(29,158,117,0.06);}
+.rec-label{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--teal);margin-bottom:6px;}
+.rec-headline{font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.rec-detail{font-size:13px;color:var(--muted);line-height:1.5;}
+/* ── Related tools ── */
+.related-tools{margin-top:36px;padding-top:20px;border-top:0.5px solid var(--border);}
+.related-title{font-size:11px;font-weight:600;color:var(--hint);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;}
+.related-grid{display:flex;flex-wrap:wrap;gap:8px;}
+.related-link{display:inline-flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:13px;color:var(--text);text-decoration:none;transition:border-color .15s;}
+.related-link:hover{border-color:rgba(24,95,165,0.3);color:var(--accent);}
 
 /* ── Save for Export button ── */
 .save-export-wrap{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:20px;padding-top:16px;border-top:0.5px solid var(--border);}
@@ -117,8 +136,19 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 <header>
   <p class="header-tag">CPG Operations Tool</p>
   <h1>MOQ &amp; Run Size Optimizer</h1>
-  <p class="header-desc">Find the true cost per unit at every order or run size — accounting for supplier price tiers, amortized setup costs, and inventory carrying costs. Identify your optimal quantity before committing to a run.</p>
-  <p class="byline">Built by <strong>Sam Pellerito</strong></p>
+  <p class="header-desc">Compare different production or purchase quantities to find the run size with the lowest true cost per unit, including price breaks, setup costs, freight, and inventory holding cost.</p>
+  <p style="font-size:13px;color:var(--hint);margin-top:6px;">Use this before placing a supplier order, scheduling a co-man run, negotiating MOQs, or deciding whether a price break is worth the extra inventory.</p>
+  <div class="how-to">
+    <div class="how-to-step"><div class="how-to-num">1</div><div class="how-to-text">Enter annual demand and selling price</div></div>
+    <div class="how-to-step"><div class="how-to-num">2</div><div class="how-to-text">Enter fixed costs that happen every order or run</div></div>
+    <div class="how-to-step"><div class="how-to-num">3</div><div class="how-to-text">Enter variable costs that apply to every unit</div></div>
+    <div class="how-to-step"><div class="how-to-num">4</div><div class="how-to-text">Add supplier/co-man price tiers by minimum quantity, then click Calculate</div></div>
+  </div>
+  <button class="sample-btn" onclick="loadSample()">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+    Load sample SKU (Protein Bar)
+  </button>
+  <p class="byline" style="margin-top:10px;">Built by <strong>Sam Pellerito</strong></p>
 </header>
 
 <!-- ── Demand & product ──────────────────────────── -->
@@ -188,14 +218,15 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 <div class="divider"></div>
 
 <!-- ── Supplier price tiers ──────────────────────── -->
-<p class="section-title">Supplier / co-man price tiers</p>
-<p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Enter each quantity break and the co-man or supplier price per unit at that tier. The tool picks the applicable tier for each run size.</p>
+<p class="section-title">MOQ and supplier price tiers</p>
+<p style="font-size:13px;color:var(--muted);margin-bottom:6px;">Enter the minimum allowed order quantity and any price breaks at higher quantities. The first row is typically your true MOQ — rows below it are price break quantities.</p>
+<p style="font-size:11px;color:var(--hint);margin-bottom:14px;">💡 The tool automatically applies the correct price tier for each run size evaluated.</p>
 
 <table class="tier-table" id="tierTable">
   <thead>
     <tr>
       <th>Min order qty (units)</th>
-      <th>Supplier price / unit ($)</th>
+      <th>Supplier / co-man price / unit ($)</th>
       <th></th>
     </tr>
   </thead>
@@ -213,9 +244,10 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 <!-- ── Results ───────────────────────────────────── -->
 <p class="section-title">Results</p>
 
-<div id="verdictBar" class="verdict-bar" style="display:none;">
-  <span style="font-size:18px;">✅</span>
-  <span id="verdictText"></span>
+<div id="recBox" class="rec-box" style="display:none;">
+  <div class="rec-label">Recommended run size</div>
+  <div class="rec-headline" id="recHeadline"></div>
+  <div class="rec-detail" id="recDetail"></div>
 </div>
 
 <div class="metric-grid">
@@ -238,23 +270,26 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
       <th class="r" style="text-align:right">Variable / unit</th>
       <th class="r" style="text-align:right">Carrying / unit</th>
       <th class="r" style="text-align:right">Total / unit</th>
+      <th class="r" style="text-align:right">Total annual cost</th>
+      <th class="r" style="text-align:right">Est. inventory value</th>
+      <th class="r" style="text-align:right">Est. months of supply</th>
       <th class="r" style="text-align:right">Runs / yr</th>
       <th class="r" style="text-align:right">Gross margin</th>
     </tr>
   </thead>
   <tbody id="resBody"></tbody>
 </table>
-<p class="chart-note">Optimal row highlighted in green. Carrying cost = average inventory value × carrying rate ÷ annual demand.</p>
+<p class="chart-note">Optimal row highlighted in green. Assumes average inventory equals half the run size and demand is consumed evenly throughout the year.</p>
 
 <!-- ── Chart ─────────────────────────────────────── -->
 <p class="section-title">Total cost per unit vs run size</p>
 <div class="legend-row">
-  <span><span class="leg" style="background:var(--accent)"></span>Total cost / unit</span>
-  <span><span class="leg" style="background:var(--teal)"></span>Optimal point</span>
-  <span><span class="leg" style="background:rgba(186,117,23,0.7)"></span>Supplier price (variable)</span>
+  <span><span class="leg" style="background:var(--accent)"></span>Total cost / unit — includes setup amortization, supplier price, variable costs, and carrying cost</span>
+  <span><span class="leg" style="background:rgba(186,117,23,0.7)"></span>Supplier price (dashed) — drops at each price tier threshold</span>
+  <span><span class="leg" style="background:var(--teal)"></span>Optimal — run size with lowest total cost/unit</span>
 </div>
 <div class="chart-wrap"><canvas id="moqChart" role="img" aria-label="MOQ cost per unit chart"></canvas></div>
-<p class="chart-note">As run size grows, setup costs per unit fall but carrying costs rise. The optimal quantity sits at the trough of the total cost curve.</p>
+<p class="chart-note">As run size grows, setup costs per unit fall but carrying costs rise. The optimal quantity sits at the trough of the total cost curve. Assumes average inventory equals half the run size and demand is consumed evenly throughout the year.</p>
 
 <footer>
   <div class="footer-left">Built by <strong>Sam Pellerito</strong> — CPG Operations Tools</div>
@@ -262,7 +297,7 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 
 <div class="export-bar no-print">
   <div class="export-bar-left">
-    <strong>Export results</strong>
+    <strong>Export this MOQ/run-size analysis</strong>
     <span class="save-confirm" id="saveConfirm">&#10003; Saved to Export Hub</span><span class="export-bar-hint" id="exportHint">Save to Hub or download as CSV, Excel, or PDF</span>
   </div>
   <button class="ebtn ebtn-hub" onclick="saveForExport()">
@@ -281,7 +316,7 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
     PDF
   </button>
-  <button class="ebtn ebtn-reset" onclick="resetForm()" title="Reset all inputs to defaults">
+  <button class="ebtn ebtn-reset" onclick="resetForm(this)" title="Reset all inputs to defaults">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.85"/></svg>
     Reset
   </button>
@@ -289,6 +324,32 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 <div id="pdfReport" class="print-only"></div>
 
 </footer>
+
+<div class="related-tools no-print">
+  <p class="related-title">Related tools</p>
+  <div class="related-grid">
+    <a class="related-link" href="../01-cogs-per-unit-builder/cogs-per-unit-builder V2.html">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+      COGS Per Unit Builder
+    </a>
+    <a class="related-link" href="../02-standard-vs-actual-cost-variance/standard-vs-actual-cost-variance.html">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Standard vs Actual Cost Variance
+    </a>
+    <a class="related-link" href="../03-make-vs-buy-decision/make-vs-buy-decision.html">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      Make vs Buy Decision
+    </a>
+    <a class="related-link" href="../05-demand-planning-safety-stock/demand-planning-safety-stock V2.html">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+      Demand Planning & Safety Stock
+    </a>
+    <a class="related-link" href="../07-stockout-vs-overstock-cost/stockout-vs-overstock-cost.html">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Stockout vs Overstock Cost
+    </a>
+  </div>
+</div>
 
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
@@ -407,10 +468,24 @@ function render(){
   gmEl.textContent = fmtPct(optGM);
   gmEl.className = 'metric-value' + (optGM < 0 ? ' bad' : optGM < 20 ? ' warn' : ' good');
 
-  // Verdict
-  const vb = $id('verdictBar');
-  vb.style.display = 'flex';
-  $id('verdictText').innerHTML = `Optimal run size is <strong>${fmtK(optimal.qty)} units</strong> at <strong>${fmt(optimal.totalPU)}/unit</strong> total cost — ${optRuns.toFixed(1)} runs/yr at ${fmtPct(optGM)} gross margin.`;
+  // Recommendation box
+  const rb = $id('recBox');
+  rb.style.display = 'block';
+  $id('recHeadline').textContent = `${fmtK(optimal.qty)} units at ${fmt(optimal.totalPU)}/unit total cost`;
+  // Context: how far is optimal from the nearest tier below and above?
+  const lowerTiers = tiers.filter(t => t.moq <= optimal.qty);
+  const higherTiers = tiers.filter(t => t.moq > optimal.qty);
+  let detailParts = [`This is the lowest total cost per unit based on your price tiers, setup costs, freight, and carrying cost.`];
+  if(higherTiers.length > 0){
+    const nextTier = higherTiers[0];
+    const nextC = totalCPU(nextTier.moq, tiers);
+    if(nextC && nextC.totalPU < optimal.totalPU){
+      detailParts.push(`Ordering ${fmtK(nextTier.moq)} units (next price tier) saves ${fmt(optimal.totalPU - nextC.totalPU)}/unit but increases carrying cost.`);
+    } else if(nextC){
+      detailParts.push(`Ordering ${fmtK(nextTier.moq)} units to hit the next price break adds inventory carrying cost that outweighs the supplier savings.`);
+    }
+  }
+  $id('recDetail').textContent = detailParts.join(' ');
 
   // Results table — one row per tier at its MOQ
   const tableQtys = tiers.map(t => t.moq);
@@ -421,10 +496,13 @@ function render(){
   $id('resBody').innerHTML = tableQtys.map(qty => {
     const c = totalCPU(qty, tiers);
     if(!c) return '';
-    const runs  = (demand / qty).toFixed(1);
-    const gm    = sell ? ((sell - c.totalPU) / sell * 100) : 0;
-    const isOpt = qty === optimal.qty;
-    const gmColor = gm < 0 ? 'var(--red)' : gm < 20 ? 'var(--amber)' : 'var(--teal)';
+    const runs        = demand / qty;
+    const gm          = sell ? ((sell - c.totalPU) / sell * 100) : 0;
+    const isOpt       = qty === optimal.qty;
+    const gmColor     = gm < 0 ? 'var(--red)' : gm < 20 ? 'var(--amber)' : 'var(--teal)';
+    const totalAnnual = c.totalPU * demand;
+    const invValue    = (qty / 2) * c.suppPrice; // avg inventory at supplier price
+    const monthsSupply = (qty / demand) * 12;
     return `<tr class="${isOpt ? 'optimal' : ''}">
       <td>${fmtK(qty)} units${isOpt ? '<span class="opt-badge">OPTIMAL</span>' : ''}</td>
       <td style="text-align:right">${fmt(c.suppPrice)}</td>
@@ -432,7 +510,10 @@ function render(){
       <td style="text-align:right">${fmt(c.varPU)}</td>
       <td style="text-align:right">${fmt(c.carryPU)}</td>
       <td style="text-align:right;font-weight:600;color:${isOpt ? 'var(--teal)' : 'var(--text)'}">${fmt(c.totalPU)}</td>
-      <td style="text-align:right">${runs}x</td>
+      <td style="text-align:right">${fmt(totalAnnual, 0)}</td>
+      <td style="text-align:right">${fmt(invValue, 0)}</td>
+      <td style="text-align:right">${monthsSupply.toFixed(1)} mo</td>
+      <td style="text-align:right">${runs.toFixed(1)}x</td>
       <td style="text-align:right;color:${gmColor}">${fmtPct(gm)}</td>
     </tr>`;
   }).join('');
@@ -633,7 +714,46 @@ function exportPDF(){
     <div class="pdf-footer"><span>MOQ & Run Size Optimizer — CPG Operations Tools — Sam Pellerito</span><span>Exported ${now}</span></div>`;
   setTimeout(()=>window.print(),120);
 }
-function resetForm(){
+
+function loadSample(){
+  document.getElementById('skuName').value       = 'Chocolate Protein Bar';
+  document.getElementById('annualDemand').value  = '120000';
+  document.getElementById('sellPrice').value     = '2.99';
+  document.getElementById('carryingRate').value  = '25';
+  document.getElementById('fixedSetup').value    = '1500';
+  document.getElementById('fixedFreight').value  = '600';
+  document.getElementById('fixedOther').value    = '0';
+  document.getElementById('varMaterials').value  = '0';
+  document.getElementById('varPackaging').value  = '0.18';
+  document.getElementById('varOther').value      = '0';
+  // Clear existing tiers and load sample tiers
+  document.getElementById('tierBody').innerHTML  = '';
+  [
+    { moq: 5000,  price: 1.20 },
+    { moq: 10000, price: 1.05 },
+    { moq: 25000, price: 0.92 },
+    { moq: 50000, price: 0.86 },
+  ].forEach(t => addTierRow(t.moq, t.price));
+  render();
+}
+
+function flashResetBtn(btn){
+  if(!btn) return;
+  const orig = btn.innerHTML;
+  btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 12 4 9"/></svg> ✓ Cleared';
+  btn.style.background = 'rgba(29,158,117,0.12)';
+  btn.style.color = 'var(--teal)';
+  btn.style.borderColor = 'rgba(29,158,117,0.3)';
+  setTimeout(()=>{
+    btn.innerHTML = orig;
+    btn.style.background = '';
+    btn.style.color = '';
+    btn.style.borderColor = '';
+  }, 2000);
+}
+function resetForm(btn){
+  localStorage.removeItem('cpg_export_moq-optimizer');
+  flashResetBtn(btn);
   document.querySelectorAll('input,select').forEach(el=>{
     const def=el.getAttribute('value');
     if(el.tagName==='SELECT'){ el.selectedIndex=0; }
