@@ -70,6 +70,46 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 .footer-left strong{color:var(--text);}
 .footer-right a{color:var(--hint);text-decoration:none;font-size:12px;}
 .footer-right a:hover{color:var(--accent);}
+/* ── How-to block ───────────────────── */
+.how-to{background:var(--surface);border-radius:12px;padding:18px 20px;margin-bottom:24px;}
+.how-to-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--hint);margin-bottom:10px;}
+.how-to ol{margin:0;padding-left:18px;}
+.how-to li{font-size:13px;color:var(--muted);margin-bottom:4px;}
+/* ── Sample / toggle buttons ─────────── */
+.sample-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:7px 14px;font-size:13px;color:var(--muted);cursor:pointer;transition:background .15s,color .15s;margin-top:12px;margin-right:8px;}
+.sample-btn:hover{background:var(--surface);color:var(--text);}
+.mode-toggle-btn{padding:7px 16px;border-radius:8px;border:1px solid var(--border);background:var(--card);font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s;}
+.mode-toggle-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+/* ── Rec-box ─────────────────────────── */
+.rec-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:16px;display:none;}
+.rec-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--teal);margin-bottom:6px;}
+.rec-headline{font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px;line-height:1.4;}
+.rec-stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;}
+.rec-stat{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;min-width:160px;}
+.rec-stat-label{font-size:10px;color:var(--hint);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;}
+.rec-stat-value{font-size:14px;font-weight:700;color:var(--text);}
+/* ── Flags list ──────────────────────── */
+.flags-list{display:none;margin-bottom:16px;}
+.flag-warn,.flag-info{font-size:13px;padding:10px 14px;border-radius:8px;margin-bottom:6px;line-height:1.5;}
+.flag-warn{background:rgba(186,117,23,0.08);border-left:3px solid var(--amber);color:var(--text);}
+.flag-info{background:rgba(24,95,165,0.06);border-left:3px solid var(--accent);color:var(--text);}
+/* ── Chart callout row ───────────────── */
+.callout-row{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 16px;}
+.callout-badge{font-size:11px;font-weight:600;padding:5px 10px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--muted);}
+.callout-badge.revenue{border-color:rgba(24,95,165,0.25);color:var(--accent);background:rgba(24,95,165,0.05);}
+.callout-badge.margin{border-color:rgba(29,158,117,0.25);color:var(--teal);background:rgba(29,158,117,0.05);}
+.callout-badge.profit{border-color:rgba(29,158,117,0.25);color:var(--teal);background:rgba(29,158,117,0.05);}
+.callout-badge.deductions{border-color:rgba(226,75,74,0.25);color:var(--red);background:rgba(226,75,74,0.05);}
+/* ── Related tools ───────────────────── */
+.related-tools{margin-top:40px;padding-top:24px;border-top:0.5px solid var(--border);}
+.related-tools-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--hint);margin-bottom:14px;}
+.related-tools-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;}
+.related-tool-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;text-decoration:none;display:block;transition:border-color .15s,box-shadow .15s;}
+.related-tool-card:hover{border-color:var(--accent);box-shadow:0 2px 8px rgba(24,95,165,0.1);}
+.rtc-tag{font-size:10px;font-weight:600;color:var(--hint);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;}
+.rtc-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.rtc-desc{font-size:11.5px;color:var(--muted);}
+
 /* Export bar */
 .export-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-top:28px;}
 .export-bar-left{flex:1;min-width:160px;}
@@ -134,21 +174,45 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 <header>
   <p class="header-tag">CPG Operations Tool</p>
   <h1>Channel Margin Waterfall</h1>
-  <p class="header-desc">Enter your actual revenue per channel and deduction rates — see exactly where margin erodes in retail, DTC, Amazon, and foodservice side by side. COGS scales proportionally from the rate you enter below.</p>
+  <p class="header-desc">Compare true gross margin across retail, DTC, Amazon, and foodservice after COGS and channel-specific deductions. See which channels are actually profitable, where deductions are eroding margin, and whether each channel is worth scaling.</p>
+  <p style="font-size:13px;color:var(--muted);margin-top:8px;max-width:680px;"><strong style="color:var(--text);">Use this to</strong> decide which channels to prioritize, renegotiate trade terms, or determine the deduction rate you can afford at your target margin.</p>
   <p class="byline">Built by <strong>Sam Pellerito</strong></p>
 </header>
 
-<p class="section-title">Reference totals — sets your COGS rate</p>
-<div class="field-row">
+<div class="how-to">
+  <p class="how-to-title">How to use this tool</p>
+  <ol>
+    <li><strong>Enter total gross revenue and COGS</strong> to set your blended COGS rate, or toggle to enter COGS per channel.</li>
+    <li><strong>Select the channels to compare</strong> — default deduction rates load for each.</li>
+    <li><strong>Adjust deduction rates</strong> to match your actual trade terms, Amazon fees, or DTC costs.</li>
+    <li><strong>Click Calculate</strong> to see gross margin by channel, where deductions are largest, and which channel contributes the most profit.</li>
+  </ol>
+  <button class="sample-btn" onclick="loadSample()">Load sample multi-channel brand</button>
+</div>
+
+<p class="section-title">Reference totals & COGS method</p>
+<div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+  <button class="mode-toggle-btn active" id="btnBlended" onclick="setCogsMode('blended')">Use blended COGS rate</button>
+  <button class="mode-toggle-btn" id="btnChannel" onclick="setCogsMode('channel')">Enter COGS per channel</button>
+</div>
+<div class="field-row" id="blendedCogsRow">
   <div class="field">
     <label>Total gross revenue ($) — all channels</label>
     <input type="number" id="grossRevenue" value="1000000" step="10000" min="1"/>
-    <span class="field-hint">Combined revenue across all channels. Used with total COGS to compute your COGS rate (%), which then scales to each channel's actual revenue.</span>
+    <span class="field-hint">Combined revenue across all channels. Used with total COGS to compute your blended COGS rate.</span>
   </div>
   <div class="field">
     <label>Total COGS ($) — all channels</label>
     <input type="number" id="totalCOGS" value="370000" step="5000" min="0"/>
-    <span class="field-hint">Combined cost of goods sold. Sets the COGS % rate — e.g. $370K ÷ $1M = 37% COGS. Each channel's COGS is then its revenue × that rate.</span>
+    <span class="field-hint">Sets the COGS % rate (e.g. $370K ÷ $1M = 37%). Each channel's COGS = its revenue × that rate. Use product-level COGS only — do not include fulfillment, platform fees, or freight here if those are already entered as deductions below.</span>
+  </div>
+</div>
+<p style="font-size:12px;color:var(--hint);background:rgba(24,95,165,0.04);border-radius:8px;padding:10px 14px;margin-bottom:16px;" id="blendedCaution">This uses a blended COGS rate across all channels. If each channel has a different product mix, pack format, or cost structure, toggle to "Enter COGS per channel" for more accurate results.</p>
+<div class="field-row" style="max-width:340px;">
+  <div class="field">
+    <label>Target gross margin % (optional)</label>
+    <input type="number" id="targetGM" value="35" step="1" min="0" max="100"/>
+    <span class="field-hint">Channels above target are highlighted. Leave blank or 0 to skip.</span>
   </div>
 </div>
 
@@ -158,6 +222,7 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 <div class="ch-toggle-row" id="toggleRow"></div>
 
 <p class="section-title">Deduction rates — edit to match your terms</p>
+<p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Only include deductions not already in COGS. Typical items by channel: <strong>Retail</strong> — trade spend, slotting, freight allowance, chargebacks, returns. <strong>DTC</strong> — payment processing, fulfillment, shipping, returns, platform fees. <strong>Amazon</strong> — referral fee, FBA, advertising, returns, storage. <strong>Foodservice</strong> — distributor margin, broker commission, rebates, freight.</p>
 <div class="ch-editors" id="editorsContainer"></div>
 
 <div class="divider"></div>
@@ -167,6 +232,14 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 </div>
 
 <p class="section-title">Net revenue & gross margin by channel</p>
+
+<div class="rec-box" id="recBox">
+  <p class="rec-label">Channel profitability snapshot</p>
+  <p class="rec-headline" id="recHeadline"></p>
+  <div class="rec-stats" id="recStats"></div>
+</div>
+<div class="flags-list" id="flagsList"></div>
+
 <div class="legend-row">
   <span><span class="leg" style="background:var(--teal)"></span>Gross profit</span>
   <span><span class="leg" style="background:var(--amber)"></span>COGS</span>
@@ -174,7 +247,8 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
   <span><span class="leg" style="background:var(--purple)"></span>Gross margin % (line)</span>
 </div>
 <div class="chart-wrap"><canvas id="cmpChart" role="img" aria-label="Channel margin comparison chart"></canvas></div>
-<p class="chart-note">Each bar stacks gross profit (green) + COGS (amber) + deductions (red) = gross revenue. Purple line shows gross margin % on net revenue. Hover for deduction breakdown by line item.</p>
+<p class="chart-note">Each bar stacks gross profit (green) + COGS (amber) + deductions (red) = gross revenue. The purple line shows gross margin % on net revenue. Hover for deduction breakdown by line item.</p>
+<div class="callout-row" id="calloutRow"></div>
 
 <p class="section-title">Channel comparison summary</p>
 <div style="overflow-x:auto;">
@@ -202,7 +276,7 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
 <!-- Export bar (screen only) -->
 <div class="export-bar no-print">
   <div class="export-bar-left">
-    <strong>Export results</strong>
+    <strong>Export this channel margin analysis</strong>
     <span class="save-confirm" id="saveConfirm">&#10003; Saved to Export Hub</span><span class="export-bar-hint" id="exportHint">Save to Hub or download as CSV, Excel, or PDF</span>
   </div>
   <button class="btn-export btn-hub" onclick="saveForExport()">
@@ -221,7 +295,7 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
     PDF
   </button>
-  <button class="btn-export btn-reset" onclick="resetForm()" title="Reset all inputs to defaults">
+  <button class="btn-export btn-reset" onclick="resetForm(this)" title="Reset all inputs to defaults">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.85"/></svg>
     Reset
   </button>
@@ -234,6 +308,32 @@ footer{margin-top:48px;padding-top:20px;border-top:0.5px solid var(--border);dis
   <div class="footer-left">Built by <strong>Sam Pellerito</strong> — CPG Operations Tools</div>
   <div class="footer-right"><a href="index.html">← All tools</a></div>
 </footer>
+
+<div class="related-tools no-print">
+  <p class="related-tools-title">Related tools</p>
+  <div class="related-tools-grid">
+    <a href="../09-trade-spend-net-revenue/trade-spend-net-revenue.html" class="related-tool-card">
+      <p class="rtc-tag">Trade Economics</p>
+      <p class="rtc-name">Trade Spend & Net Revenue</p>
+      <p class="rtc-desc">Deep-dive into deduction rates and gross-to-net for a single channel.</p>
+    </a>
+    <a href="../02-cogs-builder/cogs-builder.html" class="related-tool-card">
+      <p class="rtc-tag">COGS</p>
+      <p class="rtc-name">COGS Builder</p>
+      <p class="rtc-desc">Build a per-unit COGS from ingredients, packaging, and co-man costs.</p>
+    </a>
+    <a href="../08-landed-cost-freight/landed-cost-freight.html" class="related-tool-card">
+      <p class="rtc-tag">Supply Chain</p>
+      <p class="rtc-name">Landed Cost & Freight</p>
+      <p class="rtc-desc">Calculate your true landed cost before setting channel pricing.</p>
+    </a>
+    <a href="../11-operational-impact/operational-impact.html" class="related-tool-card">
+      <p class="rtc-tag">Trade Economics</p>
+      <p class="rtc-name">Operational Impact Calculator</p>
+      <p class="rtc-desc">Quantify the P&amp;L impact of cost changes, price changes, or volume shifts.</p>
+    </a>
+  </div>
+</div>
 
 </div>
 
@@ -333,11 +433,29 @@ const DEFAULT_REVENUE = {
 
 const userRevenue = {};
 const userPcts = {};
+const userCogs  = {}; // per-channel COGS in $ (used when cogsMode === 'channel')
+let cogsMode = 'blended'; // 'blended' or 'channel'
+
 Object.keys(CHANNELS).forEach(ck => {
   userRevenue[ck] = DEFAULT_REVENUE[ck] || 100000;
   userPcts[ck] = {};
   CHANNELS[ck].deductions.forEach(d => { userPcts[ck][d.key] = d.pct; });
+  userCogs[ck] = Math.round((DEFAULT_REVENUE[ck] || 100000) * 0.37);
 });
+
+function setCogsMode(mode){
+  cogsMode = mode;
+  $id('btnBlended').classList.toggle('active', mode === 'blended');
+  $id('btnChannel').classList.toggle('active', mode === 'channel');
+  $id('blendedCogsRow').style.display = mode === 'blended' ? '' : 'none';
+  $id('blendedCaution').style.display = mode === 'blended' ? '' : 'none';
+  buildEditors();
+}
+
+function getChannelCogs(ck){
+  if(cogsMode === 'channel') return userCogs[ck] || 0;
+  return Math.round(cogsRate() * (userRevenue[ck] || 0));
+}
 
 let cmpChart = null;
 
@@ -361,8 +479,17 @@ function buildEditors(){
     const card = document.createElement('div');
     card.className = 'ch-card' + (activeChannels.has(ck) ? '' : ' hidden');
     card.id = 'editor-'+ck;
-    const cogsRate = (val('grossRevenue')||1) > 0 ? val('totalCOGS')/val('grossRevenue') : 0.37;
-    const channelCogs = Math.round(cogsRate * userRevenue[ck]);
+    const chCogsVal = getChannelCogs(ck);
+
+    const cogsRow = cogsMode === 'channel'
+      ? `<div class="rev-row" style="border-color:rgba(186,117,23,0.2);background:rgba(186,117,23,0.04);">
+           <span class="rev-label" style="color:var(--amber)">Channel COGS ($)</span>
+           <input class="rev-input" type="number" step="5000" min="0"
+             value="${userCogs[ck]}"
+             oninput="userCogs['${ck}']=parseFloat(this.value)||0; updateEditorNet('${ck}')"/>
+         </div>`
+      : `<p class="rev-cogs-note" id="edcogs-${ck}">COGS at current rate: ${fmt(chCogsVal)} (${fmtPct(cogsRate()*100)})</p>`;
+
     card.innerHTML = `
       <div class="ch-card-header">
         <span class="ch-card-title">${ch.emoji} ${ch.label}</span>
@@ -374,7 +501,7 @@ function buildEditors(){
           value="${userRevenue[ck]}"
           oninput="userRevenue['${ck}']=parseFloat(this.value)||0; updateEditorNet('${ck}')"/>
       </div>
-      <p class="rev-cogs-note" id="edcogs-${ck}">COGS at current rate: ${fmt(channelCogs)}</p>
+      ${cogsRow}
       ${ch.deductions.map(d => `
         <div class="ded-row">
           <span class="ded-label" title="${d.label}">${d.label}</span>
@@ -402,7 +529,7 @@ function cogsRate(){
 
 function updateEditorNet(ck){
   const chGross = userRevenue[ck] || 0;
-  const chCogs  = Math.round(cogsRate() * chGross);
+  const chCogs  = getChannelCogs(ck);
   const totalPct = CHANNELS[ck].deductions.reduce((s,d) => s + (userPcts[ck][d.key]||0), 0);
   const net = chGross * (1 - totalPct/100);
   const gp  = net - chCogs;
@@ -413,12 +540,12 @@ function updateEditorNet(ck){
     el.innerHTML = `Net: ${fmt(net)} · <span style="color:${gmColor}">${fmtPct(gm)} GM</span>`;
   }
   const cogsEl = $id('edcogs-'+ck);
-  if(cogsEl) cogsEl.textContent = `COGS at current rate: ${fmt(chCogs)} (${fmtPct(cogsRate()*100)})`;
+  if(cogsEl && cogsMode === 'blended') cogsEl.textContent = `COGS at current rate: ${fmt(chCogs)} (${fmtPct(cogsRate()*100)})`;
 }
 
 function computeChannel(ck){
   const chGross = userRevenue[ck] || 0;
-  const chCogs  = Math.round(cogsRate() * chGross);
+  const chCogs  = getChannelCogs(ck);
   const ch = CHANNELS[ck];
   const deductions = ch.deductions.map(d => ({
     label: d.label,
@@ -441,12 +568,55 @@ function render(){
   const active  = [...activeChannels];
   const results = active.map(ck => ({ ck, ...computeChannel(ck) }));
   const best    = results.reduce((a,b) => a.gm > b.gm ? a : b);
+  const worst   = results.reduce((a,b) => a.gm < b.gm ? a : b);
+  const highRevCh  = results.reduce((a,b) => a.chGross > b.chGross ? a : b);
+  const highGpCh   = results.reduce((a,b) => a.gp > b.gp ? a : b);
+  const highDedCh  = results.reduce((a,b) => a.dedPct > b.dedPct ? a : b);
   const totalGross = results.reduce((s,r) => s+r.chGross, 0);
+  const targetGM   = val('targetGM') || 0;
+
+  // ── Rec-box ──────────────────────────
+  const rb = $id('recBox');
+  rb.style.display = 'block';
+  const channelNames = results.map(r => CHANNELS[r.ck].label);
+  $id('recHeadline').textContent =
+    `${CHANNELS[best.ck].emoji} ${CHANNELS[best.ck].label} has the highest gross margin at ${fmtPct(best.gm)}. ${CHANNELS[highRevCh.ck].label} contributes the most revenue (${fmt(highRevCh.chGross)}). ${CHANNELS[highDedCh.ck].label} has the highest deduction burden at ${fmtPct(highDedCh.dedPct)} of gross.`;
+  $id('recStats').innerHTML = [
+    {label:'Best margin', value:`${CHANNELS[best.ck].emoji} ${CHANNELS[best.ck].label} — ${fmtPct(best.gm)}`},
+    {label:'Largest deduction burden', value:`${CHANNELS[highDedCh.ck].emoji} ${CHANNELS[highDedCh.ck].label} — ${fmtPct(highDedCh.dedPct)}`},
+    {label:'Highest gross revenue', value:`${CHANNELS[highRevCh.ck].emoji} ${CHANNELS[highRevCh.ck].label} — ${fmt(highRevCh.chGross)}`},
+    {label:'Largest $ gross profit', value:`${CHANNELS[highGpCh.ck].emoji} ${CHANNELS[highGpCh.ck].label} — ${fmt(highGpCh.gp)}`},
+  ].map(s=>`<div class="rec-stat"><p class="rec-stat-label">${s.label}</p><p class="rec-stat-value">${s.value}</p></div>`).join('');
+
+  // ── Flags ────────────────────────────
+  const flags = [];
+  results.forEach(r => {
+    if(r.gm < 0) flags.push({cls:'flag-warn', msg:`${CHANNELS[r.ck].emoji} ${CHANNELS[r.ck].label}: gross margin is negative (${fmtPct(r.gm)}). COGS plus deductions exceed net revenue.`});
+    if(r.dedPct > 30) flags.push({cls:'flag-warn', msg:`${CHANNELS[r.ck].emoji} ${CHANNELS[r.ck].label}: deductions exceed 30% of gross revenue (${fmtPct(r.dedPct)}).`});
+    if(r.net > 0 && r.gp < 0) flags.push({cls:'flag-warn', msg:`${CHANNELS[r.ck].emoji} ${CHANNELS[r.ck].label}: net revenue is positive but COGS wipes out gross profit. Unprofitable at current rates.`});
+    if(targetGM > 0 && r.gm < targetGM && r.gm >= 0) flags.push({cls:'flag-info', msg:`${CHANNELS[r.ck].emoji} ${CHANNELS[r.ck].label}: gross margin (${fmtPct(r.gm)}) is below your target of ${fmtPct(targetGM)}.`});
+  });
+  if(results.length > 1){
+    const gmRange = best.gm - worst.gm;
+    if(gmRange > 20) flags.push({cls:'flag-info', msg:`Large spread between your best (${CHANNELS[best.ck].label}, ${fmtPct(best.gm)}) and worst (${CHANNELS[worst.ck].label}, ${fmtPct(worst.gm)}) channel — a ${fmtPct(gmRange)} margin gap. Consider focusing volume on higher-margin channels.`});
+  }
+  const flDiv = $id('flagsList');
+  if(flags.length > 0){
+    flDiv.style.display = 'block';
+    flDiv.innerHTML = flags.map(f=>`<div class="${f.cls}">${f.msg}</div>`).join('');
+  } else {
+    flDiv.style.display = 'none';
+    flDiv.innerHTML = '';
+  }
 
   // ── Comparison table ────────────────────────────
   let rows = '';
   results.forEach(r => {
     const isBest = r.ck === best.ck;
+    const aboveTarget = targetGM > 0 && r.gm >= targetGM;
+    const targetBadge = targetGM > 0
+      ? `<span style="font-size:10px;font-weight:600;padding:2px 6px;border-radius:10px;margin-left:6px;background:${aboveTarget?'rgba(29,158,117,0.12)':'rgba(226,75,74,0.1)'};color:${aboveTarget?'var(--teal)':'var(--red)'}">${aboveTarget?'↑ above target':'↓ below target'}</span>`
+      : '';
     rows += `<tr class="${isBest?'best':''}">
       <td>${CHANNELS[r.ck].emoji} ${CHANNELS[r.ck].label}${isBest?' ★':''}</td>
       <td style="font-weight:600">${fmt(r.chGross)}</td>
@@ -455,7 +625,7 @@ function render(){
       <td style="color:var(--teal);font-weight:600">${fmt(r.net)}</td>
       <td>${fmt(r.chCogs)}</td>
       <td style="color:${r.gp>=0?'var(--teal)':'var(--red)'};font-weight:600">${r.gp>=0?fmt(r.gp):'('+fmt(Math.abs(r.gp))+')' }</td>
-      <td style="color:${r.gm>=20?'var(--teal)':r.gm>=0?'var(--amber)':'var(--red)'};font-weight:700">${fmtPct(r.gm)}</td>
+      <td style="color:${r.gm>=20?'var(--teal)':r.gm>=0?'var(--amber)':'var(--red)'};font-weight:700">${fmtPct(r.gm)}${targetBadge}</td>
     </tr>`;
   });
   // Totals row
@@ -475,7 +645,7 @@ function render(){
     <td style="color:${totGM>=20?'var(--teal)':totGM>=0?'var(--amber)':'var(--red)'}">${fmtPct(totGM)}</td>
   </tr>`;
   $id('cmpBody').innerHTML = rows;
-  $id('bestChannelNote').textContent = `★ ${CHANNELS[best.ck].label} has the highest gross margin at ${fmtPct(best.gm)}. Blended margin across all active channels: ${fmtPct(totGM)}.`;
+  $id('bestChannelNote').textContent = `★ ${CHANNELS[best.ck].label} has the highest gross margin at ${fmtPct(best.gm)}. Blended margin across all active channels: ${fmtPct(totGM)}.${targetGM>0?' Target: '+fmtPct(targetGM)+'.':''}`;
 
   // ── Per-channel waterfall detail ─────────────────
   const detailGrid = $id('detailGrid');
@@ -510,6 +680,14 @@ function render(){
   const gmData     = results.map(r => parseFloat(r.gm.toFixed(1)));
   const dedDetails = results.map(r => r.deductions.filter(d => d.amount > 0));
   const maxRev     = Math.max(...results.map(r => r.chGross));
+
+  // ── Callout badges ─────────────────────────────
+  $id('calloutRow').innerHTML = [
+    {cls:'revenue', text:`📊 Highest revenue: ${CHANNELS[highRevCh.ck].label} (${fmt(highRevCh.chGross)})`},
+    {cls:'margin',  text:`✓ Highest margin: ${CHANNELS[best.ck].label} (${fmtPct(best.gm)})`},
+    {cls:'profit',  text:`$ Most gross profit: ${CHANNELS[highGpCh.ck].label} (${fmt(highGpCh.gp)})`},
+    {cls:'deductions',text:`↓ Highest deductions: ${CHANNELS[highDedCh.ck].label} (${fmtPct(highDedCh.dedPct)})`},
+  ].map(b=>`<span class="callout-badge ${b.cls}">${b.text}</span>`).join('');
 
   if(cmpChart) cmpChart.destroy();
   cmpChart = new Chart($id('cmpChart'), {
@@ -574,6 +752,35 @@ function render(){
   });
 }
 
+// ── Sample data ─────────────────────────────────
+function loadSample(){
+  // Set global totals
+  $id('grossRevenue').value = '1000000';
+  $id('totalCOGS').value    = '370000';
+  $id('targetGM').value     = '35';
+
+  // Set channel revenues
+  const revenues = { grocery:500000, dtc:200000, amazon:200000, foodservice:100000 };
+  const dedRates = {
+    grocery:    { tpr:10, oi:5, mcb:3, slot:2, spoil:1.5, freight:0.8, epd:0.3, other:2.4 },  // 25% total
+    dtc:        { marketing:0, processing:2.9, shipping:9, returns:3.5, promos:5, affiliate:2, platform:1, other:0.6 },  // ~14% (no marketing)
+    amazon:     { referral:10, fba:6, ads:12, coupons:2.5, returns:5, storage:1.5, other:1 },  // 38%
+    foodservice:{ distrib:22, broker:4, gpo:3, freight:2, samples:1, other:0 },  // 32%
+  };
+
+  // Activate the right channels
+  activeChannels.clear();
+  ['grocery','dtc','amazon','foodservice'].forEach(ck=>activeChannels.add(ck));
+  Object.entries(revenues).forEach(([ck,rev]) => { userRevenue[ck] = rev; });
+  Object.entries(dedRates).forEach(([ck,rates]) => {
+    Object.entries(rates).forEach(([key,val]) => { if(userPcts[ck]) userPcts[ck][key]=val; });
+  });
+  setCogsMode('blended');
+  buildToggles();
+  buildEditors();
+  render();
+}
+
 // Refresh COGS notes and net previews when global inputs change
 [$id('grossRevenue'), $id('totalCOGS')].forEach(el => {
   el.addEventListener('input', () => Object.keys(CHANNELS).forEach(ck => updateEditorNet(ck)));
@@ -582,7 +789,16 @@ function render(){
 buildToggles();
 buildEditors();
 
-function resetForm(){
+function flashResetBtn(btn){
+  if(!btn) return;
+  const orig=btn.innerHTML;
+  btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 12 4 9"/></svg> ✓ Cleared';
+  btn.style.background='rgba(29,158,117,0.12)'; btn.style.color='var(--teal)'; btn.style.borderColor='rgba(29,158,117,0.3)';
+  setTimeout(()=>{ btn.innerHTML=orig; btn.style.background=''; btn.style.color=''; btn.style.borderColor=''; }, 2000);
+}
+function resetForm(btn){
+  localStorage.removeItem('cpg_export_channel-margin');
+  flashResetBtn(btn);
   // Reset global inputs
   const globalInputs = ['grossRevenue','totalCOGS'];
   globalInputs.forEach(id=>{
@@ -596,8 +812,15 @@ function resetForm(){
   // Reset channel toggles to defaults
   activeChannels.clear();
   ['grocery','mass','dtc','amazon'].forEach(ck=>activeChannels.add(ck));
+  // Reset per-channel state
+  Object.keys(CHANNELS).forEach(ck => {
+    userRevenue[ck] = DEFAULT_REVENUE[ck] || 100000;
+    userCogs[ck] = Math.round((DEFAULT_REVENUE[ck] || 100000) * 0.37);
+    CHANNELS[ck].deductions.forEach(d => { userPcts[ck][d.key] = d.pct; });
+  });
+  setCogsMode('blended');
   buildToggles();
-  updateEditorVisibility();
+  buildEditors();
   render();
 }
 
